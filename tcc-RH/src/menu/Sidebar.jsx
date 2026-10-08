@@ -19,24 +19,25 @@ import solicitacaoIcon from './img/img-solicitacao.svg'
 
 
 const icones = {
-  'icon-dashboard': dashboardIcon,
-  'icon-colaborador': colaboradorIcon,
-  'icon-setor': setorIcon,
-  'icon-cargo': cargoIcon,
-  'icon-jornada': jornadaEscalaIcon,
-  'icon-ferias': feriasIcon,
-  'icon-beneficios': beneficiosIcon,
-  'icon-documentos': documentosIcon,
-  'icon-feedbacks': feedbacksIcon,
-  'icon-pesquisa': pesquisaIcon,
-  'icon-indicadores': indicadoresIcon,
-  'icon-avaliacao': avaliacaoIcon,
-  'icon-motor': motorIcon,
-  'icon-plano': planoIcon,
-  'icon-notificacao': notificacaoIcon,
-  'icon-minhaEquipe': minhaEquipeIcon,
-  'icon-solicitacao': solicitacaoIcon
+    'icon-dashboard': dashboardIcon,
+    'icon-colaborador': colaboradorIcon,
+    'icon-setor': setorIcon,
+    'icon-cargo': cargoIcon,
+    'icon-jornada': jornadaEscalaIcon,
+    'icon-ferias': feriasIcon,
+    'icon-beneficios': beneficiosIcon,
+    'icon-documentos': documentosIcon,
+    'icon-feedbacks': feedbacksIcon,
+    'icon-pesquisa': pesquisaIcon,
+    'icon-indicadores': indicadoresIcon,
+    'icon-avaliacao': avaliacaoIcon,
+    'icon-motor': motorIcon,
+    'icon-plano': planoIcon,
+    'icon-notificacao': notificacaoIcon,
+    'icon-minhaEquipe': minhaEquipeIcon,
+    'icon-solicitacao': solicitacaoIcon
 };
+
 
 function Sidebar() {
     const [menus, setMenus] = useState([]);
@@ -54,7 +55,12 @@ function Sidebar() {
 
                 const dados = await resposta.json();
 
-                setMenus(dados.response.classificacao);
+                const menusOrdenados = [...dados.response.classificacao].sort(
+                    (a, b) => a.ordem - b.ordem
+                );
+
+                setMenus(menusOrdenados);
+
             } catch (erro) {
                 console.error('Erro ao carregar menus:', erro);
             }
@@ -76,11 +82,16 @@ function Sidebar() {
                     <a
                         key={menu.id}
                         href={menu.rota}
+                        className={
+                            window.location.pathname == menu.rota
+                                ? 'menu-ativo'
+                                : ''
+                        }
                     >
 
                         <img
                             src={icones[menu.icone]}
-                            alt=""
+                            alt="menu icones"
                             className="sidebar-menu-icon"
                         />
 

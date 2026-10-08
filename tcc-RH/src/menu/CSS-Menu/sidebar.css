@@ -1,4 +1,3 @@
-
 @font-face {
   font-family: "Geist";
   src: url("../../fonts/Geist[wght].woff2") format("woff2");
@@ -9,16 +8,16 @@
 
 @font-face {
   font-family: "Bruno Ace SC";
-  src: url("../../BrunoAceSC-Regular.ttf") format("truetype");
+  src: url("../../fonts/BrunoAceSC-Regular.ttf") format("truetype");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 
-
 body {
   font-family: "Geist", sans-serif;
-  background-color: #f5f6f8;
+  background-color: #F8F9FF;
+  margin: 0;
 }
 
 .sistema {
@@ -26,40 +25,64 @@ body {
 }
 
 .sidebar {
-  width: 250px;
-  min-height: 100vh;
+  width: 230px;
+  height: 100vh;
   background-color: #001F3F;
-  border-right: 1px solid #e5e7eb;
-  padding: 24px 16px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background-color: #1c5fe4;
+  border-radius: 10px;
 }
 
 
 
+
+.sidebar-logo {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
 .sidebar-logo h2 {
-  font-family: "Bruno Ace SC";
-  font-size: 22px;
+  display: flex;
+  justify-content: center;
+  margin-top: 40px;
+  margin-bottom: 50px;
+
+  font-family: "Bruno Ace SC", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 31px;
+  letter-spacing: 5px;
+
   color: #ffffff;
 }
 
 .sidebar-menu {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  margin-left: 6px;
+
 }
 
 .sidebar-menu a {
   display: flex;
   align-items: center;
   gap: 12px;
-
   padding: 12px;
-
   text-decoration: none;
-
   color: #374151;
-
-  border-radius: 8px;
-
   transition: background-color 0.2s, color 0.2s;
 }
 
@@ -68,11 +91,16 @@ body {
   color: #111827;
 }
 
+.sidebar-menu a.menu-ativo {
+  background-color: #0066FF;
+  color: #ffffff;
+  font-weight: 600;
 
+}
 
 .sidebar-menu-text {
   font-size: 14px;
-  color: white;
+  color: #ffffff;
 }
 
 .sidebar-menu-icon {

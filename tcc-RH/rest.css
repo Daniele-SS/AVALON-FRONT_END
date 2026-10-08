@@ -12,3 +12,10 @@ a{
 ol, ul, li{
  list-style: none;
 }
+
+html,
+body,
+#root {
+    width: 100%;
+    min-height: 100%;
+}

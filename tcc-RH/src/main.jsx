@@ -1,14 +1,26 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import './menu/CSS-Menu/sidebar.css'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 
+import Login from './login/Login'
 import Sidebar from './menu/Sidebar'
+
+import './menu/CSS-Menu/sidebar.css'
+import './login/css-login/login.css'
 
 function Sistema() {
   return (
-    <div className="sistema">
-      <Sidebar />
-    </div>
+    <BrowserRouter>
+      <Routes>
+
+        <Route path="/login" element={<Login />} />
+
+        <Route path="/menu" element={<Sidebar />} />
+
+        <Route path="*" element={<Navigate to="/login" />} />
+
+      </Routes>
+    </BrowserRouter>
   )
 }
 
