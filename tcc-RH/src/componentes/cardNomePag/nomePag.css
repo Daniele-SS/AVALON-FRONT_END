@@ -1,0 +1,91 @@
+@font-face {
+    font-family: "Geist";
+    src: url("../../fonts/Geist[wght].woff2") format("woff2");
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: swap;
+  }
+
+
+
+.card-tiulo{
+    display: flex;
+    justify-content: space-between;
+    align-items:center ;
+    width: 100%;
+    height: 110px;
+    border-radius: 12px;
+    background-color: rgb(255, 255, 255);
+
+    padding-left: 24px;
+    padding-right: 24px;
+
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.card-tiulo .titulo-descricao {
+    flex: 1;
+    min-width: 0;
+}
+
+.card-tiulo .titulo-descricao h2 {
+    font-family: "Geist", sans-serif;
+    font-size: 30px;
+    font-weight: 600;
+}
+
+.titulo-descricao p{
+    font-size: 14px;
+    margin-top: 4px;
+    color: #424656;
+    max-width: 446px;
+}
+
+.botao-cadastro{
+    display: flex;
+
+    min-width: 180px;
+    height: 40px;
+
+}
+
+.botao-cadastro button {
+
+    align-items: center;
+
+    min-width: 180px;
+    max-width: 100%;
+    height: 40px;
+
+    padding: 0 16px;
+
+    background-color: #0066FF;
+    color: #FFFFFF;
+
+    border: none;
+    border-radius: 8px;
+
+    cursor: pointer;
+}
+
+.botao-cadastro:active {
+    transform: scale(0.96);
+}
+
+.nome-btn{
+    display: flex;
+    width: 100%;
+    padding-left: 24px;
+    padding-right: 24px;
+}
+
+
+.titulo-botao{
+
+    font-size: 12px;
+    font-weight: normal;
+    padding-left: 32px;
+}
+
+
+
