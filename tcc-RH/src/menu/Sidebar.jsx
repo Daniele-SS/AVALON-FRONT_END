@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react'
+import { NavLink } from 'react-router-dom'
+
 import dashboardIcon from './img/img-dashboard.svg'
 import colaboradorIcon from './img/img-colaborador.svg'
 import setorIcon from './img/img-setores.svg'
@@ -79,13 +81,11 @@ function Sidebar() {
             <nav className="sidebar-menu">
 
                 {menus.map((menu) => (
-                    <a
+                    <NavLink
                         key={menu.id}
-                        href={menu.rota}
-                        className={
-                            window.location.pathname == menu.rota
-                                ? 'menu-ativo'
-                                : ''
+                        to={menu.rota}
+                        className={({ isActive }) =>
+                            isActive ? 'menu-ativo' : ''
                         }
                     >
 
@@ -99,7 +99,7 @@ function Sidebar() {
                             {menu.nome}
                         </span>
 
-                    </a>
+                    </NavLink>
                 ))}
 
             </nav>

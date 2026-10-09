@@ -30,6 +30,7 @@ body {
   background-color: #001F3F;
   overflow-y: auto;
   overflow-x: hidden;
+  
 }
 
 .sidebar::-webkit-scrollbar {
@@ -108,4 +109,14 @@ body {
   height: 18px;
   object-fit: contain;
   flex-shrink: 0;
+}
+
+.layout-sistema {
+    display: flex;
+}
+
+
+.conteudo-principal {
+    flex: 1;
+    padding: 30px;
 }

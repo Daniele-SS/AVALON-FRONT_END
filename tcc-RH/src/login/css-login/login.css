@@ -4,7 +4,7 @@
     min-height: 100vh;
 }
 
-.lado-esquerdo{
+.lado-esquerdo {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -51,34 +51,23 @@
     margin-top: 8px;
 }
 
-.email {
+.email,
+.senha,
+.btn-entrar {
     display: flex;
     flex-direction: column;
     width: 100%;
     margin-top: 24px;
 }
 
-.email label {
-    font-size: 13px;
-    font-weight: 500;
-    color: #4B5563;
-    margin-bottom: 8px;
-}
-
-
-.senha {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    margin-top: 16px;
-}
-
+.email label,
 .senha label {
     font-size: 13px;
     font-weight: 500;
     color: #4B5563;
     margin-bottom: 8px;
 }
+
 
 
 
@@ -108,12 +97,52 @@
     font-size: 14px;
 }
 
+
 .input-com-icone input::placeholder {
     color: #9CA3AF;
 }
 
+.recuperar-senha-container {
+    display: flex;
+    width: 100%;
+    margin-top: 15px;
+}
 
-.lado-direito{
+.recuperar-senha {
+    font-family: sans-serif;
+    font-size: 14px;
+    color: #5D52F2;
+    cursor: pointer;
+}
+
+.recuperar-senha:hover {
+    text-decoration: underline;
+}
+
+
+button {
+    background-color: #5D52F2;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 44px;
+    border-radius: 8px;
+    font-size: 16px;
+
+    border: none;
+    outline: none;
+
+    cursor: pointer;
+}
+
+
+.btn-entrar:active {
+    transform: scale(0.96);
+}
+
+.lado-direito {
     background-color: #5D52F2;
     display: flex;
     justify-content: center;
@@ -121,7 +150,6 @@
     width: 50%;
 }
 
-.lado-direito img{
+.lado-direito img {
     width: 100%;
 }
-
