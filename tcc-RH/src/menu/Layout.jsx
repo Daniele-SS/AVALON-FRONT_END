@@ -1,16 +1,21 @@
-import { Outlet } from 'react-router-dom'
-import Sidebar from './Sidebar'
+import { Outlet } from 'react-router-dom';
+import Sidebar from './Sidebar';
+import Header from '../header/header';
 
 function Layout() {
     return (
         <div className="layout-sistema">
             <Sidebar />
 
-            <main className="conteudo-principal">
-                <Outlet />
-            </main>
+            <div className="area-direita">
+                <Header />
+
+                <main className="conteudo-principal">
+                    <Outlet />
+                </main>
+            </div>
         </div>
-    )
+    );
 }
 
-export default Layout
+export default Layout;

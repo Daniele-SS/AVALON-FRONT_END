@@ -1,0 +1,125 @@
+header {
+    height: 72px;
+    width: 100%;
+    padding: 0 24px;
+    background-color: #F8F9FF;
+    border-bottom: 1px solid #E5E7EB;
+
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.acoes-header {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    margin-right: 78px;
+}
+
+.campainha {
+    width: 24px;
+    height: 24px;
+}
+
+.campainha:hover {
+    filter: brightness(0) saturate(100%)
+            invert(27%) sepia(97%) saturate(3000%)
+            hue-rotate(210deg) brightness(100%) contrast(105%);
+}
+
+.pefil {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    height: 40px;
+}
+
+.foto-perfil {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    border-radius: 100%;
+    background-color: #D9D9D9;
+}
+
+.informacoes {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    white-space: nowrap;
+}
+
+.informacoes h4 {
+    font-size: 14px;
+}
+
+.informacoes p {
+    font-size: 12px;
+}
+
+
+
+.pefil {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    height: 40px;
+}
+
+.seta-perfil {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+    border: none;
+    background: transparent;
+    color: #374151;
+    font-size: 18px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.seta-perfil:hover {
+    color: #0066FF;
+}
+
+
+.dropdown-perfil {
+    position: absolute;
+    top: calc(100% + 12px);
+    right: 0;
+    width: 180px;
+    padding: 6px;
+    background-color: #FFFFFF;
+    border: 1px solid #E5E7EB;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    z-index: 1000;
+}
+
+.dropdown-perfil button {
+    display: block;
+    width: 100%;
+    padding: 10px 12px;
+    border: none;
+    border-radius: 5px;
+    background: transparent;
+    text-align: left;
+    font-family: inherit;
+    font-size: 14px;
+    color: #374151;
+    cursor: pointer;
+}
+
+.dropdown-perfil button:hover {
+    background-color: #F3F4F6;
+}
+
+.dropdown-perfil .botao-sair {
+    color: #DC2626;
+}

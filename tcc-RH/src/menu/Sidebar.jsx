@@ -56,8 +56,9 @@ function Sidebar() {
                 }
 
                 const dados = await resposta.json();
+                console.log(dados);
 
-                const menusOrdenados = [...dados.response.classificacao].sort(
+                const menusOrdenados = [...dados.response.menu].sort(
                     (a, b) => a.ordem - b.ordem
                 );
 

@@ -1,7 +1,20 @@
+import BotaoCadastro from '../../componentes/cardNomePag/nomePag.jsx';
+import '../../componentes/cardNomePag/nomePag.css'
+
+
 function MotorRegras() {
+    function novaRegra() {
+        console.log('Botão Novo Setor clicado!');
+    }
+
     return (
-<h1>Motor Regras</h1>
-    )
+        <BotaoCadastro
+            titulo="Motor de Regras"
+            descricao="Automatize a identificação de situações que precisam de atenção."
+            textoBotao="Nova Regra"
+            onClick={novaRegra}
+        />
+    );
 }
 
 export default MotorRegras

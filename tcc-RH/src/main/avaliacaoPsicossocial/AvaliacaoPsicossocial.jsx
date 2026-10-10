@@ -1,7 +1,21 @@
+import BotaoCadastro from '../../componentes/cardNomePag/nomePag.jsx';
+import '../../componentes/cardNomePag/nomePag.css'
+
+
 function AvaliacaoPsicossocial() {
+
+    function novaAvaliação() {
+        console.log('Botão Novo Setor clicado!');
+    }
+
     return (
-<h1>AvaliacaoPsicossocial</h1>
-    )
+        <BotaoCadastro
+            titulo="Avaliação Psicossocial"
+            descricao="Acompanhe avaliações e identifique fatores psicossociais que merecem atenção no ambiente de trabalho."
+            textoBotao="Nova Avaliação"
+            onClick={novaAvaliação}
+        />
+    );
 }
 
 export default AvaliacaoPsicossocial
