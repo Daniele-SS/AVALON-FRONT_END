@@ -1,0 +1,56 @@
+.item-minicard {
+    flex: 1;
+}
+
+.minicard {
+    width: 100%;
+    height: 100%;
+
+    border-radius: 12px;
+    background-color: rgb(255, 255, 255);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+    display: flex;
+    padding-left: 24px;
+}
+
+.conteudo-minicard {
+    display: flex;
+    align-items: center;
+}
+
+.icone-minicard {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background-color: #E8FBF0;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.info-minicard {
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+    margin-top: 15px;
+}
+
+.info-minicard p {
+    font-size: 12px;
+    color: #424656;
+}
+
+/* Número e descrição lado a lado */
+.layout-horizontal .info-minicard {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Número em cima e descrição embaixo */
+.layout-vertical .info-minicard {
+    flex-direction: column;
+    align-items: flex-start;
+}
