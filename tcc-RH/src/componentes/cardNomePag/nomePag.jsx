@@ -1,3 +1,5 @@
+import '../cardNomePag/nomePag.css'
+
 import iconeSinalMais from '../img/sinalMais-icon.svg';
 
 function BotaoCadastro({ titulo, descricao, textoBotao, onClick }) {

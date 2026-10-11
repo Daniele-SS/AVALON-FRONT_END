@@ -1,3 +1,5 @@
+import '../minicard/minicard.css'
+
 function Minicards({ icone, numero, informacao, corFundo,layout = "vertical" }) {
     return (
         <div className="item-minicard">

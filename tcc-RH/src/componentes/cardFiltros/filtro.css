@@ -1,0 +1,229 @@
+.card-filtro {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+    height: 128px;
+    border-radius: 12px;
+    background-color: rgb(255, 255, 255);
+
+    padding-left: 24px;
+    padding-right: 24px;
+    margin-top: 57px;
+
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.string-filtro {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.nome-filtro {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.string-filtro p {
+    font-size: 12px;
+    color: #424656;
+}
+
+.filtros {
+    display: flex;
+    align-items: center;
+    gap: 36px;
+}
+
+.filtro-de-pesquisa {
+    display: flex;
+    align-items: center;
+    width: 32.6%;
+    height: 44px;
+    margin-top: 16px;
+    border: none;
+    border-radius: 8px;
+    background-color: #EFF4FF;
+
+}
+
+.filtro-de-pesquisa img {
+    width: 18px;
+    height: 18px;
+    margin-right: 10px;
+    margin-left: 14px;
+}
+
+.filtro-de-pesquisa input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 14px;
+}
+
+
+.filtro-de-pesquisa input::placeholder {
+    color: #9CA3AF;
+}
+
+
+.filtro-selecao {
+    display: flex;
+    gap: 4px;
+
+    width: 258px;
+    height: 30px;
+    padding: 3px;
+    margin-top: 15px;
+
+    background-color: #EFF4FF;
+    border-radius: 8px;
+    box-sizing: border-box;
+}
+
+.filtro-selecao button {
+    flex: 1;
+    height: 100%;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    font-size: 11px;
+    font-family: inherit;
+    color: black;
+
+    background-color: transparent;
+    border: none;
+    border-radius: 6px;
+    outline: none;
+
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.filtro-selecao button.selecionado {
+    background-color: #0066FF;
+    color: white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.10);
+}
+
+
+/* Container do dropdown */
+.dropbox {
+    position: relative;
+    min-width: 166px;
+    max-width: 100%;
+    margin-top: 16px;
+}
+
+/* Botão que abre a lista */
+.dropbox-menu {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+
+    width: 100%;
+    min-width: 166px;
+    min-height: 44px;
+    padding: 10px 12px;
+
+
+    background-color: #EFF4FF;
+    border-radius: 8px;
+
+    font-size: 13px;
+    color: #374151;
+
+    cursor: pointer;
+}
+
+/* Texto alinhado à esquerda */
+.texto-setor {
+    display: flex;
+    gap: 12px;
+}
+
+
+/* Seta alinhada ao topo */
+.seta-dropdown {
+    flex-shrink: 0;
+    font-size: 18px;
+    line-height: 16px;
+    transition: transform 0.2s;
+}
+
+.dropbox-menu.seta-aberta .seta-dropdown {
+    transform: rotate(180deg);
+}
+
+/* Lista colada ao botão */
+.dropdown-nome {
+    position: absolute;
+    top: 100%;
+
+
+    width: 100%;
+    min-width: 166px;
+    max-height: 180px;
+    overflow-y: auto;
+
+    box-sizing: border-box;
+    padding: 4px;
+
+    background-color: #FFFFFF;
+    border: 1px solid #D8E2F5;
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+/* Opções */
+.dropdown-nome button {
+    display: block;
+    width: 100%;
+    padding: 10px 8px;
+
+    
+    border: none;
+    background: transparent;
+
+
+    font-size: 13px;
+    color: #374151;
+    text-align: left;
+    cursor: pointer;
+}
+
+.dropdown-nome button:hover {
+    background-color: #EFF4FF;
+}
+
+.reset {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+
+    border: none;
+    border-radius: 8px;
+    background-color: #EFF4FF;
+
+    margin-top: 16px;
+    margin-left: auto;
+    margin-right: 24px;
+
+    cursor: pointer;
+}
+
+.reset img {
+    width: 18px;
+    height: 18px;
+}
