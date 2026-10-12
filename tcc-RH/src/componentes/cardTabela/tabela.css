@@ -1,0 +1,362 @@
+/*----------------- CARD PRINCIPAL -------------------------*/
+
+.card-tabela {
+    width: 100%;
+    min-width: 0;
+    min-height: 300px;
+
+    display: flex;
+    flex-direction: column;
+
+    margin-top: 24px;
+    margin-bottom: 24px;
+
+    box-sizing: border-box;
+
+    background-color: #FFFFFF;
+    border: 1px solid #EEF0F7;
+    border-radius: 13px;
+
+    overflow: hidden;
+
+    font-family: "Geist", sans-serif;
+    color: #17243B;
+}
+
+
+/*----------------- CABEÇALHO ------------------------------*/
+
+.cabecalho-tabela {
+    width: 100%;
+    min-height: 58px;
+
+    padding: 0 20px;
+    box-sizing: border-box;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+
+    background-color: #FFFFFF;
+}
+
+.cabecalho-tabela h2 {
+    margin: 0;
+
+    color: #10213A;
+    font-size: 14px;
+    font-weight: 650;
+}
+
+.cabecalho-tabela > span {
+    color: #525B6D;
+
+    font-size: 10px;
+    font-weight: 450;
+
+    white-space: nowrap;
+}
+
+
+/*----------------- ÁREA DA TABELA -------------------------*/
+
+.area-tabela {
+    width: 100%;
+    min-width: 0;
+
+    overflow-x: auto;
+    overflow-y: auto;
+}
+
+
+/*----------------- TABELA ---------------------------------*/
+
+.tabela {
+    width: 100%;
+    min-width: 750px;
+
+    border-collapse: separate;
+    border-spacing: 0;
+
+    table-layout: auto;
+
+    font-family: "Geist", sans-serif;
+    font-size: 11px;
+}
+
+
+/*----------------- CABEÇALHO DAS COLUNAS ------------------*/
+
+.tabela thead th {
+    height: 42px;
+
+    padding: 8px 12px;
+    box-sizing: border-box;
+
+    background-color: #EEF3FF;
+    border-bottom: 1px solid #E2E8F5;
+
+    color: #42495A;
+
+    font-size: 9px;
+    font-weight: 700;
+
+    text-align: center;
+    vertical-align: middle;
+
+    white-space: normal;
+}
+
+
+/*----------------- LINHAS DA TABELA -----------------------*/
+
+.tabela tbody tr {
+    height: 59px;
+
+    transition: background-color 0.15s ease;
+}
+
+.tabela tbody tr:hover td {
+    background-color: #F8FAFF;
+}
+
+.tabela tbody td {
+    height: 59px;
+
+    padding: 10px 12px;
+    box-sizing: border-box;
+
+    background-color: #FFFFFF;
+    border-bottom: 1px solid #F0F2F8;
+
+    color: #454D60;
+
+    font-size: 11px;
+    font-weight: 400;
+
+    text-align: center;
+    vertical-align: middle;
+}
+
+.tabela tbody tr:last-child td {
+    border-bottom: none;
+}
+
+
+/*----------------- PRIMEIRA COLUNA ------------------------*/
+
+.tabela tbody td:first-child {
+    color: #10213A;
+    font-weight: 600;
+}
+
+
+/*----------------- STATUS ---------------------------------*/
+
+.tabela .status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+
+    min-height: 22px;
+
+    padding: 3px 10px;
+    box-sizing: border-box;
+
+    border-radius: 12px;
+
+    font-size: 10px;
+    font-weight: 500;
+
+    white-space: nowrap;
+}
+
+.tabela .status-ativo {
+    background-color: #DDFBE9;
+    color: #006B45;
+}
+
+.tabela .status-inativo {
+    background-color: #E9EDFA;
+    color: #596174;
+}
+
+
+/*----------------- BOTÃO DE VISUALIZAR --------------------*/
+
+.tabela .botao-visualizar {
+    padding: 5px 8px;
+
+    border: none;
+    border-radius: 5px;
+
+    background-color: transparent;
+
+    color: #0057FF;
+
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 500;
+
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.tabela .botao-visualizar:hover {
+    background-color: #EEF3FF;
+    color: #003DB8;
+}
+
+
+/*----------------- MENSAGEM SEM REGISTROS -----------------*/
+
+.tabela tbody td[colspan] {
+    height: 120px;
+
+    color: #747D90;
+    font-size: 12px;
+    font-weight: 400;
+
+    text-align: center;
+}
+
+
+/*----------------- RODAPÉ ---------------------------------*/
+
+.rodape-tabela {
+    width: 100%;
+    min-height: 58px;
+
+    margin-top: auto;
+    padding: 10px 20px;
+    box-sizing: border-box;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+
+    background-color: #F8FAFF;
+    border-top: 1px solid #F0F2F8;
+}
+
+.rodape-tabela > span {
+    color: #525B6D;
+
+    font-size: 10px;
+    font-weight: 400;
+
+    white-space: nowrap;
+}
+
+
+/*----------------- PAGINAÇÃO ------------------------------*/
+
+.paginacao {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 5px;
+}
+
+.paginacao button {
+    width: 27px;
+    height: 27px;
+
+    padding: 0;
+    box-sizing: border-box;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    border: none;
+    border-radius: 6px;
+
+    background-color: transparent;
+
+    color: #343D50;
+
+    font-family: inherit;
+    font-size: 10px;
+    font-weight: 450;
+
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+
+/* Página selecionada */
+
+.paginacao button.pagina-ativa {
+    background-color: #0866FF;
+    color: #FFFFFF;
+
+    font-weight: 600;
+}
+
+
+/* Efeito ao passar o mouse */
+
+.paginacao button:hover:not(:disabled):not(.pagina-ativa) {
+    background-color: #E8EEFF;
+}
+
+
+/* Botões desativados */
+
+.paginacao button:disabled {
+    color: #A0A7B5;
+    cursor: not-allowed;
+}
+
+
+/* Setas de navegação */
+
+.paginacao button:first-child,
+.paginacao button:last-child {
+    font-size: 20px;
+    font-weight: 400;
+}
+
+
+/*----------------- RESPONSIVIDADE -------------------------*/
+
+@media (max-width: 768px) {
+
+    .cabecalho-tabela {
+        padding: 12px;
+        flex-wrap: wrap;
+    }
+
+    .cabecalho-tabela h2 {
+        font-size: 13px;
+    }
+
+    .cabecalho-tabela > span {
+        font-size: 9px;
+    }
+
+    .tabela {
+        min-width: 750px;
+    }
+
+    .rodape-tabela {
+        padding: 12px;
+
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .rodape-tabela > span {
+        width: 100%;
+        text-align: center;
+    }
+
+    .paginacao {
+        max-width: 100%;
+        flex-wrap: wrap;
+    }
+}

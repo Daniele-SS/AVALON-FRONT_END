@@ -1,0 +1,56 @@
+/*----------------- CABEÇALHO NOVO SETOR ------------------*/
+
+.cabecalho-novo-setor {
+    width: 100%;
+    min-height: 129px;
+}
+
+.cabecalho-novo-setor .card-tiulo {
+    width: 100%;
+    height: 129px;
+    min-height: 129px;
+}
+
+
+.caminho-cadastro-setor {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    margin-bottom: 8px;
+
+    font-size: 13px;
+}
+
+.caminho-cadastro-setor button {
+    width: auto;
+    height: auto;
+    padding: 0;
+
+    border: none;
+    background: transparent;
+
+    color: #434655;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.seta {
+    display: flex;
+    gap: 8px;
+}
+
+.caminho-cadastro-setor button:hover {
+    text-decoration: underline;
+    color: #0866FF;
+}
+
+.caminho-cadastro-setor>span {
+    color: #9AA3B2;
+}
+
+.caminho-cadastro-setor .pagina-atual-setor {
+    color: #131B2E;
+    font-weight: 500;
+}
