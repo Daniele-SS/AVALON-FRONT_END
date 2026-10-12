@@ -1,0 +1,89 @@
+/* CARTÃO DO RESPONSÁVEL */
+
+.cartao-responsavel {
+    width: 100%;
+    padding: 22px 19px;
+    margin-top: 23px;
+    border-radius: 8px;
+    background-color: #FFFFFF;
+    color: #172033;
+
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+
+/* CABEÇALHO */
+
+.cabecalho-responsavel {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.cabecalho-responsavel h2 {
+    margin: 0;
+    font-size: 17px;
+}
+
+.cabecalho-responsavel p {
+    margin: 4px 0 0;
+    color: #52586B;
+    font-size: 12px;
+}
+
+
+/* ETIQUETA OPCIONAL */
+
+.etiqueta-opcional {
+    padding: 4px 9px;
+    border-radius: 20px;
+    background-color: #F0F1FF;
+    color: #626780;
+    font-size: 10px;
+    white-space: nowrap;
+}
+
+
+/* CAMPO DO FORMULÁRIO */
+
+.cartao-responsavel .campo-formulario {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.cartao-responsavel .campo-formulario label {
+    margin-bottom: 6px;
+    font-size: 12px;
+    font-weight: 650;
+}
+
+.cartao-responsavel .campo-formulario select {
+    width: 100%;
+    height: 36px;
+    padding: 0 10px;
+    border: 1px solid transparent;
+    border-radius: 5px;
+    background-color: #F1F2FF;
+    color: #202A40;
+    font-size: 12px;
+}
+
+.cartao-responsavel .campo-formulario select:focus {
+    outline: 1px solid #2452E8;
+}
+
+.cartao-responsavel .campo-formulario select:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.cartao-responsavel .campo-formulario small {
+    margin-top: 6px;
+    color: #555B6D;
+    font-size: 10px;
+    line-height: 14px;
+}
+

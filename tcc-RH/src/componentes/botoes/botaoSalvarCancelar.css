@@ -1,0 +1,56 @@
+/* AÇÕES DO CADASTRO */
+
+.acoes-cadastro-setor {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    margin-top: 24px;
+}
+
+
+/* BOTÃO CANCELAR */
+
+.botao-cancelar-setor {
+    padding: 10px 16px;
+    border: 1px solid #D9DCE7;
+    border-radius: 6px;
+    background-color: #FFFFFF;
+    color: #51576B;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.botao-cancelar-setor:hover {
+    background-color: #F1F2FF;
+}
+
+
+/* BOTÃO SALVAR */
+
+.botao-salvar-setor {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 6px;
+    background-color: #1747E8;
+    color: #FFFFFF;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.botao-salvar-setor:hover {
+    background-color: #1238BC;
+}
+
+
+/* BOTÃO DESABILITADO */
+
+.botao-salvar-setor:disabled {
+    background-color: #AEB8D6;
+    cursor: not-allowed;
+}
+
+
+/* RESPONSIVIDADE */

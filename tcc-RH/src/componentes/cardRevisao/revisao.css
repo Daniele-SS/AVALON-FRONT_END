@@ -1,0 +1,158 @@
+/* CARTÃO DE REVISÃO */
+
+.cartao-revisao {
+    width: 100%;
+    padding: 22px 19px 20px;
+    margin-top: 23px;
+    border-radius: 8px;
+    background-color: #F0F1FF;
+    color: #172033;
+}
+
+
+/* CABEÇALHO */
+
+.cabecalho-revisao {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 18px;
+}
+
+.cabecalho-revisao h2 {
+    margin: 0;
+    font-size: 16px;
+}
+
+.etiqueta-revisao {
+    color: #555A6D;
+    font-size: 10px;
+    font-weight: 650;
+    text-transform: uppercase;
+}
+
+
+/* RESUMO DO CADASTRO */
+
+.resumo-cadastro {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+    padding: 17px;
+    border-radius: 8px;
+    background-color: #FFFFFF;
+}
+
+.coluna-resumo {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 17px;
+    min-width: 0;
+}
+
+.item-resumo {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 100%;
+    min-width: 0;
+}
+
+.item-resumo > span {
+    color: #777D90;
+    font-size: 10px;
+    font-weight: 650;
+    text-transform: uppercase;
+}
+
+.item-resumo > strong {
+    color: #172033;
+    font-size: 13px;
+    font-weight: 650;
+    overflow-wrap: anywhere;
+}
+
+.item-resumo p {
+    margin: 0;
+    color: #51576B;
+    font-size: 11px;
+    line-height: 17px;
+    overflow-wrap: anywhere;
+}
+
+
+/* STATUS */
+
+.etiqueta-status {
+    display: inline-block;
+    width: fit-content;
+    padding: 4px 8px;
+    border-radius: 20px;
+    font-size: 10px;
+}
+
+.status-ativo {
+    background-color: #9BF3D4;
+    color: #075C47;
+}
+
+.status-inativo {
+    background-color: #E1E4EF;
+    color: #51576B;
+}
+
+
+/* VALIDAÇÕES */
+
+.lista-validacoes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 17px;
+}
+
+.lista-validacoes > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    border-radius: 20px;
+    font-size: 10px;
+    line-height: 13px;
+}
+
+.validacao-aprovada {
+    background-color: #9BF3D4;
+    color: #075C47;
+}
+
+.validacao-pendente {
+    background-color: #E3E5EF;
+    color: #555B6D;
+}
+
+
+/* MENSAGENS */
+
+.mensagem-erro,
+.mensagem-sucesso {
+    margin: 15px 0 0;
+    padding: 10px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    line-height: 18px;
+}
+
+.mensagem-erro {
+    background-color: #FFF0F0;
+    color: #B42318;
+}
+
+.mensagem-sucesso {
+    background-color: #E5FBF1;
+    color: #08744D;
+}
+

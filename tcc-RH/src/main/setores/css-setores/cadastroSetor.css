@@ -54,3 +54,519 @@
     color: #131B2E;
     font-weight: 500;
 }
+
+/*----------------------------------------------------------
+  FONTE
+----------------------------------------------------------*/
+
+/* @font-face {
+    font-family: "Geist";
+    src: url("../../../fonts/Geist[wght].woff2") format("woff2");
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: swap;
+} */
+
+/*----------------------------------------------------------
+  FORMULÁRIO
+----------------------------------------------------------*/
+
+/* .formulario-cadastro-setor {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding-bottom: 12px;
+    font-family: "Geist", sans-serif;
+    color: #172033;
+    box-sizing: border-box;
+}
+
+.formulario-cadastro-setor * {
+    box-sizing: border-box;
+} */
+
+/*----------------------------------------------------------
+  CARDS
+----------------------------------------------------------*/
+/* 
+.card-informacoes-setor,
+.card-responsavel-setor {
+    width: 100%;
+    max-width: 1213px;
+    background-color: #FFFFFF;
+    border-radius: 10px;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.card-informacoes-setor {
+    min-height: 466px;
+    padding: 22px 19px 20px;
+}
+
+.card-responsavel-setor {
+    min-height: 173px;
+    padding: 22px 19px;
+} */
+
+/*----------------------------------------------------------
+  TÍTULOS
+----------------------------------------------------------*/
+
+/* .titulo-card-setor {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    margin: 0 0 22px;
+}
+
+.titulo-card-setor h2,
+.titulo-revisao-setor h2 {
+    margin: 0;
+    font-size: 17px;
+    line-height: 24px;
+    font-weight: 650;
+    color: #172033;
+}
+
+.titulo-card-setor p {
+    margin: 3px 0 0;
+    font-size: 12px;
+    line-height: 18px;
+    color: #52586B;
+}
+
+.etiqueta-setor {
+    flex-shrink: 0;
+    padding: 4px 9px;
+    border-radius: 20px;
+    background-color: #F0F1FF;
+    color: #626780;
+    font-size: 10px;
+    font-weight: 600;
+    white-space: nowrap;
+} */
+
+/*----------------------------------------------------------
+  CAMPOS DO SETOR
+----------------------------------------------------------*/
+
+/* .campos-setor {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    column-gap: 12px;
+    row-gap: 25px;
+}
+
+.campo-setor {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.campo-setor label,
+.label-status {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 12px;
+    line-height: 17px;
+    font-weight: 650;
+    color: #202A40;
+}
+
+.campo-setor label > span:not(.texto-opcional),
+.label-status > span {
+    color: #D92D45;
+}
+
+.campo-setor input,
+.campo-setor textarea,
+.campo-setor select {
+    width: 100%;
+    border: 1px solid transparent;
+    border-radius: 5px;
+    background-color: #F1F2FF;
+    color: #202A40;
+    font-family: inherit;
+    font-size: 12px;
+    outline: none;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.campo-setor input,
+.campo-setor select {
+    height: 36px;
+    padding: 0 11px;
+}
+
+.campo-setor textarea {
+    height: 66px;
+    min-height: 66px;
+    max-height: 120px;
+    padding: 9px 11px;
+    resize: vertical;
+    line-height: 18px;
+}
+
+.campo-setor input:focus,
+.campo-setor textarea:focus,
+.campo-setor select:focus {
+    border-color: #2452E8;
+    box-shadow: 0 0 0 2px rgba(36, 82, 232, 0.10);
+}
+
+.campo-setor input::placeholder,
+.campo-setor textarea::placeholder {
+    color: #8A90A5;
+}
+
+.campo-setor input:disabled,
+.campo-setor select:disabled {
+    cursor: not-allowed;
+    opacity: 0.85;
+}
+
+.campo-setor small {
+    margin-top: 5px;
+    color: #555B6D;
+    font-size: 10px;
+    line-height: 13px;
+}
+
+.campo-nome,
+.campo-codigo {
+    grid-row: 1;
+}
+
+.campo-descricao {
+    grid-column: 1 / -1;
+    grid-row: 2;
+}
+
+.label-com-contador {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+.label-com-contador label {
+    margin-bottom: 6px;
+}
+
+.label-com-contador > span {
+    margin-bottom: 6px;
+    color: #777D90;
+    font-size: 10px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.texto-opcional {
+    margin-left: 3px;
+    color: #777D90 !important;
+    font-weight: 400;
+} */
+
+/*----------------------------------------------------------
+  STATUS OPERACIONAL
+----------------------------------------------------------*/
+
+/* .campo-status-setor {
+    grid-column: 1 / -1;
+    grid-row: 3;
+    min-width: 0;
+}
+
+.label-status {
+    margin-bottom: 8px;
+}
+
+.opcoes-status-setor {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 9px;
+}
+
+.opcao-status {
+    min-width: 0;
+    min-height: 76px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px 10px;
+    border: 1px solid transparent;
+    border-radius: 9px;
+    background-color: #F1F2FF;
+    cursor: pointer;
+    transition:
+        border-color 0.2s ease,
+        background-color 0.2s ease;
+}
+
+.opcao-status.status-selecionado {
+    border: 1.5px solid #1747E8;
+    background-color: #FFFFFF;
+}
+
+.opcao-status input {
+    flex-shrink: 0;
+    width: 12px;
+    height: 12px;
+    margin: 2px 0 0;
+    accent-color: #1265F5;
+    cursor: pointer;
+}
+
+.conteudo-status {
+    flex: 1;
+    min-width: 0;
+}
+
+.linha-status {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 5px;
+}
+
+.linha-status strong {
+    font-size: 13px;
+    font-weight: 650;
+}
+
+.conteudo-status p {
+    margin: 5px 0 0;
+    max-width: 320px;
+    color: #51576B;
+    font-size: 11px;
+    line-height: 16px;
+}
+
+.badge-status {
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    padding: 3px 7px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 650;
+    line-height: 13px;
+    white-space: nowrap;
+}
+
+.badge-ativo {
+    background-color: #8DF2CE;
+    color: #075C47;
+}
+
+.badge-inativo {
+    background-color: #E1E4EF;
+    color: #51576B;
+} */
+
+/*----------------------------------------------------------
+  RESPONSÁVEL
+----------------------------------------------------------*/
+
+/* .campo-responsavel {
+    width: 100%;
+}
+
+.campo-responsavel small {
+    line-height: 15px;
+} */
+
+/*----------------------------------------------------------
+  CARD DE REVISÃO
+----------------------------------------------------------*/
+
+/* .card-revisao-setor {
+    width: 100%;
+    max-width: 1213px;
+    padding: 22px 19px 20px;
+    border-radius: 10px;
+    background-color: #F0F1FF;
+}
+
+.titulo-revisao-setor {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 18px;
+}
+
+.titulo-revisao-setor > span {
+    color: #555A6D;
+    font-size: 10px;
+    font-weight: 650;
+    letter-spacing: 0.3px;
+}
+
+.resumo-setor {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 28px;
+    min-height: 166px;
+    padding: 17px;
+    border-radius: 8px;
+    background-color: #FFFFFF;
+}
+
+.coluna-resumo {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 17px;
+    min-width: 0;
+}
+
+.item-resumo {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+    width: 100%;
+}
+
+.item-resumo > span {
+    color: #777D90;
+    font-size: 10px;
+    font-weight: 650;
+    letter-spacing: 0.25px;
+}
+
+.item-resumo > strong {
+    color: #172033;
+    font-size: 13px;
+    font-weight: 650;
+    overflow-wrap: anywhere;
+}
+
+.item-resumo p {
+    margin: 0;
+    max-width: 440px;
+    color: #51576B;
+    font-size: 11px;
+    line-height: 17px;
+    overflow-wrap: anywhere;
+} */
+
+/*----------------------------------------------------------
+  VALIDAÇÕES
+----------------------------------------------------------*/
+
+/* .validacoes-setor {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 17px;
+}
+
+.validacoes-setor > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    border-radius: 20px;
+    font-size: 10px;
+    line-height: 13px;
+}
+
+.validacao-ok {
+    background-color: #9BF3D4;
+    color: #075C47;
+}
+
+.validacao-pendente {
+    background-color: #E3E5EF;
+    color: #555B6D;
+} */
+
+/*----------------------------------------------------------
+  MENSAGENS
+----------------------------------------------------------*/
+
+/* .mensagem-erro-setor,
+.mensagem-sucesso-setor {
+    margin: 15px 0 0;
+    padding: 10px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    line-height: 18px;
+}
+
+.mensagem-erro-setor {
+    background-color: #FFF0F0;
+    color: #B42318;
+}
+
+.mensagem-sucesso-setor {
+    background-color: #E5FBF1;
+    color: #08744D;
+} */
+
+/*----------------------------------------------------------
+  AÇÕES DO FORMULÁRIO
+----------------------------------------------------------*/
+
+/* .acoes-cadastro-setor {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 22px;
+    padding: 12px 19px 0;
+}
+
+.botao-cancelar-setor,
+.botao-salvar-setor {
+    min-height: 38px;
+    border-radius: 7px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+        background-color 0.2s ease,
+        box-shadow 0.2s ease,
+        opacity 0.2s ease;
+}
+
+.botao-cancelar-setor {
+    padding: 0 10px;
+    border: none;
+    background-color: transparent;
+    color: #444B5D;
+}
+
+.botao-cancelar-setor:hover {
+    background-color: #ECEEF9;
+}
+
+.botao-salvar-setor {
+    min-width: 120px;
+    padding: 0 20px;
+    border: none;
+    background-color: #2445B5;
+    color: #FFFFFF;
+    box-shadow: 0 2px 4px rgba(25, 49, 125, 0.20);
+}
+
+.botao-salvar-setor:hover:not(:disabled) {
+    background-color: #19399F;
+}
+
+.botao-salvar-setor:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+} */
+
+/*----------------------------------------------------------
+  RESPONSIVIDADE
+----------------------------------------------------------*/
+

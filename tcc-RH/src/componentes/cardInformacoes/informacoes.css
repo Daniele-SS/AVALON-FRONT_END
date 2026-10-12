@@ -1,0 +1,179 @@
+/* CARTÃO DE INFORMAÇÕES */
+
+.cartao-informacoes {
+    width: 100%;
+    min-height: 466px;
+    padding: 22px 19px;
+    border-radius: 8px;
+    margin-top: 23px;
+    background-color: rgb(255, 255, 255);
+    color: #172033;
+
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+
+/* CABEÇALHO */
+
+.cabecalho-informacoes {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+}
+
+.cabecalho-informacoes h2 {
+    font-size: 17px;
+}
+
+.cabecalho-informacoes p {
+    margin: 4px 0 0;
+    color: #52586b;
+    font-size: 12px;
+}
+
+.etiqueta-etapa {
+    padding: 4px 9px;
+    border-radius: 20px;
+    background: #f0f1ff;
+    color: #626780;
+    font-size: 10px;
+}
+
+
+/* CAMPOS DO FORMULÁRIO */
+
+.lista-campos {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px 12px;
+}
+
+.campo-formulario {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.campo-formulario label,
+.rotulo-status {
+    margin-bottom: 6px;
+    font-size: 12px;
+    font-weight: 650;
+}
+
+.campo-formulario input,
+.campo-formulario textarea,
+.campo-formulario select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid transparent;
+    border-radius: 5px;
+    background: #f1f2ff;
+    color: #202a40;
+    font-size: 12px;
+}
+
+.campo-formulario input,
+.campo-formulario select {
+    height: 36px;
+}
+
+.campo-formulario textarea {
+    height: 66px;
+    resize: vertical;
+}
+
+.campo-formulario input:focus,
+.campo-formulario textarea:focus,
+.campo-formulario select:focus {
+    outline: 1px solid #2452e8;
+}
+
+.campo-formulario small {
+    margin-top: 5px;
+    color: #555b6d;
+    font-size: 10px;
+    line-height: 14px;
+}
+
+
+/* RÓTULO E CONTADOR */
+
+.rotulo-contador {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.rotulo-contador span {
+    color: #777d90;
+    font-size: 10px;
+}
+
+
+/* DESCRIÇÃO E STATUS */
+
+.campo-descricao,
+.campo-status {
+    grid-column: 1 / -1;
+}
+
+
+/* OPÇÕES DE STATUS */
+
+.opcoes-status {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 9px;
+}
+
+.opcao-status {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px;
+    border: 1px solid transparent;
+    border-radius: 9px;
+    background: #f1f2ff;
+    cursor: pointer;
+}
+
+.opcao-status.status-selecionado {
+    border-color: #1747e8;
+    background: #fff;
+}
+
+.opcao-status input {
+    width: 13px;
+    height: 13px;
+    accent-color: #1265f5;
+}
+
+.opcao-status p {
+    margin: 6px 0 0;
+    color: #51576b;
+    font-size: 11px;
+    line-height: 16px;
+}
+
+
+/* ETIQUETAS DE STATUS */
+
+.etiqueta-status {
+    display: inline-block;
+    padding: 3px 7px;
+    border-radius: 20px;
+    font-size: 10px;
+    margin-left: 15px;
+}
+
+.etiqueta-ativo {
+    background: #9bf3d4;
+    color: #075c47;
+}
+
+.etiqueta-inativo {
+    background: #e1e4ef;
+    color: #51576b;
+}
