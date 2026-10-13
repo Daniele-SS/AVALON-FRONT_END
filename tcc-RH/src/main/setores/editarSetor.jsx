@@ -1,4 +1,5 @@
-//----------------- IMPORTAÇÕES ----------------------------//
+
+//----------------- IMPORTAÇÕES -----------------------------//
 
 import { useEffect, useState } from 'react';
 
@@ -7,17 +8,19 @@ import Informacoes from '../../componentes/cardInformacoes/informacoes.jsx';
 import RevisaoSetor from '../../componentes/cardRevisao/revisao.jsx';
 import BotaoSalvarCancelar from '../../componentes/botoes/botaoSalvarCancelar.jsx';
 
+import { buscarDadosCadastro } from './servicos/cadastroSetorApi.js';
+import { atualizarSetor } from './servicos/editarSetorApi.js';
+
+import validarSetor from './funcoes/editarSetor/validarSetor.js';
+
 import './css-setores/cadastroSetor.css';
 
 
-//----------------- API ------------------------------------//
-
-const API = 'http://localhost:8080/v1/senai/avalon';
-
-
-//----------------- COMPONENTE -----------------------------//
+//----------------- COMPONENTE ------------------------------//
 
 function EditarSetor({ setor, voltar }) {
+
+    //----------------- ESTADOS -----------------------------//
 
     const [nome, setNome] = useState('');
     const [codigo, setCodigo] = useState('');
@@ -38,12 +41,10 @@ function EditarSetor({ setor, voltar }) {
     useEffect(() => {
 
         if (setor) {
-
             setNome(setor.nome || '');
             setCodigo(setor.codigo || '');
             setDescricao(setor.descricao || '');
             setStatus(Number(setor.status));
-
         }
 
     }, [setor]);
@@ -53,19 +54,12 @@ function EditarSetor({ setor, voltar }) {
 
     useEffect(() => {
 
-        async function buscarSetores() {
+        async function carregarSetores() {
 
             try {
 
-                const resposta = await fetch(`${API}/setor`);
-
-                if (!resposta.ok) {
-                    throw new Error('Erro ao carregar os setores.');
-                }
-
-                const resultado = await resposta.json();
-
-                setSetores(resultado.response?.setor || []);
+                const dadosSetores = await buscarDadosCadastro();
+                setSetores(dadosSetores);
 
             } catch (erroApi) {
 
@@ -79,41 +73,29 @@ function EditarSetor({ setor, voltar }) {
 
         }
 
-        buscarSetores();
+        carregarSetores();
 
     }, []);
 
 
     //----------------- VALIDAÇÃO ---------------------------//
 
-    const nomeDuplicado = setores.some(setorAtual =>
-
-        Number(setorAtual.id) !== Number(setor.id) &&
-
-        (setorAtual.nome || '').trim().toLowerCase() ===
-        nome.trim().toLowerCase()
-
+    const validacao = validarSetor(
+        nome,
+        codigo,
+        setores,
+        setor?.id ?? null
     );
 
+    const nomeValido = validacao.nomeValido;
+    const codigoValido = validacao.codigoValido;
 
-    const codigoDuplicado = setores.some(setorAtual =>
-
-        Number(setorAtual.id) !== Number(setor.id) &&
-
-        (setorAtual.codigo || '').trim().toLowerCase() ===
-        codigo.trim().toLowerCase()
-
-    );
-
-
-    const nomeValido = nome.trim() !== '';
-    const codigoValido = codigo.trim() !== '';
-    const descricaoValida = descricao.trim() !== '';
+    const nomeDuplicado = validacao.nomeDuplicado;
+    const codigoDuplicado = validacao.codigoDuplicado;
 
     const formularioValido =
         nomeValido &&
         codigoValido &&
-        descricaoValida &&
         !nomeDuplicado &&
         !codigoDuplicado &&
         !carregando &&
@@ -129,51 +111,28 @@ function EditarSetor({ setor, voltar }) {
         setErro('');
         setSucesso('');
 
-        if (!formularioValido) {
-
-            setErro('Verifique o nome, o código e a descrição do setor.');
-
+        if (!setor) {
+            setErro('Nenhum setor foi selecionado para edição.');
             return;
+        }
 
+        if (!formularioValido) {
+            setErro('Verifique o nome e o código do setor.');
+            return;
         }
 
         setSalvando(true);
 
         try {
 
-            const resposta = await fetch(`${API}/setor/${setor.id}`, {
+            const dadosSetor = {
+                nome: nome.trim(),
+                codigo: codigo.trim(),
+                descricao: descricao.trim() || 'Nenhuma descrição informada.',
+                status: Number(status)
+            };
 
-                method: 'PUT',
-
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-
-                body: JSON.stringify({
-
-                    nome: nome.trim(),
-                    codigo: codigo.trim(),
-                    descricao: descricao.trim(),
-                    status: Number(status)
-
-                })
-
-            });
-
-
-            const resultado = await resposta.json();
-
-
-            if (!resposta.ok || Number(resultado.status_code) >= 400) {
-
-                throw new Error(
-                    resultado.message ||
-                    resultado.mensagem ||
-                    'Não foi possível atualizar o setor.'
-                );
-
-            }
-
+            await atualizarSetor(setor.id, dadosSetor);
 
             setSucesso('Setor atualizado com sucesso!');
 
@@ -192,19 +151,18 @@ function EditarSetor({ setor, voltar }) {
     }
 
 
-    //----------------- TELA --------------------------------//
+    //----------------- VERIFICAR SETOR ---------------------//
 
     if (!setor) {
-
         return <p>Nenhum setor foi selecionado para edição.</p>;
-
     }
 
 
-    return (
-        <>
+    //----------------- TELA --------------------------------//
 
-            {/* CABEÇALHO */}
+    return (
+
+        <>
 
             <div className="cabecalho-novo-setor">
 
@@ -215,10 +173,7 @@ function EditarSetor({ setor, voltar }) {
 
                     <nav className="caminho-cadastro-setor">
 
-                        <button
-                            type="button"
-                            onClick={voltar}
-                        >
+                        <button type="button" onClick={voltar}>
                             Setores
                         </button>
 
@@ -234,8 +189,6 @@ function EditarSetor({ setor, voltar }) {
 
             </div>
 
-
-            {/* FORMULÁRIO */}
 
             <form onSubmit={salvarAlteracoes}>
 
@@ -255,8 +208,6 @@ function EditarSetor({ setor, voltar }) {
                 />
 
 
-                {/* REVISÃO */}
-
                 <RevisaoSetor
                     nome={nome}
                     codigo={codigo}
@@ -273,8 +224,6 @@ function EditarSetor({ setor, voltar }) {
                 />
 
 
-                {/* BOTÕES */}
-
                 <BotaoSalvarCancelar
                     voltar={voltar}
                     salvando={salvando}
@@ -284,12 +233,18 @@ function EditarSetor({ setor, voltar }) {
 
             </form>
 
+
+            {carregando && (
+                <p>Carregando dados...</p>
+            )}
+
         </>
+
     );
 
 }
 
 
-//----------------- EXPORTAÇÃO -----------------------------//
+//----------------- EXPORTAÇÃO ------------------------------//
 
 export default EditarSetor;

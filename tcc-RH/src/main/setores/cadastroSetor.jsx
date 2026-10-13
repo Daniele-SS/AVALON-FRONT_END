@@ -1,4 +1,5 @@
-//----------------- IMPORTAÇÕES ----------------------------//
+
+//----------------- IMPORTAÇÕES -----------------------------//
 
 import { useEffect, useState } from 'react';
 
@@ -7,28 +8,29 @@ import Informacoes from '../../componentes/cardInformacoes/informacoes.jsx';
 import RevisaoSetor from '../../componentes/cardRevisao/revisao.jsx';
 import BotaoSalvarCancelar from '../../componentes/botoes/botaoSalvarCancelar.jsx';
 
+import {
+    buscarDadosCadastro,
+    cadastrarSetor
+} from './servicos/cadastroSetorApi.js';
+
+import validarSetor from './funcoes/cadastroSetor/validarSetor.js';
+
 import './css-setores/cadastroSetor.css';
 
 
-//----------------- API ------------------------------------//
-
-const API = 'http://localhost:8080/v1/senai/avalon';
-
-
-//----------------- COMPONENTE -----------------------------//
+//----------------- COMPONENTE ------------------------------//
 
 function CadastroSetor({ voltar }) {
+
+    //----------------- ESTADOS -----------------------------//
 
     const [nome, setNome] = useState('');
     const [codigo, setCodigo] = useState('');
     const [descricao, setDescricao] = useState('');
     const [status, setStatus] = useState(1);
 
-    const [responsavel, setResponsavel] = useState('');
-    const [colaboradores, setColaboradores] = useState([]);
-    const [nivelGestor, setNivelGestor] = useState(null);
-
     const [setores, setSetores] = useState([]);
+
     const [carregando, setCarregando] = useState(true);
     const [salvando, setSalvando] = useState(false);
 
@@ -44,47 +46,9 @@ function CadastroSetor({ voltar }) {
 
             try {
 
-                const respostaSetores = await fetch(`${API}/setor`);
-                const dadosSetores = await respostaSetores.json();
+                const dadosSetores = await buscarDadosCadastro();
 
-                if (!respostaSetores.ok) {
-                    throw new Error('Erro ao carregar setores.');
-                }
-
-                setSetores(dadosSetores.response?.setor || []);
-
-                const respostaUsuarios = await fetch(`${API}/usuario`);
-                const dadosUsuarios = await respostaUsuarios.json();
-
-                if (!respostaUsuarios.ok) {
-                    throw new Error('Erro ao carregar gestores.');
-                }
-
-                const gestores = [];
-
-                (dadosUsuarios.response?.usuario || []).forEach((usuario) => {
-
-                    const niveis = usuario.nivel_acesso?.nivel_acesso || [];
-
-                    if (niveis.some((nivel) => nivel.nome === 'Gestor' && Number(nivel.status) === 1)) {
-
-                        (usuario.colaborador || []).forEach((colaborador) => {
-
-                            if (colaborador.status === 'Ativo') {
-                                gestores.push({
-                                    id: colaborador.id,
-                                    nome: colaborador.nome
-                                });
-                            }
-
-                        });
-
-                    }
-
-                });
-
-                setColaboradores(gestores);
-                setNivelGestor({ id: 2, nome: 'Gestor' });
+                setSetores(dadosSetores);
 
             } catch (erroApi) {
 
@@ -105,16 +69,13 @@ function CadastroSetor({ voltar }) {
 
     //----------------- VALIDAÇÃO ---------------------------//
 
-    const nomeDuplicado = setores.some((setor) =>
-        setor.nome.trim().toLowerCase() === nome.trim().toLowerCase()
-    );
+    const validacao = validarSetor(nome, codigo, setores);
 
-    const codigoDuplicado = setores.some((setor) =>
-        setor.codigo.trim().toLowerCase() === codigo.trim().toLowerCase()
-    );
+    const nomeValido = validacao.nomeValido;
+    const codigoValido = validacao.codigoValido;
 
-    const nomeValido = nome.trim() !== '';
-    const codigoValido = codigo.trim() !== '';
+    const nomeDuplicado = validacao.nomeDuplicado;
+    const codigoDuplicado = validacao.codigoDuplicado;
 
     const formularioValido =
         nomeValido &&
@@ -135,52 +96,36 @@ function CadastroSetor({ voltar }) {
         setSucesso('');
 
         if (!formularioValido) {
+
             setErro('Verifique o nome e o código do setor.');
+
             return;
+
         }
 
         setSalvando(true);
 
         try {
 
-            const resposta = await fetch(`${API}/setor`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    nome: nome.trim(),
-                    codigo: codigo.trim(),
-                    descricao: descricao.trim(),
-                    status: Number(status),
-                    responsavel: responsavel ? Number(responsavel) : null
-                })
-            });
+            const dadosSetor = {
+                nome: nome.trim(),
+                codigo: codigo.trim(),
+                descricao: descricao.trim() || 'Nenhuma descrição informada.',
+                status: Number(status)
+            };
 
-            const resultado = await resposta.json();
-
-            if (!resposta.ok || resultado.status_code >= 400) {
-                throw new Error(
-                    resultado.message ||
-                    resultado.mensagem ||
-                    'Não foi possível cadastrar o setor.'
-                );
-            }
+            await cadastrarSetor(dadosSetor);
 
             setSucesso('Setor cadastrado com sucesso!');
 
-            setSetores([...setores, {
-                nome: nome.trim(),
-                codigo: codigo.trim(),
-                descricao: descricao.trim(),
-                status: Number(status)
-            }]);
+            const dadosSetores = await buscarDadosCadastro();
+
+            setSetores(dadosSetores);
 
             setNome('');
             setCodigo('');
             setDescricao('');
             setStatus(1);
-            setResponsavel('');
 
         } catch (erroApi) {
 
@@ -198,15 +143,22 @@ function CadastroSetor({ voltar }) {
     //----------------- TELA --------------------------------//
 
     return (
+
         <>
+
             <div className="cabecalho-novo-setor">
 
                 <BotaoCadastro
                     titulo="Novo setor"
                     descricao="Gerencie dados cadastrais, vínculos funcionais e status operacionais dos colaboradores."
                 >
+
                     <nav className="caminho-cadastro-setor">
-                        <button type="button" onClick={voltar}>
+
+                        <button
+                            type="button"
+                            onClick={voltar}
+                        >
                             Setores
                         </button>
 
@@ -215,10 +167,13 @@ function CadastroSetor({ voltar }) {
                         <span className="pagina-atual-setor">
                             Novo setor
                         </span>
+
                     </nav>
+
                 </BotaoCadastro>
 
             </div>
+
 
             <form onSubmit={salvarSetor}>
 
@@ -243,8 +198,6 @@ function CadastroSetor({ voltar }) {
                     codigo={codigo}
                     descricao={descricao}
                     status={status}
-                    responsavel={responsavel}
-                    colaboradores={colaboradores}
                     nomeValido={nomeValido}
                     codigoValido={codigoValido}
                     nomeDuplicado={nomeDuplicado}
@@ -253,6 +206,7 @@ function CadastroSetor({ voltar }) {
                     sucesso={sucesso}
                 />
 
+
                 <BotaoSalvarCancelar
                     voltar={voltar}
                     salvando={salvando}
@@ -260,9 +214,19 @@ function CadastroSetor({ voltar }) {
                 />
 
             </form>
+
+
+            {carregando && (
+                <p>Carregando dados...</p>
+            )}
+
         </>
+
     );
 
 }
+
+
+//----------------- EXPORTAÇÃO ------------------------------//
 
 export default CadastroSetor;
