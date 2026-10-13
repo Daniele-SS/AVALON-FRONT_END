@@ -8,6 +8,7 @@ import Filtro from '../../componentes/cardFiltros/filtros.jsx';
 import Tabela from '../../componentes/cardTabela/tabela.jsx';
 
 import CadastroSetor from './cadastroSetor.jsx';
+import EditarSetor from './editarSetor.jsx';
 
 import './css-setores/setores.css';
 
@@ -15,163 +16,365 @@ import SetoresAtivos from './img/setoresAtivos-icon.svg';
 import iconeColaboradores from './img/colaboradores-icon.svg';
 import SetoresInativos from './img/setoresInativos-icon.svg';
 
-//----------------- FIM DAS IMPORTAÇÕES --------------------//
 
+//----------------- API ------------------------------------//
+
+const API = 'http://localhost:8080/v1/senai/avalon';
+
+
+//----------------- COMPONENTE -----------------------------//
 
 function Setores() {
 
-    //----------------- VARIÁVEIS DE ESTADO -----------------//
-
-    // Armazena os setores recebidos da API.
     const [setores, setSetores] = useState([]);
+    const [colaboradores, setColaboradores] = useState([]);
+    const [usuarios, setUsuarios] = useState([]);
 
-    // Armazena os valores dos filtros selecionados.
+    const [carregando, setCarregando] = useState(true);
+
     const [filtros, setFiltros] = useState({
         pesquisa: '',
         status: 'Todos',
         opcao: ''
     });
 
-   // Controla qual tela será exibida.
     const [telaAtual, setTelaAtual] = useState('lista');
-
-    //----------------- FIM DAS VARIÁVEIS DE ESTADO --------//
-
+    const [setorSelecionado, setSetorSelecionado] = useState(null);
 
 
-    //----------------- BUSCA DOS SETORES -------------------//
+    //----------------- BUSCAR DADOS ------------------------//
 
-    // Busca os setores cadastrados na API.
+    async function buscarDados() {
+
+        setCarregando(true);
+
+        try {
+
+            const respostaSetores = await fetch(`${API}/setor`);
+            const respostaColaboradores = await fetch(`${API}/colaborador`);
+            const respostaUsuarios = await fetch(`${API}/usuario`);
+
+            if (
+                !respostaSetores.ok ||
+                !respostaColaboradores.ok ||
+                !respostaUsuarios.ok
+            ) {
+                throw new Error('Não foi possível carregar os dados.');
+            }
+
+            const dadosSetores = await respostaSetores.json();
+            const dadosColaboradores = await respostaColaboradores.json();
+            const dadosUsuarios = await respostaUsuarios.json();
+
+            setSetores(dadosSetores.response?.setor || []);
+            setColaboradores(dadosColaboradores.response?.colaborador || []);
+            setUsuarios(dadosUsuarios.response?.usuario || []);
+
+        } catch (erro) {
+
+            console.log('Erro ao buscar dados:', erro);
+
+        } finally {
+
+            setCarregando(false);
+
+        }
+
+    }
+
+
+    //----------------- INICIALIZAÇÃO -----------------------//
+
     useEffect(() => {
-        fetch('http://localhost:8080/v1/senai/avalon/setor')
-            .then(resposta => resposta.json())
-            .then(dados => {
-                setSetores(dados.response.setor);
-            })
-            .catch(erro => {
-                console.log('Erro ao buscar setores:', erro);
-            });
+        buscarDados();
     }, []);
 
-    //----------------- FIM DA BUSCA DOS SETORES ------------//
 
+    //----------------- ABRIR EDIÇÃO ------------------------//
 
-        //----------------- NAVEGAÇÃO ENTRE TELAS ---------------//
+    function abrirEdicao(setor) {
 
-    // Exibe a tela de cadastro no lugar da listagem.
-    if (telaAtual == 'cadastro') {
-        return (
-            <CadastroSetor
-                voltar={() => setTelaAtual('lista')}
-            />
-        );
+        setSetorSelecionado(setor);
+        setTelaAtual('edicao');
+
     }
 
-    //----------------- FIM DA NAVEGAÇÃO --------------------//
 
+    //----------------- VOLTAR PARA LISTA -------------------//
 
-    //----------------- ATUALIZAÇÃO DOS FILTROS -------------//
+    function voltarParaLista() {
 
-    // Recebe e atualiza os filtros selecionados.
-    function receberFiltros(novosFiltros) {
-        setFiltros(novosFiltros);
+        setTelaAtual('lista');
+        setSetorSelecionado(null);
+
+        buscarDados();
+
     }
 
-    //----------------- FIM DA ATUALIZAÇÃO DOS FILTROS ------//
+
+    //----------------- CONTAGEM DOS SETORES ----------------//
+
+    const ativos = setores.filter(
+        setor => Number(setor.status) === 1
+    ).length;
+
+    const inativos = setores.filter(
+        setor => Number(setor.status) === 0
+    ).length;
 
 
-    //----------------- PARA O FILTRO -----------------------//
+    //----------------- MONTAR DADOS DA TABELA --------------//
 
-    // Conta os setores ativos e inativos.
-    const ativos = setores.filter(setor => setor.status === 1).length;
-    const inativos = setores.filter(setor => setor.status === 0).length;
+    const setoresComInformacoes = setores.map(setor => {
 
-    // Filtra os setores conforme os valores selecionados.
-    const setoresFiltrados = setores.filter(setor => {
+        // Busca os colaboradores deste setor
+        const colaboradoresSetor = colaboradores.filter(colaborador => {
 
-        // Nome do setor e texto digitado na pesquisa.
-        const nome = setor.nome.toLowerCase();
-        const pesquisa = filtros.pesquisa.toLowerCase();
+            const setorColaborador = Array.isArray(colaborador.setor)
+                ? colaborador.setor[0]
+                : colaborador.setor;
 
-        // Verifica se o nome corresponde à pesquisa.
-        const correspondeNome = nome.includes(pesquisa);
+            const idSetor = colaborador.id_setor ?? setorColaborador?.id;
 
-        // Verifica se o status corresponde ao filtro.
-        const correspondeStatus =
-            filtros.status === 'Todos' ||
-            (filtros.status === 'Ativos' && setor.status === 1) ||
-            (filtros.status === 'Inativos' && setor.status === 0);
+            return Number(idSetor) === Number(setor.id);
 
-        // Verifica se o setor corresponde à opção selecionada.
-        const correspondeOpcao =
-            filtros.opcao === '' ||
-            String(setor.id) === filtros.opcao;
+        });
 
-        // Retorna os setores que atendem a todos os filtros.
-        return correspondeNome && correspondeStatus && correspondeOpcao;
+
+        // Conta os cargos diferentes do setor
+        const cargos = [];
+
+        colaboradoresSetor.forEach(colaborador => {
+
+            const classificacoes = colaborador.cargo?.classificacao || [];
+
+            classificacoes.forEach(cargo => {
+
+                if (!cargos.includes(cargo.id)) {
+                    cargos.push(cargo.id);
+                }
+
+            });
+
+            if (
+                colaborador.id_cargo &&
+                !cargos.includes(colaborador.id_cargo)
+            ) {
+                cargos.push(colaborador.id_cargo);
+            }
+
+        });
+
+
+        // Procura o gestor responsável pelo setor
+        const gestoresSetor = usuarios.filter(usuario => {
+
+            const niveis = usuario.nivel_acesso?.nivel_acesso || [];
+
+            const temNivelGestor = niveis.some(nivel =>
+                nivel.nome === 'Gestor' &&
+                Number(nivel.status) === 1
+            );
+
+            if (!temNivelGestor) {
+                return false;
+            }
+
+            const colaboradoresUsuario = usuario.colaborador || [];
+
+            return colaboradoresUsuario.some(colaboradorUsuario => {
+
+                const colaboradorSetor = colaboradores.find(colaborador =>
+                    Number(colaborador.id) === Number(colaboradorUsuario.id)
+                );
+
+                if (
+                    !colaboradorSetor ||
+                    colaboradorSetor.status !== 'Ativo'
+                ) {
+                    return false;
+                }
+
+                const setorColaborador = Array.isArray(colaboradorSetor.setor)
+                    ? colaboradorSetor.setor[0]
+                    : colaboradorSetor.setor;
+
+                const idSetor =
+                    colaboradorSetor.id_setor ?? setorColaborador?.id;
+
+                return Number(idSetor) === Number(setor.id);
+
+            });
+
+        });
+
+
+        // Nome do gestor encontrado
+        const gestorResponsavel = gestoresSetor.map(usuario => {
+
+            const colaboradorUsuario = (usuario.colaborador || []).find(item =>
+                colaboradoresSetor.some(colaborador =>
+                    Number(colaborador.id) === Number(item.id)
+                )
+            );
+
+            return colaboradorUsuario?.nome;
+
+        }).filter(Boolean).join(', ');
+
+
+        // Retorna o setor com os dados calculados
+        return {
+            ...setor,
+
+            quantidade_colaboradores: colaboradoresSetor.length,
+
+            gestor_responsavel: gestorResponsavel || 'Não definido',
+
+            quantidade_cargos: cargos.length,
+
+            data_atualizacao: setor.data_atualizacao || '—'
+        };
+
     });
 
-    //----------------- FIM DO FILTRO -----------------------//
+
+   //----------------- FILTROS -----------------------------//
+
+function receberFiltros(novosFiltros) {
+    setFiltros(novosFiltros);
+}
+
+const setoresFiltrados = setoresComInformacoes.filter(setor => {
+
+    const pesquisa = (filtros.pesquisa || '').toLowerCase().trim();
+
+    // Pesquisa pelo nome
+    const nome = (setor.nome || '').toLowerCase();
+
+    // Pesquisa pelo código
+    const codigo = String(setor.codigo || '').toLowerCase();
+
+    // Pesquisa pelo gestor responsável
+    const gestor = (setor.gestor_responsavel || '').toLowerCase();
+
+    const correspondePesquisa =
+        nome.includes(pesquisa) ||
+        codigo.includes(pesquisa) ||
+        gestor.includes(pesquisa);
+
+    // Filtro por status
+    const correspondeStatus =
+        filtros.status === 'Todos' ||
+        (
+            filtros.status === 'Ativos' &&
+            Number(setor.status) === 1
+        ) ||
+        (
+            filtros.status === 'Inativos' &&
+            Number(setor.status) === 0
+        );
+
+    // Filtro pelo setor selecionado no dropdown
+    const correspondeOpcao =
+        filtros.opcao === '' ||
+        String(setor.id) === String(filtros.opcao);
+
+    return (
+        correspondePesquisa &&
+        correspondeStatus &&
+        correspondeOpcao
+    );
+
+});
+
+    //----------------- NAVEGAÇÃO ---------------------------//
+
+    if (telaAtual === 'cadastro') {
+
+        return (
+            <CadastroSetor
+                voltar={voltarParaLista}
+            />
+        );
+
+    }
+
+    if (telaAtual === 'edicao') {
+
+        return (
+            <EditarSetor
+                setor={setorSelecionado}
+                voltar={voltarParaLista}
+            />
+        );
+
+    }
 
 
-    //----------------- CONFIGURAÇÃO DA TABELA --------------//
+    //----------------- COLUNAS DA TABELA -------------------//
 
-    // Define as colunas e as informações exibidas na tabela.
     const colunasSetores = [
+
         {
             titulo: 'SETOR',
             campo: 'nome'
         },
+
         {
             titulo: 'COLABORADORES',
             campo: 'quantidade_colaboradores'
         },
+
         {
             titulo: 'GESTOR RESPONSÁVEL',
             campo: 'gestor_responsavel'
         },
+
         {
             titulo: 'CARGOS',
             campo: 'quantidade_cargos'
         },
-        {
-            titulo: 'ATUALIZAÇÃO',
-            campo: 'data_atualizacao'
-        },
+
+
         {
             titulo: 'STATUS',
+
             render: setor => (
                 <span
                     className={
-                        setor.status === 1
+                        Number(setor.status) === 1
                             ? 'status status-ativo'
                             : 'status status-inativo'
                     }
                 >
-                    ● {setor.status === 1 ? 'Ativo' : 'Inativo'}
+                    ● {Number(setor.status) === 1 ? 'Ativo' : 'Inativo'}
                 </span>
             )
         },
+
         {
             titulo: 'AÇÕES',
+
             render: setor => (
                 <button
+                    type="button"
                     className="botao-visualizar"
-                    onClick={() => console.log(setor)}
+                    onClick={() => abrirEdicao(setor)}
                 >
                     Visualizar
                 </button>
             )
         }
+
     ];
 
-    //----------------- FIM DA CONFIGURAÇÃO DA TABELA -------//
 
-
-    //----------------- EXIBIÇÃO DA PÁGINA ------------------//
+    //----------------- TELA PRINCIPAL ---------------------//
 
     return (
         <>
+
             <BotaoCadastro
                 titulo="Setores"
                 descricao="Gerencie os setores da empresa."
@@ -179,7 +382,11 @@ function Setores() {
                 onClick={() => setTelaAtual('cadastro')}
             />
 
+
+            {/* MINICARDS */}
+
             <div className="container-minicards">
+
                 <Minicards
                     icone={SetoresAtivos}
                     numero={setores.length}
@@ -203,7 +410,11 @@ function Setores() {
                     corFundo="#E5EEFF"
                     layout="horizontal"
                 />
+
             </div>
+
+
+            {/* FILTROS */}
 
             <Filtro
                 titulo="Pesquisar Setor"
@@ -213,20 +424,24 @@ function Setores() {
                 onFiltrosChange={receberFiltros}
             />
 
+
+            {/* TABELA */}
+
             <Tabela
                 titulo="Lista de Setores"
                 dados={setoresFiltrados}
                 colunas={colunasSetores}
             />
+
+
+            {carregando && <p>Carregando dados...</p>}
+
         </>
     );
 
-    //----------------- FIM DA EXIBIÇÃO DA PÁGINA -----------//
 }
 
 
-//----------------- EXPORTAÇÃO DO COMPONENTE ---------------//
+//----------------- EXPORTAÇÃO ----------------------------//
 
 export default Setores;
-
-//----------------- FIM DA EXPORTAÇÃO ----------------------//

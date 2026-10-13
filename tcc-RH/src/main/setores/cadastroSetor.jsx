@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 
 import BotaoCadastro from '../../componentes/cardNomePag/nomePag.jsx';
 import Informacoes from '../../componentes/cardInformacoes/informacoes.jsx';
-import ResponsavelSetor from '../../componentes/cardResponsavel/responsavel.jsx';
 import RevisaoSetor from '../../componentes/cardRevisao/revisao.jsx';
 import BotaoSalvarCancelar from '../../componentes/botoes/botaoSalvarCancelar.jsx';
 
@@ -153,7 +152,8 @@ function CadastroSetor({ voltar }) {
                     nome: nome.trim(),
                     codigo: codigo.trim(),
                     descricao: descricao.trim(),
-                    status: Number(status)
+                    status: Number(status),
+                    responsavel: responsavel ? Number(responsavel) : null
                 })
             });
 
@@ -237,13 +237,6 @@ function CadastroSetor({ voltar }) {
                     campos={['nome', 'codigo', 'descricao', 'status']}
                 />
 
-                <ResponsavelSetor
-                    responsavel={responsavel}
-                    setResponsavel={setResponsavel}
-                    colaboradores={colaboradores}
-                    nivelGestor={nivelGestor}
-                    carregando={carregando}
-                />
 
                 <RevisaoSetor
                     nome={nome}

@@ -8,7 +8,8 @@ import '../botoes/BotaoSalvarCancelar.css';
 function BotaoSalvarCancelar({
     voltar,
     salvando,
-    formularioValido
+    formularioValido,
+    textoBotao = 'Salvar setor'
 }) {
 
     //----------------- RETORNO JSX -------------------------//
@@ -38,7 +39,7 @@ function BotaoSalvarCancelar({
 
                 {salvando
                     ? 'Salvando...'
-                    : 'Salvar setor'}
+                    : textoBotao}
 
             </button>
 
