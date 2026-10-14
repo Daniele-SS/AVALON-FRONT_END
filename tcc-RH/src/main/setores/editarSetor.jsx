@@ -7,6 +7,7 @@ import BotaoCadastro from '../../componentes/cardNomePag/nomePag.jsx';
 import Informacoes from '../../componentes/cardInformacoes/informacoes.jsx';
 import RevisaoSetor from '../../componentes/cardRevisao/revisao.jsx';
 import BotaoSalvarCancelar from '../../componentes/botoes/botaoSalvarCancelar.jsx';
+import Alerta from '../../componentes/cardAlerta/alerta.jsx';
 
 import { buscarDadosCadastro } from './servicos/cadastroSetorApi.js';
 import { atualizarSetor } from './servicos/editarSetorApi.js';
@@ -100,6 +101,36 @@ function EditarSetor({ setor, voltar }) {
         !codigoDuplicado &&
         !carregando &&
         !salvando;
+
+
+
+    //----------------- ALERTA DE INATIVAÇÃO --------------------//
+
+    const [alertaAberto, setAlertaAberto] = useState(false);
+
+
+    //----------------- ALTERAR STATUS --------------------------//
+
+    function alterarStatus(novoStatus) {
+
+        if (Number(novoStatus) === 0) {
+            setAlertaAberto(true);
+            return;
+        }
+
+        setStatus(Number(novoStatus));
+
+    }
+
+
+    //----------------- CONFIRMAR INATIVAÇÃO --------------------//
+
+    function confirmarInativacao() {
+
+        setStatus(0);
+        setAlertaAberto(false);
+
+    }
 
 
     //----------------- ATUALIZAR SETOR ---------------------//
@@ -203,7 +234,7 @@ function EditarSetor({ setor, voltar }) {
                     descricao={descricao}
                     setDescricao={setDescricao}
                     status={status}
-                    setStatus={setStatus}
+                    setStatus={alterarStatus}
                     campos={['nome', 'codigo', 'descricao', 'status']}
                 />
 
@@ -232,6 +263,36 @@ function EditarSetor({ setor, voltar }) {
                 />
 
             </form>
+
+            <Alerta
+                aberto={alertaAberto}
+                titulo="Inativar setor?"
+                entidade="setor"
+                mensagem="Ao inativar este setor, ele não poderá ser utilizado em novos cadastros. Os colaboradores atualmente vinculados continuarão associados ao setor e seu histórico será preservado."
+
+                informacoes={[
+                    {
+                        titulo: 'Setor selecionado:',
+                        valor: `${nome} (${codigo})`
+                    },
+                    {
+                        titulo: 'Colaboradores impactados:',
+                        valor: setor.quantidade_colaboradores
+                            ?? setor.colaboradores?.length
+                            ?? 'Não informado',
+                        tipo: 'colaboradores'
+                    },
+                    {
+                        titulo: 'Política de integridade:',
+                        valor: 'O setor não será excluído. Seu histórico será preservado.',
+                        tipo: 'integridade'
+                    }
+                ]}
+
+                textoBotao="Inativar"
+                cancelar={() => setAlertaAberto(false)}
+                confirmar={confirmarInativacao}
+            />
 
 
             {carregando && (

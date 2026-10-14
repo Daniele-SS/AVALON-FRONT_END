@@ -1,0 +1,255 @@
+/*----------------- FUNDO E DESFOQUE -----------------------*/
+
+.fundo-alerta {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    background: rgba(15, 23, 42, 0.35);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+
+
+/*----------------- CARD PRINCIPAL -------------------------*/
+
+.card-alerta {
+    width: 100%;
+    max-width: 494px;
+
+    padding: 27px;
+
+    background: #ffffff;
+    border-radius: 9px;
+
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.18);
+}
+
+
+/*----------------- CABEÇALHO ------------------------------*/
+
+.cabecalho-alerta {
+    display: flex;
+    gap: 11px;
+    width: 100%;
+}
+
+.icone-alerta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 41px;
+    height: 41px;
+
+    background: #fff2c7;
+    border-radius: 8px;
+
+    color: #e58a00;
+    font-size: 25px;
+}
+
+.titulo-alerta {
+    flex: 1;
+    min-width: 0;
+}
+
+.categoria-alerta {
+    display: block;
+
+    margin-bottom: 3px;
+
+    color: #d97706;
+    font-size: 10px;
+    font-weight: bold;
+}
+
+.titulo-alerta h2 {
+    color: #172033;
+    font-size: 20px;
+    font-weight: bold;
+
+}
+
+.fechar-alerta {
+    width: 21px;
+    background: transparent;
+    border: none;
+
+    color: #7b8190;
+    font-size: 25px;
+
+    cursor: pointer;
+}
+
+
+
+
+/*----------------- MENSAGEM -------------------------------*/
+
+.mensagem-alerta {
+    margin: 20px 0;
+
+    color: #50576a;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+
+/*----------------- BLOCO DE INFORMAÇÕES -------------------*/
+
+.informacoes-alerta {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    padding: 17px;
+
+    background: #f1f2ff;
+    border-radius: 8px;
+}
+
+
+/*----------------- LINHAS DE INFORMAÇÕES ------------------*/
+
+.linha-alerta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    width: 100%;
+    min-width: 0;
+}
+
+.nome-informacao-alerta {
+    flex: 1;
+    min-width: 0;
+
+    color: #000000;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.valor-informacao-alerta {
+    color: #173da8;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+
+
+.caixa-colaboradores {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+
+    width: 112px;
+    height: 24px;
+
+    background: #ffffff;
+    border-radius: 6px;
+
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
+}
+
+/* Número */
+
+.numero-colaboradores {
+    color: #000000;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+/* Texto vinculados */
+
+.texto-vinculados {
+    color: #000000;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+
+/*----------------- POLÍTICA DE INTEGRIDADE ----------------*/
+
+.linha-alerta.integridade {
+    display: flex;
+    gap: 4px;
+
+    width: 100%;
+}
+
+/* Título inteiro na mesma linha */
+
+.linha-alerta.integridade .nome-informacao-alerta {
+    flex: 0 0 auto;
+
+    color: #000000;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+/* Texto explicativo ao lado do título */
+
+.linha-alerta.integridade .valor-informacao-alerta {
+    color: #454b5d;
+    font-size: 10px;
+    font-weight: bold;
+}
+
+/* Palavra destacada em vermelho, quando configurada */
+
+.texto-nao {
+    color: #c51d1d;
+    font-weight: 700;
+}
+
+
+/*----------------- BOTÕES ---------------------------------*/
+
+.botoes-alerta {
+    display: flex;
+    gap: 10px;
+    margin-top: 24px;
+}
+
+.botao-cancelar-alerta,
+.botao-confirmar-alerta {
+
+    border-radius: 7px;
+
+    font-size: 12px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.botao-cancelar-alerta {
+    background: #f0f2ff;
+    color: #41465a;
+}
+
+.botao-cancelar-alerta:hover {
+    background: #e4e7fa;
+}
+
+.botao-confirmar-alerta {
+    background: #c51d1d;
+    color: #ffffff;
+
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
+}
+
+.botao-confirmar-alerta:hover {
+    background: #a91515;
+}
+
+
+
+
+
