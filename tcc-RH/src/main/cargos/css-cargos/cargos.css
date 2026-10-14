@@ -1,0 +1,48 @@
+/*----------------- MINICARDS -------------------------------*/
+
+.container-minicards {
+    display: flex;
+    gap: 30px;
+    width: 100%;
+    min-height: 127px;
+    margin-top: 78px;
+    padding: 0 78px;
+    box-sizing: border-box;
+}
+
+/*----------------- STATUS DO CARGO ------------------------*/
+
+.status-cargo {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.status-cargo.ativo {
+    color: #16803C;
+    background-color: #E1FFEC;
+}
+
+.status-cargo.inativo {
+    color: #B42318;
+    background-color: #FEE4E2;
+}
+
+/*----------------- BOTÃO VISUALIZAR -----------------------*/
+
+.botao-visualizar-cargo {
+    border: none;
+    background: transparent;
+    color: #2457C5;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.botao-visualizar-cargo:hover {
+    text-decoration: underline;
+}
+

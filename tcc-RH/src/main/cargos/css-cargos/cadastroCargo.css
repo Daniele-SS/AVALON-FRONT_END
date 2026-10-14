@@ -1,0 +1,13 @@
+/*----------------- PÁGINA DE CADASTRO DE CARGO -------------*/
+
+.pagina-cadastro-cargo {
+    width: 100%;
+    padding: 0 78px 40px;
+    box-sizing: border-box;
+}
+
+/*----------------- ESPAÇAMENTO DOS CARDS ------------------*/
+
+.pagina-cadastro-cargo > * {
+    margin-bottom: 24px;
+}
