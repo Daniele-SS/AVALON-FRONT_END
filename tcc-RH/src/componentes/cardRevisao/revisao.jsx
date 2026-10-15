@@ -1,9 +1,9 @@
-//----------------- IMPORTAÇÕES ----------------------------//
+//----------------- IMPORTAÇÕES -----------------------------//
 
 import '../cardRevisao/revisao.css';
 
 
-//----------------- COMPONENTE -----------------------------//
+//----------------- COMPONENTE ------------------------------//
 
 function Revisao({
     nome,
@@ -12,6 +12,15 @@ function Revisao({
     status,
     responsavel,
     colaboradores = [],
+
+    tituloNome = 'Nome',
+    tituloCodigo = 'Código de referência',
+    tituloResponsavel = 'Responsável',
+
+    mostrarCodigo = true,
+    mostrarResponsavel = true,
+    mostrarDescricao = true,
+
     nomeValido,
     codigoValido,
     nomeDuplicado,
@@ -56,41 +65,39 @@ function Revisao({
 
             <div className="resumo-cadastro">
 
-                {/* COLUNA ESQUERDA */}
+                {/* NOME */}
 
-                <div className="coluna-resumo">
+                <div className="item-resumo">
+
+                    <span>{tituloNome}</span>
+
+                    <strong>
+                        {nome || 'Não informado'}
+                    </strong>
+
+                </div>
+
+
+                {/* CÓDIGO */}
+
+                {mostrarCodigo && (
 
                     <div className="item-resumo">
 
-                        <span>Nome do setor</span>
+                        <span>{tituloCodigo}</span>
 
                         <strong>
-                            {nome || 'Não informado'}
+                            {codigo || 'Não informado'}
                         </strong>
 
                     </div>
 
+                )}
 
-                    <div className="item-resumo">
 
-                        <span>Status inicial</span>
+                {/* DESCRIÇÃO */}
 
-                        <strong>
-
-                            <span
-                                className={`etiqueta-status ${
-                                    status === 1
-                                        ? 'status-ativo'
-                                        : 'status-inativo'
-                                }`}
-                            >
-                                ● {status === 1 ? 'Ativo' : 'Inativo'}
-                            </span>
-
-                        </strong>
-
-                    </div>
-
+                {mostrarDescricao && (
 
                     <div className="item-resumo">
 
@@ -102,27 +109,38 @@ function Revisao({
 
                     </div>
 
+                )}
+
+
+                {/* STATUS */}
+
+                <div className="item-resumo">
+
+                    <span>Status inicial</span>
+
+                    <strong>
+
+                        <span
+                            className={`etiqueta-status ${Number(status) === 1
+                                    ? 'status-ativo'
+                                    : 'status-inativo'
+                                }`}
+                        >
+                            ● {Number(status) === 1 ? 'Ativo' : 'Inativo'}
+                        </span>
+
+                    </strong>
+
                 </div>
 
 
-                {/* COLUNA DIREITA */}
+                {/* RESPONSÁVEL */}
 
-                <div className="coluna-resumo">
-
-                    <div className="item-resumo">
-
-                        <span>Código de referência</span>
-
-                        <strong>
-                            {codigo || 'Não informado'}
-                        </strong>
-
-                    </div>
-
+                {mostrarResponsavel && (
 
                     <div className="item-resumo">
 
-                        <span>Responsável pelo setor</span>
+                        <span>{tituloResponsavel}</span>
 
                         <strong>
                             {colaboradorResponsavel?.nome || 'Não definido'}
@@ -130,7 +148,7 @@ function Revisao({
 
                     </div>
 
-                </div>
+                )}
 
             </div>
 
@@ -139,13 +157,31 @@ function Revisao({
 
             <div className="lista-validacoes">
 
-                <span className={nomeAprovado ? 'validacao-aprovada' : 'validacao-pendente'}>
+                <span
+                    className={
+                        nomeAprovado
+                            ? 'validacao-aprovada'
+                            : 'validacao-pendente'
+                    }
+                >
                     {nomeAprovado ? '✓' : '○'} Nome único validado
                 </span>
 
-                <span className={codigoAprovado ? 'validacao-aprovada' : 'validacao-pendente'}>
-                    {codigoAprovado ? '✓' : '○'} Formato do código
-                </span>
+
+                {mostrarCodigo && (
+
+                    <span
+                        className={
+                            codigoAprovado
+                                ? 'validacao-aprovada'
+                                : 'validacao-pendente'
+                        }
+                    >
+                        {codigoAprovado ? '✓' : '○'} Formato do código
+                    </span>
+
+                )}
+
 
                 <span className="validacao-aprovada">
                     ✓ Status operacional definido
@@ -164,6 +200,7 @@ function Revisao({
 
             )}
 
+
             {sucesso && (
 
                 <p className="mensagem-sucesso">
@@ -175,6 +212,7 @@ function Revisao({
         </section>
 
     );
+
 }
 
 

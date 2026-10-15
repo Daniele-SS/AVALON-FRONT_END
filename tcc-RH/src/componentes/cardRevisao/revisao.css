@@ -39,18 +39,14 @@
 .resumo-cadastro {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 28px;
+    gap: 20px 28px;
     padding: 17px;
     border-radius: 8px;
     background-color: #FFFFFF;
 }
 
 .coluna-resumo {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 17px;
-    min-width: 0;
+    display: contents;
 }
 
 .item-resumo {
@@ -60,7 +56,6 @@
     width: 100%;
     min-width: 0;
 }
-
 .item-resumo > span {
     color: #777D90;
     font-size: 10px;

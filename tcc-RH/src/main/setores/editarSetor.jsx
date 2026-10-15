@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 
 import BotaoCadastro from '../../componentes/cardNomePag/nomePag.jsx';
 import Informacoes from '../../componentes/cardInformacoes/informacoes.jsx';
-import RevisaoSetor from '../../componentes/cardRevisao/revisao.jsx';
+import Revisao from '../../componentes/cardRevisao/revisao.jsx';
 import BotaoSalvarCancelar from '../../componentes/botoes/botaoSalvarCancelar.jsx';
 import Alerta from '../../componentes/cardAlerta/alerta.jsx';
 
@@ -239,17 +239,17 @@ function EditarSetor({ setor, voltar }) {
                 />
 
 
-                <RevisaoSetor
+                <Revisao
                     nome={nome}
                     codigo={codigo}
                     descricao={descricao}
                     status={status}
-                    responsavel=""
-                    colaboradores={[]}
-                    nomeValido={nomeValido}
-                    codigoValido={codigoValido}
-                    nomeDuplicado={nomeDuplicado}
-                    codigoDuplicado={codigoDuplicado}
+
+                    tituloNome="Nome do setor"
+                    tituloCodigo="Código do setor"
+
+                    mostrarResponsavel={false}
+
                     erro={erro}
                     sucesso={sucesso}
                 />
@@ -284,7 +284,6 @@ function EditarSetor({ setor, voltar }) {
                     },
                     {
                         titulo: 'Política de integridade:',
-                        valor: 'O setor não será excluído. Seu histórico será preservado.',
                         tipo: 'integridade'
                     }
                 ]}

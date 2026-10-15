@@ -6,7 +6,6 @@ import BotaoCadastro from '../../componentes/cardNomePag/nomePag.jsx';
 import Informacoes from '../../componentes/cardInformacoes/informacoes.jsx';
 import Revisao from '../../componentes/cardRevisao/revisao.jsx';
 import BotaoSalvarCancelar from '../../componentes/botoes/botaoSalvarCancelar.jsx';
-import Alerta from '../../componentes/cardAlerta/alerta.jsx';
 
 import {
     buscarDadosCadastro,
@@ -17,169 +16,208 @@ import validarCargo from './funcoes/cadastroCargo/validarCargo.js';
 
 import './css-cargos/cadastroCargo.css';
 
+
 //----------------- COMPONENTE ------------------------------//
 
 function CadastroCargo({ voltar }) {
 
-    const [cargos, setCargos] = useState([]);
+    //----------------- ESTADOS -----------------------------//
 
     const [nome, setNome] = useState('');
     const [codigo, setCodigo] = useState('');
     const [descricao, setDescricao] = useState('');
-    const [status, setStatus] = useState('1');
+    const [status, setStatus] = useState(1);
 
-    const [erros, setErros] = useState({});
-    const [erro, setErro] = useState('');
-    const [sucesso, setSucesso] = useState('');
+    const [cargos, setCargos] = useState([]);
+
+    const [carregando, setCarregando] = useState(true);
     const [salvando, setSalvando] = useState(false);
 
-    //----------------- CARREGAR CARGOS ---------------------//
+    const [erro, setErro] = useState('');
+    const [sucesso, setSucesso] = useState('');
+
+
+    //----------------- BUSCAR DADOS ------------------------//
 
     useEffect(() => {
+
         async function carregarCargos() {
+
             try {
-                const dados = await buscarDadosCadastro();
-                setCargos(dados);
-            } catch (erro) {
-                setErro(erro.message);
+
+                const dadosCargos = await buscarDadosCadastro();
+
+                setCargos(dadosCargos);
+
+            } catch (erroApi) {
+
+                setErro(erroApi.message);
+
+            } finally {
+
+                setCarregando(false);
+
             }
+
         }
 
         carregarCargos();
+
     }, []);
 
-    //----------------- VALIDAR FORMULÁRIO ------------------//
 
-    function validarFormulario() {
-        const resultado = validarCargo(
-            { nome, codigo, descricao, status },
-            cargos
-        );
+    //----------------- VALIDAÇÃO ---------------------------//
 
-        setErros(resultado.erros);
+    const validacao = validarCargo(
+        { nome, codigo, descricao, status },
+        cargos
+    );
 
-        return resultado.valido;
-    }
+    const formularioValido =
+        validacao.valido &&
+        !carregando &&
+        !salvando;
 
-    //----------------- CADASTRAR ---------------------------//
 
-    async function salvarCargo() {
+    //----------------- CADASTRAR CARGO ---------------------//
+
+    async function salvarCargo(evento) {
+
+        evento.preventDefault();
+
         setErro('');
         setSucesso('');
 
-        if (!validarFormulario()) {
+        if (!formularioValido) {
+
+            setErro('Verifique o nome, o código e a descrição do cargo.');
+
             return;
+
         }
 
         setSalvando(true);
 
         try {
-            await cadastrarCargo({
+
+            const dadosCargo = {
                 nome: nome.trim(),
                 codigo: codigo.trim(),
-                descricao: descricao.trim(),
+                descricao: descricao.trim() || 'Nenhuma descrição informada.',
                 status: Number(status)
-            });
+            };
+
+            await cadastrarCargo(dadosCargo);
 
             setSucesso('Cargo cadastrado com sucesso!');
+
+            const dadosCargos = await buscarDadosCadastro();
+
+            setCargos(dadosCargos);
 
             setNome('');
             setCodigo('');
             setDescricao('');
-            setStatus('1');
-            setErros({});
+            setStatus(1);
 
-            const dadosAtualizados = await buscarDadosCadastro();
-            setCargos(dadosAtualizados);
-        } catch (erro) {
-            setErro(erro.message);
+        } catch (erroApi) {
+
+            setErro(erroApi.message);
+
         } finally {
+
             setSalvando(false);
+
         }
+
     }
 
-    //----------------- ATUALIZAR CAMPOS --------------------//
 
-    function atualizarCampo(campo, valor) {
-        if (campo === 'nome') setNome(valor);
-        if (campo === 'codigo') setCodigo(valor);
-        if (campo === 'descricao') setDescricao(valor);
-        if (campo === 'status') setStatus(valor);
-
-        setErros({
-            ...erros,
-            [campo]: ''
-        });
-    }
-
-    //----------------- RENDERIZAR --------------------------//
+    //----------------- TELA --------------------------------//
 
     return (
-        <div className="pagina-cadastro-cargo">
 
-            <BotaoCadastro
-                titulo="Cadastrar cargo"
-                descricao="Preencha as informações para cadastrar um novo cargo."
-                textoBotao="Voltar"
-                onClick={voltar}
-            />
+        <>
 
-            {erro && (
-                <Alerta
-                    tipo="erro"
-                    mensagem={erro}
+            <div className="cabecalho-novo-cargo">
+
+                <BotaoCadastro
+                    titulo="Novo cargo"
+                    descricao="Preencha as informações para cadastrar um novo cargo."
+                >
+
+                    <nav className="caminho-cadastro-cargo">
+
+                        <button
+                            type="button"
+                            onClick={voltar}
+                        >
+                            Cargos
+                        </button>
+
+                        <span className="seta">&gt;</span>
+
+                        <span className="pagina-atual-cargo">
+                            Novo cargo
+                        </span>
+
+                    </nav>
+
+                </BotaoCadastro>
+
+            </div>
+
+
+            <form onSubmit={salvarCargo}>
+
+                <Informacoes
+                    titulo="Informações do cargo"
+                    descricaoCard="Preencha os dados do cargo."
+                    nomeEntidade="cargo"
+                    nome={nome}
+                    setNome={setNome}
+                    codigo={codigo}
+                    setCodigo={setCodigo}
+                    descricao={descricao}
+                    setDescricao={setDescricao}
+                    status={status}
+                    setStatus={setStatus}
+                    campos={['nome', 'codigo', 'descricao', 'status']}
                 />
+
+
+                <Revisao
+                    nome={nome}
+                    codigo={codigo}
+                    descricao={descricao}
+                    status={status}
+                    tituloNome="Nome do cargo"
+                    tituloCodigo="Código do cargo"
+                    mostrarResponsavel={false}
+                    erro={erro}
+                    sucesso={sucesso}
+                />
+
+
+                <BotaoSalvarCancelar
+                    voltar={voltar}
+                    salvando={salvando || carregando}
+                    formularioValido={formularioValido}
+                />
+
+            </form>
+
+
+            {carregando && (
+                <p>Carregando dados...</p>
             )}
 
-            {sucesso && (
-                <Alerta
-                    tipo="sucesso"
-                    mensagem={sucesso}
-                />
-            )}
+        </>
 
-            <Informacoes
-                titulo="Informações do cargo"
-                descricaoCard="Preencha os dados do cargo."
-                nomeEntidade="cargo"
-                nome={nome}
-                setNome={valor => atualizarCampo('nome', valor)}
-                codigo={codigo}
-                setCodigo={valor => atualizarCampo('codigo', valor)}
-                descricao={descricao}
-                setDescricao={valor => atualizarCampo('descricao', valor)}
-                status={status}
-                setStatus={valor => atualizarCampo('status', valor)}
-                campos={['nome', 'codigo', 'descricao', 'status']}
-                erros={erros}
-            />
-
-            <Revisao
-                nome={nome}
-                codigo={codigo}
-                descricao={descricao}
-                status={status}
-                nomeEntidade="cargo"
-                mostrarResponsavel={false}
-                erro={erro}
-                sucesso={sucesso}
-            />
-
-            <BotaoSalvarCancelar
-                voltar={voltar}
-                salvando={salvando}
-                formularioValido={
-                    nome.trim() !== '' &&
-                    codigo.trim() !== '' &&
-                    descricao.trim() !== ''
-                }
-                textoBotao="Salvar cargo"
-                onClickSalvar={salvarCargo}
-            />
-
-        </div>
     );
+
 }
+
 
 //----------------- EXPORTAÇÃO ------------------------------//
 

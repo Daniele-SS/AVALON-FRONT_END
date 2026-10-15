@@ -1,46 +1,61 @@
-//----------------- COLUNAS DA TABELA DE CARGOS -------------//
+
+ //----------------- COLUNAS DA TABELA DE CARGOS ------------//
 
 function criarColunasCargos(abrirEdicao) {
+
     return [
+
         {
-            titulo: 'Cargo',
+            titulo: 'CARGO',
             campo: 'nome_cargo'
         },
+
         {
-            titulo: 'Setor',
+            titulo: 'SETOR',
             campo: 'nome_setor'
         },
+
         {
-            titulo: 'Colaboradores',
+            titulo: 'COLABORADORES',
             campo: 'quantidade_colaboradores'
         },
+
         {
-            titulo: 'Status',
+            titulo: 'STATUS',
+
             render: cargo => (
+
                 <span
                     className={
                         Number(cargo.status) === 1
-                            ? 'status-cargo ativo'
-                            : 'status-cargo inativo'
+                            ? 'status status-ativo'
+                            : 'status status-inativo'
                     }
                 >
-                    {Number(cargo.status) === 1 ? 'Ativo' : 'Inativo'}
+                    ● {Number(cargo.status) === 1 ? 'Ativo' : 'Inativo'}
                 </span>
+
             )
         },
+
         {
-            titulo: 'Visualizar',
+            titulo: 'AÇÕES',
+
             render: cargo => (
+
                 <button
                     type="button"
-                    className="botao-visualizar-cargo"
+                    className="botao-visualizar"
                     onClick={() => abrirEdicao(cargo)}
                 >
                     Visualizar
                 </button>
+
             )
         }
+
     ];
+
 }
 
 //----------------- EXPORTAÇÃO ------------------------------//

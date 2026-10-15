@@ -1,0 +1,237 @@
+/*----------------- PAINEL DE JORNADAS ----------------------*/
+
+.painel-jornadas {
+    width: 87%;
+    min-height: 171px;
+    height: auto;
+
+    padding: 24px;
+    margin: 45px auto 0;
+
+    box-sizing: border-box;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+
+    background-color: #F0F3FF;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+
+/*----------------- INFORMAÇÕES -----------------------------*/
+
+.informacoes-jornadas {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+
+    flex: 1 1 0;
+    min-width: 0;
+}
+
+
+/*----------------- ÍCONE -----------------------------------*/
+
+.icone-jornadas {
+    width: 48px;
+    height: 48px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background-color: #FFFFFF;
+    border-radius: 12px;
+}
+
+.icone-jornadas img {
+    width: 24px;
+    height: 24px;
+
+    object-fit: contain;
+}
+
+
+/*----------------- TEXTOS ----------------------------------*/
+
+.texto-jornadas {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+
+    flex: 1;
+    min-width: 0;
+}
+
+.texto-jornadas h2 {
+    margin: 0;
+
+    font-size: 18px;
+    font-weight: bold;
+    color: #25283A;
+}
+
+
+/*----------------- DESCRIÇÃO -------------------------------*/
+
+.descricao-jornadas {
+    width: 100%;
+    max-width: 380px;
+
+    margin: 8px 0 12px;
+
+    font-size: 12px;
+    color: #424656;
+
+    overflow-wrap: break-word;
+}
+
+
+/*----------------- CONCEITO ESTRUTURAL ---------------------*/
+
+.conceito-jornadas {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+
+    max-width: 100%;
+}
+
+.conceito-jornadas > span {
+    font-size: 11px;
+    color: #424656;
+
+    white-space: nowrap;
+}
+
+
+/*----------------- CARD DO CONCEITO ------------------------*/
+
+.card-conceito-jornadas {
+    width: 229px;
+    max-width: 100%;
+    min-height: 18px;
+
+    padding: 0 8px;
+    box-sizing: border-box;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+
+    background-color: #FFFFFF;
+    border-radius: 12px;
+}
+
+
+/*----------------- PALAVRA JORNADA -------------------------*/
+
+.card-conceito-jornadas strong {
+    flex-shrink: 0;
+
+    font-size: 12px;
+    font-weight: 600;
+    color: #0050CB;
+
+    white-space: nowrap;
+}
+
+
+/*----------------- RESTANTE DO CONCEITO --------------------*/
+
+.card-conceito-jornadas p {
+    margin: 0;
+
+    font-size: 12px;
+    font-weight: 500;
+    color: #000000;
+
+    white-space: nowrap;
+}
+
+
+/*----------------- INDICADORES -----------------------------*/
+
+.indicadores-jornadas {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    flex: 0 1 330px;
+    min-width: 0;
+
+    gap: 12px;
+}
+
+
+/*----------------- CADA INDICADOR --------------------------*/
+
+.indicador-jornadas {
+    flex: 1 1 0;
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    text-align: center;
+}
+
+
+/*----------------- TÍTULOS DOS INDICADORES -----------------*/
+
+.indicador-jornadas h3 {
+    margin: 0 0 8px;
+
+    font-size: 12px;
+    font-weight: 500;
+    color: #424656;
+}
+
+
+/*----------------- NÚMEROS ---------------------------------*/
+
+.indicador-jornadas strong {
+    font-size: 24px;
+    font-weight: 600;
+    color: #25283A;
+}
+
+
+/*----------------- DESCRIÇÕES DOS INDICADORES --------------*/
+
+.indicador-jornadas p {
+    margin: 5px 0 0;
+
+    font-size: 11px;
+    color: #737789;
+}
+
+/*----------------- LISTA DE JORNADAS -----------------------*/
+
+.lista-jornadas {
+    width: 100%;
+    margin: 66px auto 40px;
+    box-sizing: border-box;
+}
+
+
+/*----------------- GRADE DE CARDS --------------------------*/
+
+.grade-jornadas {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    column-gap: 29px;
+    row-gap: 20px;
+
+    width: 100%;
+    box-sizing: border-box;
+}

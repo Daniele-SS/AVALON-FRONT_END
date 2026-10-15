@@ -18,6 +18,7 @@ import criarColunasCargos from './funcoes/cargo/colunaCargos.jsx';
 
 import './css-cargos/cargos.css';
 
+
 import CargosAtivos from './img/cargosAtivos-icon.svg';
 import iconeColaboradores from './img/colaboradores-icon.svg';
 import CargosInativos from './img/cargosInativos-icon.svg';
@@ -130,6 +131,7 @@ function Cargos() {
 
     //----------------- TELA PRINCIPAL ----------------------//
 
+
     return (
         <div className="pagina-cargos">
 
@@ -166,8 +168,8 @@ function Cargos() {
             </div>
 
             <Filtro
-                titulo="Cargos cadastrados"
-                placeholder="Pesquisar cargo, código ou setor..."
+                titulo="Pesquisar Cargo"
+                placeholder="Buscar por nome do cargo"
                 nomeDropdown="Cargo"
                 opcoesDropdown={cargos.map(cargo => ({
                     id: cargo.id,
@@ -186,7 +188,7 @@ function Cargos() {
                 <p>Carregando cargos...</p>
             ) : (
                 <Tabela
-                    titulo="Lista de cargos"
+                    titulo="Lista de Cargos"
                     dados={cargosFiltrados}
                     colunas={colunas}
                 />
@@ -194,6 +196,7 @@ function Cargos() {
 
         </div>
     );
+
 }
 
 //----------------- EXPORTAÇÃO ------------------------------//

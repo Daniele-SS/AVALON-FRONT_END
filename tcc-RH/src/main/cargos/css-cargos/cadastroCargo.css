@@ -1,10 +1,69 @@
-/*----------------- PÁGINA DE CADASTRO DE CARGO -------------*/
+/*----------------- PÁGINA DE CADASTRO DE CARGO ------------*/
 
 .pagina-cadastro-cargo {
     width: 100%;
-    padding: 0 78px 40px;
-    box-sizing: border-box;
 }
+
+
+/*----------------- CABEÇALHO NOVO CARGO -------------------*/
+
+.cabecalho-novo-cargo {
+    width: 100%;
+    min-height: 129px;
+}
+
+.cabecalho-novo-cargo .card-tiulo {
+    width: 100%;
+    height: 129px;
+    min-height: 129px;
+}
+
+
+/*----------------- CAMINHO DO CADASTRO --------------------*/
+
+.caminho-cadastro-cargo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    margin-bottom: 8px;
+
+    font-size: 13px;
+}
+
+.caminho-cadastro-cargo button {
+    width: auto;
+    height: auto;
+    padding: 0;
+
+    border: none;
+    background: transparent;
+
+    color: #434655;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.caminho-cadastro-cargo .seta {
+    display: flex;
+    gap: 8px;
+}
+
+.caminho-cadastro-cargo button:hover {
+    text-decoration: underline;
+    color: #0866FF;
+}
+
+.caminho-cadastro-cargo > span {
+    color: #9AA3B2;
+}
+
+.caminho-cadastro-cargo .pagina-atual-cargo {
+    color: #131B2E;
+    font-weight: 500;
+}
+
 
 /*----------------- ESPAÇAMENTO DOS CARDS ------------------*/
 

@@ -1,5 +1,4 @@
-
- //----------------- IMPORTAÇÕES -----------------------------//
+//----------------- IMPORTAÇÕES -----------------------------//
 
 import './alerta.css';
 
@@ -131,10 +130,12 @@ function Alerta({
 
                                     <span className="valor-informacao-alerta">
 
-                                        O setor{' '}
+                                        O {entidade}{' '}
+
                                         <strong className="texto-nao">
                                             não
                                         </strong>
+
                                         {' '}será excluído. Seu histórico será preservado.
 
                                     </span>

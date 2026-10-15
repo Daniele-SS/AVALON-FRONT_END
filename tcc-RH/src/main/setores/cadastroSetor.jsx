@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 
 import BotaoCadastro from '../../componentes/cardNomePag/nomePag.jsx';
 import Informacoes from '../../componentes/cardInformacoes/informacoes.jsx';
-import RevisaoSetor from '../../componentes/cardRevisao/revisao.jsx';
+import Revisao from '../../componentes/cardRevisao/revisao.jsx';
 import BotaoSalvarCancelar from '../../componentes/botoes/botaoSalvarCancelar.jsx';
 
 import {
@@ -193,15 +193,17 @@ function CadastroSetor({ voltar }) {
                 />
 
 
-                <RevisaoSetor
+                <Revisao
                     nome={nome}
                     codigo={codigo}
                     descricao={descricao}
                     status={status}
-                    nomeValido={nomeValido}
-                    codigoValido={codigoValido}
-                    nomeDuplicado={nomeDuplicado}
-                    codigoDuplicado={codigoDuplicado}
+
+                    tituloNome="Nome do setor"
+                    tituloCodigo="Código do setor"
+
+                    mostrarResponsavel={false}
+
                     erro={erro}
                     sucesso={sucesso}
                 />

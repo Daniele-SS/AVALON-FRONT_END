@@ -1,0 +1,248 @@
+/*----------------- CARD JORNADA ----------------------------*/
+
+/*----------------- CARD JORNADA ----------------------------*/
+
+.card-jornada {
+    width: 100%;
+    height: 260px;
+    padding: 20px;
+
+    box-sizing: border-box;
+
+    display: flex;
+    flex-direction: column;
+
+    background-color: #FFFFFF;
+    border: 1px solid #E6E8EF;
+    border-radius: 12px;
+
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+
+/*----------------- GRADE DE CARDS --------------------------*/
+
+.grade-jornadas {
+    display: grid;
+
+    grid-template-columns: repeat(2, minmax(0, 37.57vw));
+
+    column-gap: 29px;
+    row-gap: 20px;
+}/*----------------- CABEÇALHO -------------------------------*/
+
+.cabecalho-card-jornada {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+}
+
+.titulo-card-jornada {
+    margin: 0;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    font-size: 16px;
+    font-weight: 600;
+    color: #25283A;
+}
+
+
+/*----------------- STATUS ----------------------------------*/
+
+.status-jornada {
+    width: 53px;
+    height: 18px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 4px;
+
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.status-jornada-ativo {
+    color: #0050CB;
+    background-color: #BDD6FF66;
+}
+
+.status-jornada-inativo {
+    color: #737789;
+    background-color: #E5E7EB;
+}
+
+
+/*----------------- DESCRIÇÃO -------------------------------*/
+
+.descricao-card-jornada {
+    margin: 8px 0 16px;
+
+    font-size: 12px;
+    line-height: 16px;
+    color: #424656;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+/*----------------- BLOCO DE HORÁRIOS -----------------------*/
+
+.horarios-card-jornada {
+    width: 100%;
+}
+
+.linha-horarios-jornada {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    width: 100%;
+    height: 22px;
+}
+
+.horario-jornada {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    font-size: 11px;
+    color: #424656;
+}
+
+.icone-horario-jornada {
+    width: 13px;
+    height: 13px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+}
+
+.icone-horario-jornada svg {
+    width: 13px;
+    height: 13px;
+
+    fill: none;
+    stroke: #0050CB;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+
+/*----------------- BARRA DE HORÁRIO ------------------------*/
+
+.barra-fundo-jornada {
+    width: 100%;
+    height: 5px;
+
+    margin-top: 5px;
+
+    overflow: hidden;
+
+    background-color: #E4EAF5;
+    border-radius: 10px;
+}
+
+.barra-preenchida-jornada {
+    width: 100%;
+    height: 100%;
+
+    background-color: #0050CB;
+    border-radius: 10px;
+}
+
+.barra-jornada-noturna {
+    background-color: #6E26DF;
+}
+
+
+/*----------------- LEGENDA DE HORÁRIOS ---------------------*/
+
+.legenda-horarios-jornada {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-top: 5px;
+
+    font-size: 10px;
+    color: #737789;
+}
+
+
+/*----------------- RODAPÉ ----------------------------------*/
+
+.rodape-card-jornada {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 10px;
+
+    margin-top: 16px;
+    padding-top: 12px;
+
+    border-top: 1px solid #E6E8EF;
+}
+
+
+/*----------------- DIAS DA SEMANA --------------------------*/
+
+.dias-semana-jornada {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.dia-semana-jornada {
+    width: 24px;
+    height: 24px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background-color: #EDF2FF;
+    border-radius: 5px;
+
+    font-size: 11px;
+    font-weight: 500;
+    color: #0050CB;
+}
+
+
+/*----------------- VER DETALHES ----------------------------*/
+
+.detalhes-card-jornada {
+    flex-shrink: 0;
+
+    font-size: 12px;
+    font-weight: 600;
+    color: #0050CB;
+
+    cursor: pointer;
+}
+
+
+/*----------------- DIA DA SEMANA ATIVO --------------------*/
+
+.dia-semana-jornada.dia-semana-ativo {
+    background-color: #0050CB;
+    color: #FFFFFF;
+    border-color: #0050CB;
+}
