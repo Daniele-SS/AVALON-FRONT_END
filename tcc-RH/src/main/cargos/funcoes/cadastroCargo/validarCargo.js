@@ -34,9 +34,7 @@ function validarCargo(dadosCargo, cargos) {
     }
 
     // Validar descrição
-    if (descricao === '') {
-        erros.descricao = 'A descrição do cargo é obrigatória.';
-    } else if (descricao.length > 255) {
+    else if (descricao.length > 300) {
         erros.descricao = 'A descrição deve ter no máximo 255 caracteres.';
     }
 

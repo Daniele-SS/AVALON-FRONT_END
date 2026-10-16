@@ -200,9 +200,10 @@ function CadastroCargo({ voltar }) {
 
 
                 <BotaoSalvarCancelar
-                    voltar={voltar}
-                    salvando={salvando || carregando}
-                    formularioValido={formularioValido}
+                    onCancelar={voltar}
+                    onSalvar={salvarCargo}
+                    salvando={salvando}
+                    textoBotao="Salvar cargo"
                 />
 
             </form>

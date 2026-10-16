@@ -210,9 +210,10 @@ function CadastroSetor({ voltar }) {
 
 
                 <BotaoSalvarCancelar
-                    voltar={voltar}
+                    onCancelar={voltar}
+                    onSalvar={salvarSetor}
                     salvando={salvando}
-                    formularioValido={formularioValido}
+                    textoBotao="Salvar setor"
                 />
 
             </form>
