@@ -237,10 +237,10 @@ function EditarCargo({ cargo, voltar }) {
 
 
                 <BotaoSalvarCancelar
-                    voltar={voltar}
-                    salvando={salvando || carregando}
-                    formularioValido={formularioValido}
-                    textoBotao="Salvar alterações"
+                    onCancelar={voltar}
+                    onSalvar={salvarAlteracoes}
+                    salvando={salvando}
+                    textoBotao="Salvar cargo"
                 />
 
             </form>

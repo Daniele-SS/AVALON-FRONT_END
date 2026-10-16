@@ -256,10 +256,10 @@ function EditarSetor({ setor, voltar }) {
 
 
                 <BotaoSalvarCancelar
-                    voltar={voltar}
+                    onCancelar={voltar}
+                    onSalvar={salvarAlteracoes}
                     salvando={salvando}
-                    formularioValido={formularioValido}
-                    textoBotao="Salvar alterações"
+                    textoBotao="Salvar alteração"
                 />
 
             </form>
