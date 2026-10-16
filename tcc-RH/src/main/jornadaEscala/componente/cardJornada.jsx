@@ -1,16 +1,21 @@
-//----------------- IMPORTAÇÕES -----------------------------//
+
+ //----------------- IMPORTAÇÕES -----------------------------//
 
 import './cardJornada.css';
 
-import entradaIcone from '../img/entrada-icon.svg'
-import saidaIcone from '../img/saida-icon.svg'
+import entradaIcone from '../img/entrada-icon.svg';
+import saidaIcone from '../img/saida-icon.svg';
 
 
 //----------------- COMPONENTE ------------------------------//
 
-function CardJornada({ jornada, diasSemana = [] }) {
+function CardJornada({
+    jornada,
+    diasSemana = [],
+    onVerDetalhes
+}) {
 
-    //----------------- DADOS -------------------------------//
+    //----------------- DADOS DA JORNADA --------------------//
 
     const ativa = Number(jornada.status) === 1;
 
@@ -22,7 +27,11 @@ function CardJornada({ jornada, diasSemana = [] }) {
         jornada.hora_fim || ''
     ).slice(0, 5);
 
-    const noturna = horaInicio && horaFim && horaFim < horaInicio;
+    const noturna = Boolean(
+        horaInicio &&
+        horaFim &&
+        horaFim < horaInicio
+    );
 
 
     //----------------- DIAS DA SEMANA ----------------------//
@@ -78,11 +87,16 @@ function CardJornada({ jornada, diasSemana = [] }) {
 
                 <div className="linha-horarios-jornada">
 
+                    {/* HORÁRIO DE ENTRADA */}
+
                     <div className="horario-jornada">
 
                         <span className="icone-horario-jornada">
 
-                            <img src={entradaIcone} alt=" icone entrada" />
+                            <img
+                                src={entradaIcone}
+                                alt="Ícone de entrada"
+                            />
 
                         </span>
 
@@ -93,6 +107,8 @@ function CardJornada({ jornada, diasSemana = [] }) {
                     </div>
 
 
+                    {/* HORÁRIO DE SAÍDA */}
+
                     <div className="horario-jornada">
 
                         <span>
@@ -101,7 +117,10 @@ function CardJornada({ jornada, diasSemana = [] }) {
 
                         <span className="icone-horario-jornada">
 
-                            <img src={saidaIcone} alt="icone de siada" />
+                            <img
+                                src={saidaIcone}
+                                alt="Ícone de saída"
+                            />
 
                         </span>
 
@@ -150,18 +169,29 @@ function CardJornada({ jornada, diasSemana = [] }) {
 
                 <div className="dias-semana-jornada">
 
-                    {dias.map(dia => {
+                    {dias.map((dia) => {
 
-                        const diaAtivo = diasSemana.some(item => {
+                        const diaAtivo = diasSemana.some((item) => {
+
+                            const idJornadaDireto =
+                                item.id_jornada_escala;
 
                             const jornadaDoDia =
                                 item.jornada_escala?.jornadaEscala || [];
 
-                            const pertenceAJornada = jornadaDoDia.some(
-                                jornadaRelacionada =>
-                                    Number(jornadaRelacionada.id) ===
-                                    Number(jornada.id)
-                            );
+                            const pertencePeloObjeto =
+                                Array.isArray(jornadaDoDia) &&
+                                jornadaDoDia.some(
+                                    (jornadaRelacionada) =>
+                                        Number(jornadaRelacionada.id) ===
+                                        Number(jornada.id)
+                                );
+
+                            const pertencePeloId =
+                                idJornadaDireto !== undefined &&
+                                idJornadaDireto !== null &&
+                                Number(idJornadaDireto) ===
+                                Number(jornada.id);
 
                             const mesmoDia =
                                 String(item.dia_sigla || '')
@@ -171,7 +201,7 @@ function CardJornada({ jornada, diasSemana = [] }) {
                             const ativo = Number(item.ativo) === 1;
 
                             return (
-                                pertenceAJornada &&
+                                (pertencePeloId || pertencePeloObjeto) &&
                                 mesmoDia &&
                                 ativo
                             );
@@ -202,7 +232,21 @@ function CardJornada({ jornada, diasSemana = [] }) {
 
                 {/* VER DETALHES */}
 
-                <span className="detalhes-card-jornada">
+                <span
+                    className="detalhes-card-jornada"
+                    onClick={() => onVerDetalhes(jornada)}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(evento) => {
+                        if (
+                            evento.key === 'Enter' ||
+                            evento.key === ' '
+                        ) {
+                            evento.preventDefault();
+                            onVerDetalhes(jornada);
+                        }
+                    }}
+                >
                     Ver detalhes
                 </span>
 

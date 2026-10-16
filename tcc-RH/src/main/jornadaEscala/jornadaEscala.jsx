@@ -1,23 +1,25 @@
-
- //----------------- IMPORTAÇÕES -----------------------------//
+//----------------- IMPORTAÇÕES -----------------------------//
 
 import { useEffect, useState } from 'react';
 
 import BotaoCadastro from '../../componentes/cardNomePag/nomePag.jsx';
 import Filtro from '../../componentes/cardFiltros/filtros.jsx';
+
 import CardJornada from './componente/cardJornada.jsx';
+import CadastroJornada from './cadastroJornada.jsx';
+import EditarJornada from './editarJornada.jsx';
+
 import buscarDadosJornadaEscala from './servicos/jornadaEscala.js';
+import filtrarJornadas from './funcoes/jornada/filtrarJornada.js';
+import montarInformacoesJornadas from './funcoes/jornada/informacoesJornadas.js';
 
 import './css-jornadaEscala/jornadaEscala.css';
-
 import RelogioIcone from './img/relogio-icon.svg';
 
 
 //----------------- COMPONENTE ------------------------------//
 
 function JornadaEscala() {
-
-    //----------------- ESTADOS -----------------------------//
 
     const [jornadas, setJornadas] = useState([]);
     const [colaboradores, setColaboradores] = useState([]);
@@ -26,6 +28,11 @@ function JornadaEscala() {
     const [carregando, setCarregando] = useState(true);
     const [erro, setErro] = useState('');
 
+    const [telaAtual, setTelaAtual] = useState('lista');
+
+    // Guarda a jornada que será editada.
+    const [jornadaSelecionada, setJornadaSelecionada] = useState(null);
+
     const [filtros, setFiltros] = useState({
         pesquisa: '',
         status: 'Todos',
@@ -33,162 +40,148 @@ function JornadaEscala() {
     });
 
 
-    //----------------- BUSCAR DADOS DA API -----------------//
+    //----------------- BUSCAR DADOS -------------------------//
 
-    useEffect(() => {
+    async function carregarDados() {
 
-        async function buscarDados() {
+        setCarregando(true);
+        setErro('');
 
-            try {
+        try {
 
-                setCarregando(true);
-                setErro('');
+            const dados = await buscarDadosJornadaEscala();
 
-                const dados = await buscarDadosJornadaEscala();
+            setJornadas(dados.jornadas);
+            setColaboradores(dados.colaboradores);
+            setDiasSemana(dados.diasSemana);
 
-                setJornadas(dados.jornadas);
-                setColaboradores(dados.colaboradores);
-                setDiasSemana(dados.diasSemana);
+        } catch (erroApi) {
 
-            } catch (erro) {
+            console.error('Erro ao buscar jornadas:', erroApi);
 
-                setErro(erro.message);
+            setErro(
+                erroApi.message ||
+                'Não foi possível carregar as jornadas.'
+            );
 
-            } finally {
+        } finally {
 
-                setCarregando(false);
-
-            }
+            setCarregando(false);
 
         }
+    }
 
-        buscarDados();
 
+    //----------------- CARREGAMENTO INICIAL -----------------//
+
+    useEffect(() => {
+        carregarDados();
     }, []);
 
 
     //----------------- INDICADORES --------------------------//
 
-    // Total de jornadas cadastradas
+    const informacoes = montarInformacoesJornadas(
+        jornadas,
+        colaboradores
+    );
 
-    const totalJornadas = jornadas.length;
-
-
-    // Total de jornadas ativas
-
-    const jornadasAtivas = jornadas.filter(
-        jornada => Number(jornada.status) === 1
-    ).length;
-
-
-    //----------------- CALCULAR JORNADAS UTILIZADAS --------//
-
-    // Conta quantas jornadas possuem pelo menos
-    // um colaborador vinculado
-
-    const jornadasUtilizadas = jornadas.filter(jornada => {
-
-        return colaboradores.some(colaborador => {
-
-            const jornadasDoColaborador =
-                colaborador.jornada_escala || [];
-
-            return jornadasDoColaborador.some(
-                jornadaColaborador =>
-                    Number(jornadaColaborador.id) === Number(jornada.id)
-            );
-
-        });
-
-    }).length;
-
-
-    //----------------- CALCULAR PERCENTUAL -----------------//
-
-    // Porcentagem de jornadas utilizadas
-
-    const percentualVinculos = totalJornadas > 0
-        ? Math.round(
-            (jornadasUtilizadas / totalJornadas) * 100
-        )
-        : 0;
-
-
-    //----------------- OPÇÕES DO FILTRO --------------------//
-
-    const opcoesJornadas = jornadas.map(jornada => ({
+    const opcoesJornadas = jornadas.map((jornada) => ({
         id: String(jornada.id),
         nome: jornada.nome
     }));
 
+    const jornadasFiltradas = filtrarJornadas(
+        jornadas,
+        filtros
+    );
 
-    //----------------- RECEBER FILTROS ---------------------//
+
+    //----------------- FILTROS ------------------------------//
 
     function receberFiltros(novosFiltros) {
 
-        setFiltros(novosFiltros);
-
+        setFiltros({
+            pesquisa: novosFiltros.pesquisa || '',
+            status: novosFiltros.status || 'Todos',
+            opcao: novosFiltros.opcao || ''
+        });
     }
 
 
-    //----------------- FILTRAR JORNADAS --------------------//
+    //----------------- ABRIR CADASTRO -----------------------//
 
-    const jornadasFiltradas = jornadas.filter(jornada => {
+    function abrirCadastro() {
 
-        const nomeJornada = String(
-            jornada.nome || ''
-        ).toLowerCase();
+        setJornadaSelecionada(null);
+        setTelaAtual('cadastro');
+    }
 
-        const pesquisa = filtros.pesquisa.toLowerCase();
 
-        const correspondePesquisa =
-            nomeJornada.includes(pesquisa);
+    //----------------- ABRIR EDIÇÃO -------------------------//
 
-        const correspondeStatus =
-            filtros.status === 'Todos' ||
-            (
-                filtros.status === 'Ativos' &&
-                Number(jornada.status) === 1
-            ) ||
-            (
-                filtros.status === 'Inativos' &&
-                Number(jornada.status) === 0
-            );
+    function abrirEdicao(jornada) {
 
-        const correspondeOpcao =
-            filtros.opcao === '' ||
-            String(jornada.id) === filtros.opcao;
+        setJornadaSelecionada(jornada);
+        setTelaAtual('edicao');
+    }
+
+
+    //----------------- VOLTAR PARA LISTAGEM -----------------//
+
+    async function voltarParaLista() {
+
+        setTelaAtual('lista');
+        setJornadaSelecionada(null);
+
+        setFiltros({
+            pesquisa: '',
+            status: 'Todos',
+            opcao: ''
+        });
+
+        await carregarDados();
+    }
+
+
+    //----------------- TELA DE CADASTRO ---------------------//
+
+    if (telaAtual === 'cadastro') {
 
         return (
-            correspondePesquisa &&
-            correspondeStatus &&
-            correspondeOpcao
+            <CadastroJornada
+                voltar={voltarParaLista}
+            />
         );
-
-    });
-
-
-    //----------------- NOVA JORNADA ------------------------//
-
-    function novaJornada() {
-
-        console.log('Botão Nova Jornada clicado!');
-
     }
 
 
-    //----------------- TELA --------------------------------//
+    //----------------- TELA DE EDIÇÃO -----------------------//
+
+    if (telaAtual === 'edicao') {
+
+        return (
+            <EditarJornada
+                jornada={jornadaSelecionada}
+                diasSemana={diasSemana}
+                voltar={voltarParaLista}
+            />
+        );
+    }
+
+
+    //----------------- TELA PRINCIPAL -----------------------//
 
     return (
         <>
 
-            {/* CARD INICIAL */}
+            {/* CABEÇALHO */}
 
             <BotaoCadastro
                 titulo="Jornada e Escala"
                 descricao="Gerencie e consulte os horários e a jornada dos colaboradores da organização."
                 textoBotao="Nova Jornada"
-                onClick={novaJornada}
+                onClick={abrirCadastro}
             />
 
 
@@ -236,48 +229,46 @@ function JornadaEscala() {
                 </div>
 
 
-                {/* INDICADORES À DIREITA */}
+                {/* INDICADORES */}
 
                 <div className="indicadores-jornadas">
-
-                    {/* TOTAL DE JORNADAS */}
 
                     <div className="indicador-jornadas">
 
                         <h3>Modelos</h3>
 
                         <strong>
-                            {carregando ? '—' : totalJornadas}
+                            {carregando
+                                ? '—'
+                                : informacoes.totalJornadas}
                         </strong>
 
                         <p>Cadastrados</p>
 
                     </div>
 
-
-                    {/* JORNADAS ATIVAS */}
-
                     <div className="indicador-jornadas">
 
                         <h3>Ativas</h3>
 
                         <strong>
-                            {carregando ? '—' : jornadasAtivas}
+                            {carregando
+                                ? '—'
+                                : informacoes.jornadasAtivas}
                         </strong>
 
                         <p>Em operação</p>
 
                     </div>
 
-
-                    {/* PERCENTUAL DE JORNADAS UTILIZADAS */}
-
                     <div className="indicador-jornadas">
 
                         <h3>Vínculos</h3>
 
                         <strong>
-                            {carregando ? '—' : `${percentualVinculos}%`}
+                            {carregando
+                                ? '—'
+                                : `${informacoes.percentualVinculos}%`}
                         </strong>
 
                         <p>Com escalas</p>
@@ -289,7 +280,7 @@ function JornadaEscala() {
             </div>
 
 
-            {/* FILTRO DE JORNADAS */}
+            {/* FILTROS */}
 
             <Filtro
                 titulo="Pesquisar Jornada"
@@ -312,33 +303,37 @@ function JornadaEscala() {
                     <p>{erro}</p>
                 )}
 
-                {!carregando && !erro && jornadasFiltradas.length === 0 && (
-                    <p>Nenhuma jornada encontrada.</p>
-                )}
+                {!carregando &&
+                    !erro &&
+                    jornadasFiltradas.length === 0 && (
+                        <p>Nenhuma jornada encontrada.</p>
+                    )}
 
-                {!carregando && !erro && jornadasFiltradas.length > 0 && (
+                {!carregando &&
+                    !erro &&
+                    jornadasFiltradas.length > 0 && (
 
-                    <div className="grade-jornadas">
+                        <div className="grade-jornadas">
 
-                        {jornadasFiltradas.map(jornada => (
+                            {jornadasFiltradas.map((jornada) => (
 
-                            <CardJornada
-                                key={jornada.id}
-                                jornada={jornada}
-                                diasSemana={diasSemana}
-                            />
+                                <CardJornada
+                                    key={jornada.id}
+                                    jornada={jornada}
+                                    diasSemana={diasSemana}
+                                    onVerDetalhes={abrirEdicao}
+                                />
 
-                        ))}
+                            ))}
 
-                    </div>
+                        </div>
 
-                )}
+                    )}
 
             </div>
 
         </>
     );
-
 }
 
 

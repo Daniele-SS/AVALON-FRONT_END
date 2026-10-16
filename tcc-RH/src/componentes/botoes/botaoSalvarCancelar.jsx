@@ -7,15 +7,27 @@ import '../botoes/BotaoSalvarCancelar.css';
 
 function BotaoSalvarCancelar({
     voltar,
-    salvando,
-    formularioValido,
-    textoBotao = 'Salvar setor'
+    onCancelar,
+    onSalvar,
+    salvando = false,
+    formularioValido = true,
+    textoBotao = 'Salvar',
 }) {
+
+    //----------------- CANCELAR ----------------------------//
+
+    function cancelar() {
+        if (onCancelar) {
+            onCancelar();
+        } else if (voltar) {
+            voltar();
+        }
+    }
+
 
     //----------------- RETORNO JSX -------------------------//
 
     return (
-
         <div className="acoes-cadastro-setor">
 
             {/* CANCELAR */}
@@ -23,7 +35,8 @@ function BotaoSalvarCancelar({
             <button
                 type="button"
                 className="botao-cancelar-setor"
-                onClick={voltar}
+                onClick={cancelar}
+                disabled={salvando}
             >
                 × Cancelar
             </button>
@@ -32,19 +45,15 @@ function BotaoSalvarCancelar({
             {/* SALVAR */}
 
             <button
-                type="submit"
+                type="button"
                 className="botao-salvar-setor"
+                onClick={onSalvar}
                 disabled={salvando || !formularioValido}
             >
-
-                {salvando
-                    ? 'Salvando...'
-                    : textoBotao}
-
+                {salvando ? 'Salvando...' : textoBotao}
             </button>
 
         </div>
-
     );
 }
 

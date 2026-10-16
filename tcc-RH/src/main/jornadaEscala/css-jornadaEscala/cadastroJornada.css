@@ -1,0 +1,333 @@
+/*----------------- CABEÇALHO NOVA JORNADA ------------------*/
+
+.cabecalho-nova-jornada {
+    width: 100%;
+    min-height: 129px;
+}
+
+.cabecalho-nova-jornada .card-tiulo {
+    width: 100%;
+    height: 129px;
+    min-height: 129px;
+}
+
+
+/*----------------- CAMINHO DE NAVEGAÇÃO -------------------*/
+
+.caminho-cadastro-jornada {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    margin-bottom: 8px;
+
+    font-size: 13px;
+}
+
+
+/*----------------- BOTÃO VOLTAR ---------------------------*/
+
+.caminho-cadastro-jornada button {
+    width: auto;
+    height: auto;
+    padding: 0;
+
+    border: none;
+    background: transparent;
+
+    color: #434655;
+    font-size: 13px;
+    font-weight: 500;
+
+    cursor: pointer;
+}
+
+.caminho-cadastro-jornada button:hover {
+    text-decoration: underline;
+    color: #0866FF;
+}
+
+
+/*----------------- SETA DO CAMINHO ------------------------*/
+
+.caminho-cadastro-jornada .seta {
+    display: flex;
+    gap: 8px;
+}
+
+
+/*----------------- TEXTOS DO CAMINHO ----------------------*/
+
+.caminho-cadastro-jornada > span {
+    color: #9AA3B2;
+}
+
+
+/*----------------- PÁGINA ATUAL ---------------------------*/
+
+.caminho-cadastro-jornada .pagina-atual-jornada {
+    color: #131B2E;
+    font-weight: 500;
+}
+
+
+/*----------------- CARTÃO DE HORÁRIOS ---------------------*/
+
+.cartao-horarios-jornada {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 190px;
+
+    margin-top: 23px;
+    padding: 22px 19px;
+
+    background: #FFFFFF;
+    border-radius: 8px;
+
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+
+/*----------------- CABEÇALHO DOS HORÁRIOS -----------------*/
+
+.cabecalho-horarios-jornada {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+
+    margin-bottom: 22px;
+}
+
+.cabecalho-horarios-jornada h2 {
+    margin: 0;
+
+    color: #172033;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.cabecalho-horarios-jornada p {
+    margin: 6px 0 0;
+
+    color: #52586B;
+    font-size: 12px;
+    line-height: 18px;
+}
+
+
+/*----------------- CAMPOS DE HORÁRIO ----------------------*/
+
+.campos-horarios-jornada {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.campo-formulario-jornada {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    min-width: 0;
+}
+
+.campo-formulario-jornada label {
+    color: #202A40;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+
+/*----------------- INPUT COM ÍCONE -----------------------*/
+
+.input-horario-jornada {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+
+    width: 100%;
+    height: 36px;
+    padding: 0 10px;
+
+    background: #F1F2FF;
+    border: 1px solid transparent;
+    border-radius: 5px;
+}
+
+.input-horario-jornada:focus-within {
+    border-color: #2452E8;
+}
+
+.icone-relogio-jornada {
+    flex-shrink: 0;
+    color: #777D90;
+}
+
+.input-horario-jornada input {
+    box-sizing: border-box;
+
+    width: 100%;
+    min-width: 0;
+    height: 34px;
+    padding: 0;
+
+    color: #202A40;
+    font-family: inherit;
+    font-size: 12px;
+
+    background: transparent;
+    border: none;
+    outline: none;
+}
+
+
+/*----------------- CARTÃO DE DIAS DA JORNADA --------------*/
+
+.cartao-dias-jornada {
+    box-sizing: border-box;
+    width: 100%;
+
+    margin-top: 23px;
+    padding: 22px 19px;
+
+    background: #FFFFFF;
+    border-radius: 8px;
+
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+
+/*----------------- CABEÇALHO DOS DIAS --------------------*/
+
+.cabecalho-dias-jornada {
+    margin-bottom: 22px;
+}
+
+.cabecalho-dias-jornada h2 {
+    margin: 0;
+
+    color: #172033;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.cabecalho-dias-jornada p {
+    margin: 6px 0 0;
+
+    color: #52586B;
+    font-size: 12px;
+    line-height: 18px;
+}
+
+
+/*----------------- LISTA DOS DIAS -------------------------*/
+
+.lista-dias-jornada {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 12px;
+
+    width: 100%;
+}
+
+
+/*----------------- MINI CARD DE CADA DIA -----------------*/
+
+.card-dia-jornada {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+
+    width: 100%;
+    min-width: 0;
+    min-height: 88px;
+    padding: 12px 4px;
+
+    border: 1px solid transparent;
+    border-radius: 8px;
+
+    font-family: inherit;
+    cursor: pointer;
+
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease;
+}
+
+
+/*----------------- DIA ATIVO ------------------------------*/
+
+.card-dia-jornada.dia-jornada-ativo {
+    background: #1E40AF;
+    border-color: #1E40AF;
+    color: #FFFFFF;
+}
+
+
+/*----------------- DIA DE FOLGA ---------------------------*/
+
+.card-dia-jornada.dia-jornada-folga {
+    background: #F2F3FF;
+    border-color: #E5E7F2;
+    color: #273047;
+}
+
+
+/*----------------- SIGLA DO DIA ---------------------------*/
+
+.sigla-dia-jornada {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+
+/*----------------- STATUS DO DIA --------------------------*/
+
+.status-dia-jornada {
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.dia-jornada-ativo .status-dia-jornada {
+    color: #FFFFFF;
+}
+
+.dia-jornada-folga .status-dia-jornada {
+    color: #626B80;
+}
+
+
+/*----------------- FOCO DO TECLADO ------------------------*/
+
+.card-dia-jornada:focus-visible {
+    outline: 2px solid #2452E8;
+    outline-offset: 3px;
+}
+
+
+/*----------------- BOTÕES SALVAR E CANCELAR ---------------*/
+
+.botoes-cadastro-jornada {
+    display: flex;
+    justify-content: flex-end;
+
+    width: 100%;
+    margin-top: 24px;
+}
+
+/*----------------- INFORMAÇÕES DA JORNADA -----------------*/
+
+/* Deixa os campos em uma única coluna */
+.cabecalho-nova-jornada ~ .cartao-informacoes .lista-campos {
+    grid-template-columns: 1fr;
+}
+
+/* Mantém o nome e a descrição na largura total */
+.cabecalho-nova-jornada ~ .cartao-informacoes .campo-formulario {
+    width: 100%;
+    min-width: 0;
+}

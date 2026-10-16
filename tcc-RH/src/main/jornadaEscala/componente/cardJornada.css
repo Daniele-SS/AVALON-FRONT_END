@@ -1,7 +1,5 @@
 /*----------------- CARD JORNADA ----------------------------*/
 
-/*----------------- CARD JORNADA ----------------------------*/
-
 .card-jornada {
     width: 100%;
     height: 260px;
@@ -29,12 +27,16 @@
 
     column-gap: 29px;
     row-gap: 20px;
-}/*----------------- CABEÇALHO -------------------------------*/
+}
+
+
+/*----------------- CABEÇALHO -------------------------------*/
 
 .cabecalho-card-jornada {
     display: flex;
     align-items: center;
     gap: 10px;
+
     min-width: 0;
 }
 
@@ -130,15 +132,11 @@
     flex-shrink: 0;
 }
 
-.icone-horario-jornada svg {
+.icone-horario-jornada img {
     width: 13px;
     height: 13px;
 
-    fill: none;
-    stroke: #0050CB;
-    stroke-width: 2;
-    stroke-linecap: round;
-    stroke-linejoin: round;
+    object-fit: contain;
 }
 
 
@@ -211,6 +209,7 @@
     width: 24px;
     height: 24px;
 
+    box-sizing: border-box;
     flex-shrink: 0;
 
     display: flex;
@@ -218,11 +217,21 @@
     justify-content: center;
 
     background-color: #EDF2FF;
+    border: 1px solid transparent;
     border-radius: 5px;
 
     font-size: 11px;
     font-weight: 500;
     color: #0050CB;
+}
+
+
+/*----------------- DIA DA SEMANA ATIVO --------------------*/
+
+.dia-semana-jornada.dia-semana-ativo {
+    background-color: #0050CB;
+    color: #FFFFFF;
+    border-color: #0050CB;
 }
 
 
@@ -238,11 +247,3 @@
     cursor: pointer;
 }
 
-
-/*----------------- DIA DA SEMANA ATIVO --------------------*/
-
-.dia-semana-jornada.dia-semana-ativo {
-    background-color: #0050CB;
-    color: #FFFFFF;
-    border-color: #0050CB;
-}
