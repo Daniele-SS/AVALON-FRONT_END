@@ -240,7 +240,7 @@ function EditarCargo({ cargo, voltar }) {
                     onCancelar={voltar}
                     onSalvar={salvarAlteracoes}
                     salvando={salvando}
-                    textoBotao="Salvar cargo"
+                    textoBotao="Salvar alteração"
                 />
 
             </form>
