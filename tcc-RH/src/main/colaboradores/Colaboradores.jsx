@@ -1,4 +1,5 @@
-//----------------- IMPORTAÇÕES -----------------------------//
+
+ //----------------- IMPORTAÇÕES -----------------------------//
 
 import { useEffect, useState } from 'react';
 
@@ -7,9 +8,7 @@ import Minicards from '../../componentes/minicard/minicard.jsx';
 import Filtro from '../../componentes/cardFiltros/filtros.jsx';
 import Tabela from '../../componentes/cardTabela/tabela.jsx';
 
-// Ainda não criados:
-// import CadastroColaborador from './cadastroColaborador.jsx';
-// import EditarColaborador from './editarColaborador.jsx';
+import CadastroColaborador from './cadastroColaborador.jsx';
 
 import buscarDadosColaboradores from './servicos/colaboradoresApi.js';
 
@@ -36,6 +35,8 @@ function Colaboradores() {
     const [usuarios, setUsuarios] = useState([]);
 
     const [carregando, setCarregando] = useState(true);
+
+    const [tela, setTela] = useState('lista');
 
     const [filtros, setFiltros] = useState({
         pesquisa: '',
@@ -80,6 +81,37 @@ function Colaboradores() {
         buscarDados();
 
     }, []);
+
+
+    //----------------- ABRIR CADASTRO -----------------------//
+
+    function abrirCadastro() {
+
+        setTela('cadastro');
+
+    }
+
+
+    //----------------- VOLTAR PARA LISTA -------------------//
+
+    function voltarParaLista() {
+
+        setTela('lista');
+
+    }
+
+
+    //----------------- EXIBIR CADASTRO ---------------------//
+
+    if (tela === 'cadastro') {
+
+        return (
+            <CadastroColaborador
+                onVoltar={voltarParaLista}
+            />
+        );
+
+    }
 
 
     //----------------- CONTAGEM DOS COLABORADORES -----------//
@@ -144,9 +176,7 @@ function Colaboradores() {
                 titulo="Colaboradores"
                 descricao="Gerencie os dados cadastrais e os vínculos dos colaboradores da empresa."
                 textoBotao="Novo colaborador"
-                onClick={() => {
-                    console.log('Tela de cadastro ainda não criada.');
-                }}
+                onClick={abrirCadastro}
             />
 
 

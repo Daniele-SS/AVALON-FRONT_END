@@ -1,0 +1,241 @@
+/*----------------- CARD PRINCIPAL -------------------------*/
+
+.card-jornada-escala {
+    display: flex;
+    margin-top: 24px;
+    flex-direction: column;
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 24px;
+    padding: 22px 19px;
+    background-color: #FFFFFF;
+    border: 1px solid #E6E8F0;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(20, 31, 56, 0.04);
+
+}
+
+
+/*----------------- CABEÇALHO ------------------------------*/
+
+.cabecalho-jornada-escala {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 28px;
+}
+
+.cabecalho-jornada-escala h2 {
+    margin: 0 0 7px;
+    color: #001F3F;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.cabecalho-jornada-escala p {
+    margin: 0;
+    color: #777F91;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+
+/*----------------- ETAPA ESSENCIAL ------------------------*/
+
+.etapa-jornada-escala {
+    flex-shrink: 0;
+    padding: 7px 11px;
+    color: #6554A4;
+    background-color: #F0EDFF;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+
+/*----------------- CAMPO ----------------------------------*/
+
+.conteudo-jornada-escala {
+    width: 100%;
+}
+
+.rotulo-jornada-escala {
+    display: block;
+    margin-bottom: 9px;
+    color: #26334A;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+
+/*----------------- SELETOR --------------------------------*/
+
+.seletor-jornada-escala {
+    position: relative;
+    width: 100%;
+}
+
+.botao-jornada-escala {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    width: 100%;
+    min-height: 62px;
+    padding: 12px 15px;
+    color: #26334A;
+    background-color: #F8F7FF;
+    border: 1px solid #E3DFF7;
+    border-radius: 7px;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color 0.2s, background-color 0.2s;
+}
+
+.botao-jornada-escala:hover {
+    border-color: #B8ACEA;
+}
+
+.botao-jornada-escala:focus-visible {
+    outline: 2px solid #8B79D9;
+    outline-offset: 2px;
+}
+
+
+/*----------------- TEXTO SELECIONADO ----------------------*/
+
+.texto-jornada-selecionada {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 0;
+}
+
+.nome-jornada-selecionada {
+    color: #001F3F;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.detalhes-jornada-selecionada {
+    color: #777F91;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+
+/*----------------- SETA -----------------------------------*/
+
+.seta-jornada-escala {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: #737B8D;
+    transition: transform 0.2s;
+}
+
+.seta-jornada-escala.aberta {
+    transform: rotate(180deg);
+}
+
+
+/*----------------- LISTA DE JORNADAS ----------------------*/
+
+.lista-jornadas-escala {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    z-index: 10;
+    width: 100%;
+    max-height: 280px;
+    overflow-y: auto;
+    box-sizing: border-box;
+    padding: 5px;
+    background-color: #FFFFFF;
+    border: 1px solid #E3E5EF;
+    border-radius: 8px;
+    box-shadow: 0 8px 22px rgba(20, 31, 56, 0.12);
+}
+
+
+/*----------------- OPÇÕES ---------------------------------*/
+
+.opcao-jornada-escala {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 12px 10px;
+    background-color: #FFFFFF;
+    border: none;
+    border-radius: 6px;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.opcao-jornada-escala:hover {
+    background-color: #F8F7FF;
+}
+
+.opcao-jornada-escala.selecionada {
+    background-color: #F0EDFF;
+}
+
+
+/*----------------- ÍCONE DO RELÓGIO -----------------------*/
+
+.icone-relogio-jornada {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: #8171C4;
+}
+
+
+/*----------------- TEXTO DAS OPÇÕES -----------------------*/
+
+.texto-opcao-jornada {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 5px;
+    min-width: 0;
+}
+
+.nome-opcao-jornada {
+    color: #001F3F;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.detalhes-opcao-jornada {
+    color: #777F91;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+
+/*----------------- CONFIRMAÇÃO ----------------------------*/
+
+.confirmacao-jornada {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: #6554A4;
+}
+
+
+/*----------------- LISTA VAZIA ----------------------------*/
+
+.mensagem-sem-jornada {
+    margin: 0;
+    padding: 15px 10px;
+    color: #777F91;
+    font-size: 13px;
+    text-align: center;
+}
