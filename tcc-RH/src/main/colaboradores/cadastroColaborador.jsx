@@ -4,10 +4,12 @@
 import { useEffect, useState } from 'react';
 
 import BotaoCadastro from '../../componentes/cardNomePag/nomePag.jsx';
+import BotaoSalvarCancelar from '../../componentes/botoes/botaoSalvarCancelar.jsx';
 
 import Dadospessoais from './componentes/dadospessoais.jsx';
 import Dadosprofissionais from './componentes/dadosprofissionais.jsx';
 import JornadaEscala from './componentes/jornadaEscala.jsx';
+import Confirmacao from './confirmacao.jsx';
 
 import {
     buscarCargos,
@@ -20,22 +22,11 @@ import {
     extrairIdColaborador
 } from './servicos/cadastroColaboradoresApi.js';
 
+import validarColaborador from './funcoes/cadastroColaborador/validarColaborador.js';
+import montarDadosColaborador from './funcoes/cadastroColaborador/montarDadosColaborador.js';
+import montarDadosUsuario from './funcoes/cadastroColaborador/montarDadosUsuario.js';
+
 import './css-colaboradores/cadastroColaborador.css';
-
-
-//----------------- DATA ATUAL ------------------------------//
-
-function obterDataAtual() {
-
-    const data = new Date();
-
-    const ano = data.getFullYear();
-    const mes = String(data.getMonth() + 1).padStart(2, '0');
-    const dia = String(data.getDate()).padStart(2, '0');
-
-    return `${ano}-${mes}-${dia}`;
-
-}
 
 
 //----------------- COMPONENTE ------------------------------//
@@ -70,9 +61,7 @@ function CadastroColaborador({ onVoltar, onSalvar }) {
 
     const [carregandoOpcoes, setCarregandoOpcoes] = useState(true);
     const [salvando, setSalvando] = useState(false);
-
-    // Guarda o ID para evitar cadastrar o colaborador novamente
-    // se ocorrer um erro durante a criação do usuário.
+    const [mostrarConfirmacao, setMostrarConfirmacao] = useState(false);
 
     const [idColaboradorCriado, setIdColaboradorCriado] = useState(null);
 
@@ -82,11 +71,9 @@ function CadastroColaborador({ onVoltar, onSalvar }) {
     useEffect(() => {
 
         async function carregarOpcoes() {
-
             setCarregandoOpcoes(true);
 
             try {
-
                 const [
                     listaCargos,
                     listaSetores,
@@ -105,7 +92,6 @@ function CadastroColaborador({ onVoltar, onSalvar }) {
                 setJornadas(listaJornadas);
 
             } catch (erro) {
-
                 console.error(
                     'Erro ao carregar opções do cadastro:',
                     erro
@@ -116,11 +102,8 @@ function CadastroColaborador({ onVoltar, onSalvar }) {
                 );
 
             } finally {
-
                 setCarregandoOpcoes(false);
-
             }
-
         }
 
         carregarOpcoes();
@@ -136,101 +119,43 @@ function CadastroColaborador({ onVoltar, onSalvar }) {
             return;
         }
 
+        if (mostrarConfirmacao) {
+            setMostrarConfirmacao(false);
+            return;
+        }
+
         if (onVoltar) {
             onVoltar();
         }
-
     }
 
 
-    //----------------- VALIDAR FORMULÁRIO -------------------//
+    //----------------- AVANÇAR PARA REVISÃO ----------------//
 
-    function validarDados() {
+    function avancarParaConfirmacao() {
 
-        if (!dados.nome.trim()) {
-            alert('Informe o nome completo do colaborador.');
-            return false;
+        if (salvando || !validarColaborador(dados)) {
+            return;
         }
 
-        if (!dados.email.trim()) {
-            alert('Informe o e-mail do colaborador.');
-            return false;
-        }
+        setMostrarConfirmacao(true);
 
-        // Verifica o formato básico do e-mail.
-
-        const email = dados.email.trim();
-
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-            alert('Informe um endereço de e-mail válido.');
-            return false;
-        }
-
-        // Verifica se o CPF contém 11 números.
-
-        const cpf = dados.cpf.replace(/\D/g, '');
-
-        if (cpf.length !== 11) {
-            alert('Informe um CPF com 11 números.');
-            return false;
-        }
-
-        if (!dados.matricula.trim()) {
-            alert('Informe a matrícula do colaborador.');
-            return false;
-        }
-
-        if (!dados.idCargo) {
-            alert('Selecione um cargo.');
-            return false;
-        }
-
-        if (!dados.idSetor) {
-            alert('Selecione um setor.');
-            return false;
-        }
-
-        if (!dados.tipoVinculo) {
-            alert('Selecione o tipo de vínculo.');
-            return false;
-        }
-
-        if (!dados.login.trim()) {
-            alert('Informe o login de acesso.');
-            return false;
-        }
-
-        if (!dados.senha.trim()) {
-            alert('Informe a senha de acesso.');
-            return false;
-        }
-
-        if (!dados.idJornadaEscala) {
-            alert('Selecione uma jornada de trabalho.');
-            return false;
-        }
-
-        if (!dados.idNivelAcesso) {
-            alert('Selecione o nível de acesso.');
-            return false;
-        }
-
-        return true;
-
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
     }
 
 
-    //----------------- SALVAR CADASTRO ----------------------//
+    //----------------- CONFIRMAR E CADASTRAR ----------------//
 
     async function salvarColaborador() {
 
-        if (salvando || !validarDados()) {
+        if (salvando) {
             return;
         }
 
         setSalvando(true);
-
-        // Mantém o ID disponível inclusive se a criação do usuário falhar.
 
         let idColaborador = idColaboradorCriado;
 
@@ -240,44 +165,7 @@ function CadastroColaborador({ onVoltar, onSalvar }) {
 
             if (!idColaborador) {
 
-                const dadosParaCadastro = {
-
-                    matricula: dados.matricula.trim(),
-
-                    nome: dados.nome.trim(),
-
-                    email: dados.email.trim(),
-
-                    cpf: dados.cpf.replace(/\D/g, ''),
-
-                    telefone: dados.telefone
-                        ? dados.telefone.replace(/\D/g, '')
-                        : null,
-
-                    data_nascimento: dados.dataNascimento || null,
-
-                    // Preenche a data de admissão automaticamente.
-
-                    data_admissao: obterDataAtual(),
-
-                    data_desligamento:
-                        dados.dataDesligamento || null,
-
-                    status: Number(dados.status) === 1
-                        ? 'Ativo'
-                        : 'Inativo',
-
-                    id_cargo: Number(dados.idCargo),
-
-                    id_setor: Number(dados.idSetor),
-
-                    id_jornada_escala: Number(
-                        dados.idJornadaEscala
-                    ),
-
-                    tipo_vinculo: dados.tipoVinculo
-
-                };
+                const dadosParaCadastro = montarDadosColaborador(dados);
 
                 const respostaCadastro = await enviarColaborador(
                     dadosParaCadastro
@@ -286,8 +174,6 @@ function CadastroColaborador({ onVoltar, onSalvar }) {
                 idColaborador = extrairIdColaborador(
                     respostaCadastro
                 );
-
-                // Se a API não retornar o ID, procura pela matrícula.
 
                 if (!idColaborador) {
 
@@ -303,40 +189,24 @@ function CadastroColaborador({ onVoltar, onSalvar }) {
                         colaboradorEncontrado?.id_colaborador ??
                         colaboradorEncontrado?.id ??
                         null;
-
                 }
 
                 if (!idColaborador) {
-
                     throw new Error(
-                        'A API não retornou o ID do colaborador. Verifique se ele foi cadastrado antes de tentar novamente.'
+                        'O colaborador pode ter sido cadastrado, mas a API não retornou seu ID. Verifique o registro antes de tentar novamente.'
                     );
-
                 }
 
-                // Salva o ID para não duplicar o colaborador
-                // caso a criação do usuário apresente um erro.
-
                 setIdColaboradorCriado(idColaborador);
-
             }
 
 
-            //----------------- CADASTRAR USUÁRIO --------------//
+            //----------------- CRIAR USUÁRIO ------------------//
 
-            // Usa o login e a senha preenchidos no formulário.
-
-            const dadosParaUsuario = {
-
-                id_colaborador: Number(idColaborador),
-
-                id_nivel_acesso: Number(dados.idNivelAcesso),
-
-                login: dados.login.trim(),
-
-                senha: dados.senha
-
-            };
+            const dadosParaUsuario = montarDadosUsuario(
+                dados,
+                idColaborador
+            );
 
             await cadastrarUsuario(dadosParaUsuario);
 
@@ -358,14 +228,14 @@ function CadastroColaborador({ onVoltar, onSalvar }) {
         } catch (erro) {
 
             console.error(
-                'Erro ao cadastrar colaborador ou usuário:',
+                'Erro ao confirmar o cadastro do colaborador:',
                 erro
             );
 
             if (idColaborador) {
 
                 alert(
-                    `O colaborador já foi cadastrado (ID ${idColaborador}), mas não foi possível concluir a criação do usuário.\n\nConfira o login, a senha e a mensagem da API antes de tentar novamente.\n\nErro: ${erro.message}`
+                    `O colaborador já foi cadastrado (ID ${idColaborador}), mas não foi possível concluir a criação do usuário.\n\nVerifique a mensagem da API antes de tentar novamente.\n\nErro: ${erro.message}`
                 );
 
             } else {
@@ -373,30 +243,45 @@ function CadastroColaborador({ onVoltar, onSalvar }) {
                 alert(
                     `Não foi possível concluir o cadastro.\n\nErro: ${erro.message}`
                 );
-
             }
 
         } finally {
-
             setSalvando(false);
-
         }
-
     }
 
 
-    //----------------- TELA --------------------------------//
+    //----------------- TELA DE CONFIRMAÇÃO ------------------//
+
+    if (mostrarConfirmacao) {
+        return (
+            <Confirmacao
+                dados={dados}
+                cargos={cargos}
+                setores={setores}
+                niveisAcesso={niveisAcesso}
+                jornadas={jornadas}
+                onVoltar={() => setMostrarConfirmacao(false)}
+                onEditarEtapa={() => {
+                    setMostrarConfirmacao(false);
+                }}
+                onConfirmar={salvarColaborador}
+                salvando={salvando}
+            />
+        );
+    }
+
+
+    //----------------- FORMULÁRIO ---------------------------//
 
     return (
         <>
-
             <div className="cabecalho-novo-colaborador">
 
                 <BotaoCadastro
                     titulo="Novo colaborador"
                     descricao="Cadastre os dados pessoais e profissionais do colaborador."
                 >
-
                     <nav className="caminho-cadastro-colaborador">
 
                         <button
@@ -414,7 +299,6 @@ function CadastroColaborador({ onVoltar, onSalvar }) {
                         </span>
 
                     </nav>
-
                 </BotaoCadastro>
 
             </div>
@@ -422,14 +306,11 @@ function CadastroColaborador({ onVoltar, onSalvar }) {
 
             {carregandoOpcoes ? (
 
-                <p>
-                    Carregando as opções do cadastro...
-                </p>
+                <p>Carregando as opções do cadastro...</p>
 
             ) : (
 
                 <>
-
                     <Dadospessoais
                         dados={dados}
                         setDados={setDados}
@@ -449,38 +330,17 @@ function CadastroColaborador({ onVoltar, onSalvar }) {
                         jornadas={jornadas}
                     />
 
-                    <div className="acoes-cadastro-colaborador">
-
-                        <button
-                            type="button"
-                            onClick={voltar}
-                            disabled={salvando}
-                        >
-                            Cancelar
-                        </button>
-
-                        <button
-                            type="button"
-                            onClick={salvarColaborador}
-                            disabled={salvando}
-                        >
-                            {salvando
-                                ? 'Salvando...'
-                                : 'Salvar colaborador'}
-                        </button>
-
-                    </div>
-
+                    <BotaoSalvarCancelar
+                        onCancelar={voltar}
+                        onSalvar={avancarParaConfirmacao}
+                        salvando={salvando}
+                        textoBotao="Revisar cadastro"
+                    />
                 </>
 
             )}
-
         </>
     );
-
 }
-
-
-//----------------- EXPORTAÇÃO ------------------------------//
 
 export default CadastroColaborador;

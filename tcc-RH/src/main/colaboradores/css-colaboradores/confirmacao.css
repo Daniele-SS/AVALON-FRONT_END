@@ -1,0 +1,651 @@
+
+/*----------------- PÁGINA -----------------------------*/
+
+.pagina-confirmacao {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding-bottom: 32px;
+    box-sizing: border-box;
+    color: #001F3F;
+}
+
+.cabecalho-confirmacao {
+    width: 100%;
+    min-width: 0;
+}
+
+/*----------------- CAMINHO -----------------------------*/
+
+.caminho-cadastro-colaborador {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+    color: #738197;
+    font-size: 13px;
+}
+
+.caminho-cadastro-colaborador button {
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+}
+
+.caminho-cadastro-colaborador button:hover:not(:disabled) {
+    color: #001F3F;
+}
+
+.caminho-cadastro-colaborador button:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.caminho-cadastro-colaborador span {
+    display: inline-flex;
+    align-items: center;
+}
+
+.caminho-cadastro-colaborador .pagina-atual-colaborador {
+    color: #001F3F;
+    font-weight: 600;
+}
+
+/*----------------- ETAPAS -----------------------------*/
+
+.etapas-confirmacao {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 18px 24px;
+    box-sizing: border-box;
+    background: #FFFFFF;
+    border: 1px solid #E5EAF0;
+    border-radius: 12px;
+}
+
+.etapa-confirmacao {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #65758B;
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+.etapa-concluida {
+    color: #001F3F;
+    font-weight: 600;
+}
+
+.numero-etapa {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: #E8F0FA;
+    color: #001F3F;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.linha-etapas {
+    flex: 1;
+    min-width: 20px;
+    height: 1px;
+    background: #DCE3EB;
+}
+
+/*----------------- CABEÇALHO DAS SEÇÕES ----------------*/
+
+.cabecalho-cartao-confirmacao {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 10px 24px;
+    margin-bottom: -8px;
+    box-sizing: border-box;
+    background: #FFFFFF;
+    border: 1px solid #E5EAF0;
+    border-radius: 12px;
+}
+
+.titulo-cartao-confirmacao {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.icone-cartao-confirmacao {
+    width: 42px;
+    height: 42px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background: #EDF3FB;
+    color: #001F3F;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.titulo-cartao-confirmacao > div:last-child {
+    flex: 1;
+    min-width: 0;
+}
+
+.titulo-cartao-confirmacao h2 {
+    margin: 0 0 5px;
+    color: #001F3F;
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+.titulo-cartao-confirmacao p {
+    margin: 0;
+    color: #738197;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.botao-editar-confirmacao {
+    flex-shrink: 0;
+    width: fit-content;
+    min-width: 0;
+    min-height: 30px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 10px;
+    margin: 0;
+    box-sizing: border-box;
+    border: 1px solid #D8E2EF;
+    border-radius: 6px;
+    background: #FFFFFF;
+    color: #001F3F;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.2;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.botao-editar-confirmacao:hover:not(:disabled) {
+    background: #EDF3FB;
+}
+
+.botao-editar-confirmacao:focus-visible {
+    outline: 2px solid #3879BD;
+    outline-offset: 2px;
+}
+
+.botao-editar-confirmacao:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/*----------------- CARDS PRINCIPAIS --------------------*/
+
+.cartao-confirmacao {
+    width: 100%;
+    min-width: 0;
+    padding: 24px;
+    box-sizing: border-box;
+    background: #FFFFFF;
+    border: 1px solid #E5EAF0;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0, 31, 63, 0.025);
+}
+
+/*----------------- PERFIL DO COLABORADOR ----------------*/
+
+.perfil-confirmacao {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding-bottom: 24px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid #EDF0F4;
+}
+
+.avatar-confirmacao {
+    width: 62px;
+    height: 62px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: #E8F0FA;
+    color: #001F3F;
+    font-size: 24px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.dados-perfil-confirmacao {
+    min-width: 0;
+    flex: 1;
+}
+
+.nome-status-confirmacao {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.nome-status-confirmacao h3 {
+    margin: 0;
+    color: #001F3F;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+}
+
+.dados-perfil-confirmacao p {
+    margin: 7px 0 0;
+    color: #738197;
+    font-size: 14px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+/*----------------- STATUS DO COLABORADOR ----------------*/
+
+.status-confirmacao {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.status-ativo {
+    background: #E5F7ED;
+    color: #187746;
+}
+
+.status-inativo {
+    background: #FDEAEA;
+    color: #B42318;
+}
+
+/*----------------- INFORMAÇÕES PESSOAIS E PROFISSIONAIS -*/
+
+.dados-pessoais-detalhes-confirmacao {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+    margin-top: 24px;
+    box-sizing: border-box;
+}
+
+.dados-pessoais-detalhes-confirmacao .informacao-confirmacao {
+    min-width: 0;
+    min-height: 92px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 10px;
+    padding: 24px;
+    box-sizing: border-box;
+    background-color: #F2F3FF;
+    border-radius: 10px;
+}
+
+.dados-pessoais-detalhes-confirmacao .titulo-informacao-confirmacao {
+    display: block;
+    color: #738197;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.dados-pessoais-detalhes-confirmacao .valor-informacao-confirmacao {
+    display: block;
+    color: #001F3F;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+/*----------------- OUTRAS INFORMAÇÕES -------------------*/
+
+.grade-informacoes-confirmacao {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px 32px;
+}
+
+.informacao-confirmacao {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.titulo-informacao-confirmacao {
+    color: #738197;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.valor-informacao-confirmacao {
+    color: #001F3F;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+/*----------------- JORNADA E ESCALA ---------------------*/
+
+/* Card externo branco, igual ao card de Informações profissionais */
+.cartao-jornada-confirmacao {
+    width: 100%;
+    padding: 24px;
+    box-sizing: border-box;
+    background: #FFFFFF;
+    border: 1px solid #E5EAF0;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0, 31, 63, 0.025);
+}
+
+/* Card interno cinza/azulado */
+.painel-jornada-confirmacao {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    padding: 24px;
+    box-sizing: border-box;
+    background: #F2F3FF;
+    border: none;
+    border-radius: 10px;
+    box-shadow: none;
+}
+
+/* Nome da jornada */
+.nome-jornada-confirmacao {
+    width: 100%;
+    margin: 0;
+    color: #001F3F;
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1.4;
+    text-align: left;
+}
+
+/* Cards dos sete dias centralizados */
+.dias-jornada-confirmacao {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+}
+
+/* Cada card mede 73px x 54px */
+.mini-card-dia-confirmacao {
+    width: 73px;
+    height: 54px;
+    min-width: 73px;
+    min-height: 54px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    padding: 4px;
+    box-sizing: border-box;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    text-align: center;
+}
+
+/* Sigla do dia */
+.sigla-dia-confirmacao {
+    color: #001F3F;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+/* Status do dia */
+.status-dia-confirmacao {
+    max-width: 100%;
+    color: #001F3F;
+    font-size: 10px;
+    font-weight: 500;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+}
+
+/* Dia ativo */
+.dia-confirmacao-ativo {
+    background: #2563EB;
+    border-color: #2563EB;
+}
+
+.dia-confirmacao-ativo .sigla-dia-confirmacao,
+.dia-confirmacao-ativo .status-dia-confirmacao {
+    color: #FFFFFF;
+}
+
+/* Dia de folga */
+.dia-confirmacao-folga {
+    background: #F2F3FF;
+    border-color: #DDE1F5;
+}
+
+.dia-confirmacao-folga .sigla-dia-confirmacao,
+.dia-confirmacao-folga .status-dia-confirmacao {
+    color: #001F3F;
+}
+
+/* Dia sem configuração */
+.dia-confirmacao-indefinido {
+    background: #F2F3FF;
+    border-color: #DDE1F5;
+}
+
+.dia-confirmacao-indefinido .sigla-dia-confirmacao {
+    color: #001F3F;
+}
+
+.dia-confirmacao-indefinido .status-dia-confirmacao {
+    color: #65758B;
+    font-size: 9px;
+}
+
+/*----------------- AVISO DE ACESSO ----------------------*/
+
+.aviso-acesso-confirmacao {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-top: 24px;
+    padding: 14px 16px;
+    box-sizing: border-box;
+    border: 1px solid #E0EAF7;
+    border-radius: 8px;
+    background: #F3F7FC;
+}
+
+.icone-aviso-confirmacao {
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: #DCE8F7;
+    color: #001F3F;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.aviso-acesso-confirmacao p {
+    margin: 0;
+    color: #4C6078;
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+/*----------------- CONVITE ------------------------------*/
+
+.cartao-convite-confirmacao {
+    width: 100%;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 22px 24px;
+    box-sizing: border-box;
+    border: 1px solid #DCE7F5;
+    border-radius: 12px;
+    background: #F6F9FE;
+}
+
+.icone-convite-confirmacao {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border-radius: 10px;
+    background: #E1EBF9;
+    color: #001F3F;
+    font-size: 22px;
+}
+
+.texto-convite-confirmacao {
+    min-width: 0;
+    flex: 1;
+}
+
+.texto-convite-confirmacao h2 {
+    margin: 0 0 8px;
+    color: #001F3F;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.5;
+}
+
+.texto-convite-confirmacao p {
+    margin: 0;
+    color: #65758B;
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+/*----------------- NOTA DE SEGURANÇA --------------------*/
+
+.nota-seguranca-confirmacao {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 0 4px;
+}
+
+.nota-seguranca-confirmacao span {
+    flex-shrink: 0;
+}
+
+.nota-seguranca-confirmacao p {
+    margin: 0;
+    color: #65758B;
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+/*----------------- BOTÕES FINAIS ------------------------*/
+
+.acoes-confirmacao {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 14px;
+    padding-top: 8px;
+}
+
+.botao-voltar-confirmacao,
+.botao-confirmar-confirmacao {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 22px;
+    box-sizing: border-box;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        opacity 0.2s ease;
+}
+
+.botao-voltar-confirmacao {
+    border: 1px solid #D5DEEA;
+    background: #FFFFFF;
+    color: #001F3F;
+}
+
+.botao-voltar-confirmacao:hover:not(:disabled) {
+    background: #F3F6FA;
+    border-color: #B9CBE2;
+}
+
+.botao-confirmar-confirmacao {
+    border: 1px solid #001F3F;
+    background: #001F3F;
+    color: #FFFFFF;
+}
+
+.botao-confirmar-confirmacao:hover:not(:disabled) {
+    background: #00345F;
+    border-color: #00345F;
+}
+
+.botao-voltar-confirmacao:focus-visible,
+.botao-confirmar-confirmacao:focus-visible {
+    outline: 2px solid #3879BD;
+    outline-offset: 3px;
+}
+
+.botao-voltar-confirmacao:disabled,
+.botao-confirmar-confirmacao:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}

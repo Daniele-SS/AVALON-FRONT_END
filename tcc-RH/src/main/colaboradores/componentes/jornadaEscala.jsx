@@ -15,7 +15,8 @@ function JornadaEscala({ dados, setDados, jornadas = [] }) {
     function atualizarJornada(jornada) {
         setDados({
             ...dados,
-            idJornadaEscala: jornada.id_jornada_escala ?? jornada.id
+            idJornadaEscala:
+                jornada.id_jornada_escala ?? jornada.id
         });
 
         setListaAberta(false);
@@ -47,7 +48,13 @@ function JornadaEscala({ dados, setDados, jornadas = [] }) {
                 return dia;
             }
 
-            return dia.nome || dia.dia_semana || dia.nome_dia || '';
+            return (
+                dia.nome ||
+                dia.dia_semana ||
+                dia.nome_dia ||
+                dia.nome_dia_semana ||
+                ''
+            );
         }).filter(Boolean);
 
         const abreviacoes = {
@@ -60,23 +67,40 @@ function JornadaEscala({ dados, setDados, jornadas = [] }) {
             'Domingo': 'Dom'
         };
 
-        return nomesDias.map((dia) => abreviacoes[dia] || dia).join(', ');
+        return nomesDias
+            .map((dia) => abreviacoes[dia] || dia)
+            .join(', ');
     }
 
 
     function nomeJornada(jornada) {
-        return jornada.nome || jornada.nome_jornada || jornada.descricao || 'Jornada';
+        return (
+            jornada.nome ||
+            jornada.nome_jornada ||
+            jornada.descricao ||
+            'Jornada'
+        );
     }
 
 
     function horarioJornada(jornada) {
-        const entrada = formatarHorario(
-            jornada.horario_entrada || jornada.hora_entrada || jornada.inicio
-        );
 
-        const saida = formatarHorario(
-            jornada.horario_saida || jornada.hora_saida || jornada.fim
-        );
+        // A API retorna hora_inicio e hora_fim.
+        // Os outros nomes ficam como alternativas.
+        const horarioEntrada =
+            jornada.hora_inicio ||
+            jornada.horario_entrada ||
+            jornada.hora_entrada ||
+            jornada.inicio;
+
+        const horarioSaida =
+            jornada.hora_fim ||
+            jornada.horario_saida ||
+            jornada.hora_saida ||
+            jornada.fim;
+
+        const entrada = formatarHorario(horarioEntrada);
+        const saida = formatarHorario(horarioSaida);
 
         return `${entrada} às ${saida}`;
     }
@@ -92,9 +116,13 @@ function JornadaEscala({ dados, setDados, jornadas = [] }) {
     //----------------- JORNADA SELECIONADA ------------------//
 
     const jornadaSelecionada = jornadas.find((jornada) => {
-        const idJornada = jornada.id_jornada_escala ?? jornada.id;
+        const idJornada =
+            jornada.id_jornada_escala ?? jornada.id;
 
-        return String(idJornada) === String(dados.idJornadaEscala);
+        return (
+            String(idJornada) ===
+            String(dados.idJornadaEscala)
+        );
     });
 
 
@@ -187,7 +215,8 @@ function JornadaEscala({ dados, setDados, jornadas = [] }) {
                                 jornadas.map((jornada) => {
 
                                     const idJornada =
-                                        jornada.id_jornada_escala ?? jornada.id;
+                                        jornada.id_jornada_escala ??
+                                        jornada.id;
 
                                     const selecionada =
                                         String(idJornada) ===
