@@ -1,4 +1,3 @@
-
 //----------------- IMPORTAÇÕES -----------------------------//
 
 import { useEffect, useState } from 'react';
@@ -36,6 +35,13 @@ function EditarSetor({ setor, voltar }) {
     const [erro, setErro] = useState('');
     const [sucesso, setSucesso] = useState('');
 
+    // Erros específicos dos campos
+    const [erroNome, setErroNome] = useState('');
+    const [erroCodigo, setErroCodigo] = useState('');
+
+    // Alerta de inativação
+    const [alertaAberto, setAlertaAberto] = useState(false);
+
 
     //----------------- CARREGAR SETOR ----------------------//
 
@@ -46,6 +52,12 @@ function EditarSetor({ setor, voltar }) {
             setCodigo(setor.codigo || '');
             setDescricao(setor.descricao || '');
             setStatus(Number(setor.status));
+
+            // Limpa os erros ao selecionar outro setor
+            setErroNome('');
+            setErroCodigo('');
+            setErro('');
+            setSucesso('');
         }
 
     }, [setor]);
@@ -60,6 +72,7 @@ function EditarSetor({ setor, voltar }) {
             try {
 
                 const dadosSetores = await buscarDadosCadastro();
+
                 setSetores(dadosSetores);
 
             } catch (erroApi) {
@@ -79,7 +92,41 @@ function EditarSetor({ setor, voltar }) {
     }, []);
 
 
-    //----------------- VALIDAÇÃO ---------------------------//
+    //----------------- ALTERAR NOME -------------------------//
+
+    function alterarNome(valor) {
+
+        setNome(valor);
+
+        // Remove o erro visual quando começar a digitar
+        if (erroNome) {
+            setErroNome('');
+        }
+
+        setErro('');
+        setSucesso('');
+
+    }
+
+
+    //----------------- ALTERAR CÓDIGO -----------------------//
+
+    function alterarCodigo(valor) {
+
+        setCodigo(valor);
+
+        // Remove o erro visual quando começar a digitar
+        if (erroCodigo) {
+            setErroCodigo('');
+        }
+
+        setErro('');
+        setSucesso('');
+
+    }
+
+
+    //----------------- VALIDAÇÃO ----------------------------//
 
     const validacao = validarSetor(
         nome,
@@ -103,13 +150,7 @@ function EditarSetor({ setor, voltar }) {
         !salvando;
 
 
-
-    //----------------- ALERTA DE INATIVAÇÃO --------------------//
-
-    const [alertaAberto, setAlertaAberto] = useState(false);
-
-
-    //----------------- ALTERAR STATUS --------------------------//
+    //----------------- ALTERAR STATUS -----------------------//
 
     function alterarStatus(novoStatus) {
 
@@ -123,7 +164,7 @@ function EditarSetor({ setor, voltar }) {
     }
 
 
-    //----------------- CONFIRMAR INATIVAÇÃO --------------------//
+    //----------------- CONFIRMAR INATIVAÇÃO -----------------//
 
     function confirmarInativacao() {
 
@@ -133,7 +174,7 @@ function EditarSetor({ setor, voltar }) {
     }
 
 
-    //----------------- ATUALIZAR SETOR ---------------------//
+    //----------------- ATUALIZAR SETOR ----------------------//
 
     async function salvarAlteracoes(evento) {
 
@@ -147,8 +188,47 @@ function EditarSetor({ setor, voltar }) {
             return;
         }
 
-        if (!formularioValido) {
-            setErro('Verifique o nome e o código do setor.');
+        if (carregando || salvando) {
+            return;
+        }
+
+        // Valida os dados novamente no momento de salvar
+        const resultado = validarSetor(
+            nome,
+            codigo,
+            setores,
+            setor.id
+        );
+
+        // Verifica o nome
+        if (resultado.nomeComErro) {
+
+            setNome('');
+            setErroNome(resultado.erroNome);
+
+        } else {
+
+            setErroNome('');
+
+        }
+
+        // Verifica o código
+        if (resultado.codigoComErro) {
+
+            setCodigo('');
+            setErroCodigo(resultado.erroCodigo);
+
+        } else {
+
+            setErroCodigo('');
+
+        }
+
+        // Não continua se houver erros nos campos
+        if (
+            resultado.nomeComErro ||
+            resultado.codigoComErro
+        ) {
             return;
         }
 
@@ -182,14 +262,14 @@ function EditarSetor({ setor, voltar }) {
     }
 
 
-    //----------------- VERIFICAR SETOR ---------------------//
+    //----------------- VERIFICAR SETOR ----------------------//
 
     if (!setor) {
         return <p>Nenhum setor foi selecionado para edição.</p>;
     }
 
 
-    //----------------- TELA --------------------------------//
+    //----------------- TELA ---------------------------------//
 
     return (
 
@@ -204,7 +284,10 @@ function EditarSetor({ setor, voltar }) {
 
                     <nav className="caminho-cadastro-setor">
 
-                        <button type="button" onClick={voltar}>
+                        <button
+                            type="button"
+                            onClick={voltar}
+                        >
                             Setores
                         </button>
 
@@ -221,20 +304,35 @@ function EditarSetor({ setor, voltar }) {
             </div>
 
 
-            <form onSubmit={salvarAlteracoes}>
+            {/* noValidate permite exibir nossas mensagens personalizadas */}
+
+            <form
+                onSubmit={salvarAlteracoes}
+                noValidate
+            >
 
                 <Informacoes
                     titulo="Informações do setor"
                     descricaoCard="Edite os dados de identificação e classificação do setor."
+
                     nomeEntidade="setor"
+
                     nome={nome}
-                    setNome={setNome}
+                    setNome={alterarNome}
+                    erroNome={erroNome}
+                    limparErroNome={() => setErroNome('')}
+
                     codigo={codigo}
-                    setCodigo={setCodigo}
+                    setCodigo={alterarCodigo}
+                    erroCodigo={erroCodigo}
+                    limparErroCodigo={() => setErroCodigo('')}
+
                     descricao={descricao}
                     setDescricao={setDescricao}
+
                     status={status}
                     setStatus={alterarStatus}
+
                     campos={['nome', 'codigo', 'descricao', 'status']}
                 />
 
@@ -244,12 +342,9 @@ function EditarSetor({ setor, voltar }) {
                     codigo={codigo}
                     descricao={descricao}
                     status={status}
-
                     tituloNome="Nome do setor"
                     tituloCodigo="Código do setor"
-
                     mostrarResponsavel={false}
-
                     erro={erro}
                     sucesso={sucesso}
                 />
@@ -263,6 +358,9 @@ function EditarSetor({ setor, voltar }) {
                 />
 
             </form>
+
+
+            {/* ALERTA DE INATIVAÇÃO */}
 
             <Alerta
                 aberto={alertaAberto}
@@ -289,6 +387,7 @@ function EditarSetor({ setor, voltar }) {
                 ]}
 
                 textoBotao="Inativar"
+
                 cancelar={() => setAlertaAberto(false)}
                 confirmar={confirmarInativacao}
             />

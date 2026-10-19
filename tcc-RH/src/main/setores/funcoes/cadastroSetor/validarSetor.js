@@ -20,13 +20,50 @@ function validarSetor(nome, codigo, setores) {
     );
 
 
-    //----------------- RETORNO -------------------------------//
+    //----------------- MENSAGENS DE ERRO --------------------//
+
+    let erroNome = '';
+    let erroCodigo = '';
+
+
+    if (!nomeValido) {
+
+        erroNome = 'Informe o nome do setor';
+
+    } else if (nomeDuplicado) {
+
+        erroNome = 'Este nome de setor já está cadastrado';
+
+    }
+
+
+    if (!codigoValido) {
+
+        erroCodigo = 'Informe o código do setor';
+
+    } else if (codigoDuplicado) {
+
+        erroCodigo = 'Este código de setor já está cadastrado';
+
+    }
+
+
+    //----------------- RETORNO ------------------------------//
 
     return {
+
         nomeValido,
         codigoValido,
+
         nomeDuplicado,
-        codigoDuplicado
+        codigoDuplicado,
+
+        erroNome,
+        erroCodigo,
+
+        nomeComErro: erroNome !== '',
+        codigoComErro: erroCodigo !== ''
+
     };
 
 }

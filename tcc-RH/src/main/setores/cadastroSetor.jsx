@@ -1,4 +1,3 @@
-
 //----------------- IMPORTAÇÕES -----------------------------//
 
 import { useEffect, useState } from 'react';
@@ -37,6 +36,10 @@ function CadastroSetor({ voltar }) {
     const [erro, setErro] = useState('');
     const [sucesso, setSucesso] = useState('');
 
+    // Erros específicos dos campos
+    const [erroNome, setErroNome] = useState('');
+    const [erroCodigo, setErroCodigo] = useState('');
+
 
     //----------------- BUSCAR DADOS ------------------------//
 
@@ -67,21 +70,49 @@ function CadastroSetor({ voltar }) {
     }, []);
 
 
+    //----------------- ALTERAR NOME -------------------------//
+
+    function alterarNome(valor) {
+
+        setNome(valor);
+
+        // Remove o erro assim que o usuário começar a digitar
+        if (erroNome) {
+            setErroNome('');
+        }
+
+        setErro('');
+        setSucesso('');
+
+    }
+
+
+    //----------------- ALTERAR CÓDIGO -----------------------//
+
+    function alterarCodigo(valor) {
+
+        setCodigo(valor);
+
+        // Remove o erro assim que o usuário começar a digitar
+        if (erroCodigo) {
+            setErroCodigo('');
+        }
+
+        setErro('');
+        setSucesso('');
+
+    }
+
+
     //----------------- VALIDAÇÃO ---------------------------//
 
     const validacao = validarSetor(nome, codigo, setores);
 
-    const nomeValido = validacao.nomeValido;
-    const codigoValido = validacao.codigoValido;
-
-    const nomeDuplicado = validacao.nomeDuplicado;
-    const codigoDuplicado = validacao.codigoDuplicado;
-
     const formularioValido =
-        nomeValido &&
-        codigoValido &&
-        !nomeDuplicado &&
-        !codigoDuplicado &&
+        validacao.nomeValido &&
+        validacao.codigoValido &&
+        !validacao.nomeDuplicado &&
+        !validacao.codigoDuplicado &&
         !carregando &&
         !salvando;
 
@@ -95,37 +126,95 @@ function CadastroSetor({ voltar }) {
         setErro('');
         setSucesso('');
 
-        if (!formularioValido) {
+        // Executa novamente a validação
+        const resultado = validarSetor(nome, codigo, setores);
 
-            setErro('Verifique o nome e o código do setor.');
+
+        //----------------- VERIFICAR NOME -------------------//
+
+        if (resultado.nomeComErro) {
+
+            setNome('');
+            setErroNome(resultado.erroNome);
+
+        } else {
+
+            setErroNome('');
+
+        }
+
+
+        //----------------- VERIFICAR CÓDIGO -----------------//
+
+        if (resultado.codigoComErro) {
+
+            setCodigo('');
+            setErroCodigo(resultado.erroCodigo);
+
+        } else {
+
+            setErroCodigo('');
+
+        }
+
+
+        //----------------- FORMULÁRIO INVÁLIDO -------------//
+
+        if (
+            resultado.nomeComErro ||
+            resultado.codigoComErro ||
+            carregando ||
+            salvando
+        ) {
 
             return;
 
         }
+
+
+        //----------------- SALVAR ---------------------------//
 
         setSalvando(true);
 
         try {
 
             const dadosSetor = {
+
                 nome: nome.trim(),
+
                 codigo: codigo.trim(),
-                descricao: descricao.trim() || 'Nenhuma descrição informada.',
+
+                descricao:
+                    descricao.trim() ||
+                    'Nenhuma descrição informada.',
+
                 status: Number(status)
+
             };
+
 
             await cadastrarSetor(dadosSetor);
 
+
             setSucesso('Setor cadastrado com sucesso!');
 
+
+            // Atualiza a lista de setores
             const dadosSetores = await buscarDadosCadastro();
 
             setSetores(dadosSetores);
+
+
+            //----------------- LIMPAR FORMULÁRIO ------------//
 
             setNome('');
             setCodigo('');
             setDescricao('');
             setStatus(1);
+
+            setErroNome('');
+            setErroCodigo('');
+
 
         } catch (erroApi) {
 
@@ -162,7 +251,9 @@ function CadastroSetor({ voltar }) {
                             Setores
                         </button>
 
-                        <span className="seta">&gt;</span>
+                        <span className="seta">
+                            &gt;
+                        </span>
 
                         <span className="pagina-atual-setor">
                             Novo setor
@@ -181,15 +272,29 @@ function CadastroSetor({ voltar }) {
                     titulo="Informações do setor"
                     descricaoCard="Dados de identificação institucional e classificação organizacional."
                     nomeEntidade="setor"
+
                     nome={nome}
-                    setNome={setNome}
+                    setNome={alterarNome}
+                    erroNome={erroNome}
+                    limparErroNome={() => setErroNome('')}
+
                     codigo={codigo}
-                    setCodigo={setCodigo}
+                    setCodigo={alterarCodigo}
+                    erroCodigo={erroCodigo}
+                    limparErroCodigo={() => setErroCodigo('')}
+
                     descricao={descricao}
                     setDescricao={setDescricao}
+
                     status={status}
                     setStatus={setStatus}
-                    campos={['nome', 'codigo', 'descricao', 'status']}
+
+                    campos={[
+                        'nome',
+                        'codigo',
+                        'descricao',
+                        'status'
+                    ]}
                 />
 
 
@@ -220,7 +325,9 @@ function CadastroSetor({ voltar }) {
 
 
             {carregando && (
-                <p>Carregando dados...</p>
+                <p>
+                    Carregando dados...
+                </p>
             )}
 
         </>
