@@ -1,11 +1,17 @@
 //----------------- VALIDAR CADASTRO DE CARGO ----------------//
 
-function validarCargo(dadosCargo, cargos = [], idCargoAtual = null) {
+function validarCargo(
+    dadosCargo,
+    cargos = [],
+    idCargoAtual = null
+) {
 
     //----------------- NORMALIZAR DADOS --------------------//
 
     const nome = (dadosCargo.nome || '').trim();
-    const codigo = (dadosCargo.codigo || '').trim();
+
+    const codigo = (dadosCargo.codigo || '').trim().toUpperCase();
+
     const descricao = (dadosCargo.descricao || '').trim();
 
 
@@ -18,10 +24,14 @@ function validarCargo(dadosCargo, cargos = [], idCargoAtual = null) {
 
     const nomeDuplicado = cargos.some(cargo => {
 
-        return (
-            Number(cargo.id) !== Number(idCargoAtual) &&
-            (cargo.nome || '').trim().toLowerCase() === nome.toLowerCase()
-        );
+        const mesmoCargo =
+            idCargoAtual !== null &&
+            Number(cargo.id) === Number(idCargoAtual);
+
+        const mesmoNome =
+            (cargo.nome || '').trim().toLowerCase() === nome.toLowerCase();
+
+        return !mesmoCargo && mesmoNome;
 
     });
 
@@ -30,10 +40,14 @@ function validarCargo(dadosCargo, cargos = [], idCargoAtual = null) {
 
     const codigoDuplicado = cargos.some(cargo => {
 
-        return (
-            Number(cargo.id) !== Number(idCargoAtual) &&
-            (cargo.codigo || '').trim().toLowerCase() === codigo.toLowerCase()
-        );
+        const mesmoCargo =
+            idCargoAtual !== null &&
+            Number(cargo.id) === Number(idCargoAtual);
+
+        const mesmoCodigo =
+            (cargo.codigo || '').trim().toUpperCase() === codigo;
+
+        return !mesmoCargo && mesmoCodigo;
 
     });
 
@@ -104,15 +118,19 @@ function validarCargo(dadosCargo, cargos = [], idCargoAtual = null) {
         erros,
 
         nomeValido: !erros.nome,
+
         codigoValido: !erros.codigo,
 
         nomeDuplicado,
+
         codigoDuplicado,
 
         erroNome: erros.nome || '',
+
         erroCodigo: erros.codigo || '',
 
         nomeComErro: Boolean(erros.nome),
+
         codigoComErro: Boolean(erros.codigo)
 
     };

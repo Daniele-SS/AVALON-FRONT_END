@@ -1,11 +1,17 @@
 //----------------- VALIDAR EDIÇÃO DE CARGO -----------------//
 
-function validarCargo(dadosCargo, cargos = [], idCargo = null) {
+function validarCargo(
+    dadosCargo,
+    cargos = [],
+    idCargo = null
+) {
 
     //----------------- NORMALIZAR DADOS --------------------//
 
     const nome = (dadosCargo.nome || '').trim();
-    const codigo = (dadosCargo.codigo || '').trim();
+
+    const codigo = (dadosCargo.codigo || '').trim().toUpperCase();
+
     const descricao = (dadosCargo.descricao || '').trim();
 
     const erros = {};
@@ -15,10 +21,14 @@ function validarCargo(dadosCargo, cargos = [], idCargo = null) {
 
     const nomeDuplicado = cargos.some(cargo => {
 
-        return (
-            Number(cargo.id) !== Number(idCargo) &&
-            (cargo.nome || '').trim().toLowerCase() === nome.toLowerCase()
-        );
+        const mesmoCargo =
+            idCargo !== null &&
+            Number(cargo.id) === Number(idCargo);
+
+        const mesmoNome =
+            (cargo.nome || '').trim().toLowerCase() === nome.toLowerCase();
+
+        return !mesmoCargo && mesmoNome;
 
     });
 
@@ -27,10 +37,14 @@ function validarCargo(dadosCargo, cargos = [], idCargo = null) {
 
     const codigoDuplicado = cargos.some(cargo => {
 
-        return (
-            Number(cargo.id) !== Number(idCargo) &&
-            (cargo.codigo || '').trim().toLowerCase() === codigo.toLowerCase()
-        );
+        const mesmoCargo =
+            idCargo !== null &&
+            Number(cargo.id) === Number(idCargo);
+
+        const mesmoCodigo =
+            (cargo.codigo || '').trim().toUpperCase() === codigo;
+
+        return !mesmoCargo && mesmoCodigo;
 
     });
 
@@ -101,15 +115,19 @@ function validarCargo(dadosCargo, cargos = [], idCargo = null) {
         erros,
 
         nomeValido: !erros.nome,
+
         codigoValido: !erros.codigo,
 
         nomeDuplicado,
+
         codigoDuplicado,
 
         erroNome: erros.nome || '',
+
         erroCodigo: erros.codigo || '',
 
         nomeComErro: Boolean(erros.nome),
+
         codigoComErro: Boolean(erros.codigo)
 
     };

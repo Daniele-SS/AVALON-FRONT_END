@@ -76,11 +76,14 @@ function EditarCargo({ cargo, voltar }) {
 
                 const dados = await buscarDadosCadastro();
 
-                setCargos(dados);
+                setCargos(Array.isArray(dados) ? dados : []);
 
             } catch (erroApi) {
 
-                setErro(erroApi.message);
+                setErro(
+                    erroApi.message ||
+                    'Não foi possível carregar os cargos.'
+                );
 
             } finally {
 
@@ -115,7 +118,7 @@ function EditarCargo({ cargo, voltar }) {
 
     function alterarCodigo(valor) {
 
-        setCodigo(valor);
+        setCodigo(valor.toUpperCase());
 
         if (erroCodigo) {
             setErroCodigo('');
@@ -127,25 +130,34 @@ function EditarCargo({ cargo, voltar }) {
     }
 
 
-    //----------------- VALIDAR CARGO -----------------------//
+    //----------------- ALTERAR DESCRIÇÃO -------------------//
 
-    const validacao = validarCargo(
-        { nome, codigo, descricao, status },
-        cargos,
-        cargo?.cargo_id ?? cargo?.id ?? null
-    );
+    function alterarDescricao(valor) {
+
+        setDescricao(valor);
+
+        setErro('');
+        setSucesso('');
+
+    }
 
 
     //----------------- ALTERAR STATUS ----------------------//
 
     function alterarStatus(novoStatus) {
 
-        if (Number(novoStatus) === 0) {
+        if (Number(novoStatus) === 0 && Number(status) !== 0) {
+
             setAlertaAberto(true);
+
             return;
+
         }
 
         setStatus(Number(novoStatus));
+
+        setErro('');
+        setSucesso('');
 
     }
 
@@ -156,6 +168,9 @@ function EditarCargo({ cargo, voltar }) {
 
         setStatus(0);
         setAlertaAberto(false);
+
+        setErro('');
+        setSucesso('');
 
     }
 
@@ -169,6 +184,8 @@ function EditarCargo({ cargo, voltar }) {
         setErro('');
         setSucesso('');
 
+        //----------------- VERIFICAR CARGO -----------------//
+
         if (!cargo) {
 
             setErro('Nenhum cargo foi selecionado para edição.');
@@ -177,15 +194,20 @@ function EditarCargo({ cargo, voltar }) {
 
         }
 
+
+        //----------------- VERIFICAR CARREGAMENTO -----------//
+
         if (carregando || salvando) {
             return;
         }
 
-        // Valida novamente os dados antes de enviar
+
+        //----------------- VALIDAR DADOS --------------------//
+
         const resultado = validarCargo(
             { nome, codigo, descricao, status },
             cargos,
-            cargo.cargo_id ?? cargo.id
+            cargo.cargo_id ?? cargo.id ?? null
         );
 
 
@@ -193,7 +215,6 @@ function EditarCargo({ cargo, voltar }) {
 
         if (resultado.erros.nome) {
 
-            setNome('');
             setErroNome(resultado.erros.nome);
 
         } else {
@@ -207,7 +228,6 @@ function EditarCargo({ cargo, voltar }) {
 
         if (resultado.erros.codigo) {
 
-            setCodigo('');
             setErroCodigo(resultado.erros.codigo);
 
         } else {
@@ -221,10 +241,7 @@ function EditarCargo({ cargo, voltar }) {
 
         if (!resultado.valido) {
 
-            if (
-                resultado.erros.descricao ||
-                resultado.erros.status
-            ) {
+            if (resultado.erros.descricao || resultado.erros.status) {
 
                 setErro(
                     resultado.erros.descricao ||
@@ -246,8 +263,9 @@ function EditarCargo({ cargo, voltar }) {
 
             const dadosCargo = {
                 nome: nome.trim(),
-                codigo: codigo.trim(),
-                descricao: descricao.trim() || 'Nenhuma descrição informada.',
+                codigo: codigo.trim().toUpperCase(),
+                descricao: descricao.trim() ||
+                    'Nenhuma descrição informada.',
                 status: Number(status)
             };
 
@@ -262,7 +280,10 @@ function EditarCargo({ cargo, voltar }) {
 
         } catch (erroApi) {
 
-            setErro(erroApi.message);
+            setErro(
+                erroApi.message ||
+                'Não foi possível atualizar o cargo.'
+            );
 
         } finally {
 
@@ -276,7 +297,9 @@ function EditarCargo({ cargo, voltar }) {
     //----------------- VERIFICAR CARGO ---------------------//
 
     if (!cargo) {
+
         return <p>Nenhum cargo foi selecionado para edição.</p>;
+
     }
 
 
@@ -315,7 +338,7 @@ function EditarCargo({ cargo, voltar }) {
             </div>
 
 
-            {/* noValidate permite mostrar nossos erros personalizados */}
+            {/* FORMULÁRIO DE EDIÇÃO */}
 
             <form
                 onSubmit={salvarAlteracoes}
@@ -339,7 +362,7 @@ function EditarCargo({ cargo, voltar }) {
                     limparErroCodigo={() => setErroCodigo('')}
 
                     descricao={descricao}
-                    setDescricao={setDescricao}
+                    setDescricao={alterarDescricao}
 
                     status={status}
                     setStatus={alterarStatus}
@@ -387,9 +410,10 @@ function EditarCargo({ cargo, voltar }) {
                     },
                     {
                         titulo: 'Colaboradores impactados:',
-                        valor: cargo.quantidade_colaboradores
-                            ?? cargo.colaboradores?.length
-                            ?? 'Não informado',
+                        valor:
+                            cargo.quantidade_colaboradores ??
+                            cargo.colaboradores?.length ??
+                            'Não informado',
                         tipo: 'colaboradores'
                     },
                     {
@@ -404,6 +428,8 @@ function EditarCargo({ cargo, voltar }) {
                 confirmar={confirmarInativacao}
             />
 
+
+            {/* CARREGAMENTO */}
 
             {carregando && (
                 <p>Carregando dados...</p>

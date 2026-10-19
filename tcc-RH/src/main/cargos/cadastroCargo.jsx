@@ -55,7 +55,9 @@ function CadastroCargo({ voltar }) {
 
             } catch (erroApi) {
 
-                setErro(erroApi.message);
+                setErro(
+                    erroApi.message || 'Não foi possível carregar os cargos.'
+                );
 
             } finally {
 
@@ -76,8 +78,11 @@ function CadastroCargo({ voltar }) {
 
         setNome(valor);
 
+        // Limpa o erro visual ao começar a digitar
         if (erroNome) {
+
             setErroNome('');
+
         }
 
         setErro('');
@@ -90,11 +95,38 @@ function CadastroCargo({ voltar }) {
 
     function alterarCodigo(valor) {
 
-        setCodigo(valor);
+        setCodigo(valor.toUpperCase());
 
+        // Limpa o erro visual ao começar a digitar
         if (erroCodigo) {
+
             setErroCodigo('');
+
         }
+
+        setErro('');
+        setSucesso('');
+
+    }
+
+
+    //----------------- ALTERAR DESCRIÇÃO --------------------//
+
+    function alterarDescricao(valor) {
+
+        setDescricao(valor);
+
+        setErro('');
+        setSucesso('');
+
+    }
+
+
+    //----------------- ALTERAR STATUS -----------------------//
+
+    function alterarStatus(novoStatus) {
+
+        setStatus(Number(novoStatus));
 
         setErro('');
         setSucesso('');
@@ -105,7 +137,12 @@ function CadastroCargo({ voltar }) {
     //----------------- VALIDAÇÃO ---------------------------//
 
     const validacao = validarCargo(
-        { nome, codigo, descricao, status },
+        {
+            nome,
+            codigo,
+            descricao,
+            status
+        },
         cargos
     );
 
@@ -119,20 +156,32 @@ function CadastroCargo({ voltar }) {
         setErro('');
         setSucesso('');
 
+        // Evita salvar durante o carregamento ou outro envio
         if (carregando || salvando) {
+
             return;
+
         }
 
-        // Validar novamente ao clicar em salvar
+
+        //----------------- VALIDAR DADOS -------------------//
+
         const resultado = validarCargo(
-            { nome, codigo, descricao, status },
+            {
+                nome,
+                codigo,
+                descricao,
+                status
+            },
             cargos
         );
 
-        // Validar nome
+
+        //----------------- VALIDAR NOME --------------------//
+
         if (resultado.erros.nome) {
 
-            setNome('');
+            // Mantém o texto digitado no campo
             setErroNome(resultado.erros.nome);
 
         } else {
@@ -141,10 +190,12 @@ function CadastroCargo({ voltar }) {
 
         }
 
-        // Validar código
+
+        //----------------- VALIDAR CÓDIGO ------------------//
+
         if (resultado.erros.codigo) {
 
-            setCodigo('');
+            // Mantém o texto digitado no campo
             setErroCodigo(resultado.erros.codigo);
 
         } else {
@@ -153,41 +204,63 @@ function CadastroCargo({ voltar }) {
 
         }
 
-        // Impedir requisição se houver erros
+
+        //----------------- INTERROMPER SE INVÁLIDO ---------//
+
         if (!resultado.valido) {
 
+            // Exibe erros gerais de descrição ou status
             if (
                 resultado.erros.descricao ||
                 resultado.erros.status
             ) {
+
                 setErro(
                     resultado.erros.descricao ||
                     resultado.erros.status
                 );
+
             }
 
             return;
 
         }
 
+
+        //----------------- INICIAR SALVAMENTO --------------//
+
         setSalvando(true);
 
         try {
 
             const dadosCargo = {
+
                 nome: nome.trim(),
-                codigo: codigo.trim(),
-                descricao: descricao.trim() || 'Nenhuma descrição informada.',
+
+                codigo: codigo.trim().toUpperCase(),
+
+                descricao:
+                    descricao.trim() ||
+                    'Nenhuma descrição informada.',
+
                 status: Number(status)
+
             };
+
+
+            //----------------- ENVIAR PARA API --------------//
 
             await cadastrarCargo(dadosCargo);
 
-            setSucesso('Cargo cadastrado com sucesso!');
+
+            //----------------- ATUALIZAR LISTA --------------//
 
             const dadosCargos = await buscarDadosCadastro();
 
             setCargos(dadosCargos);
+
+
+            //----------------- LIMPAR FORMULÁRIO ------------//
 
             setNome('');
             setCodigo('');
@@ -196,10 +269,18 @@ function CadastroCargo({ voltar }) {
 
             setErroNome('');
             setErroCodigo('');
+            setErro('');
+
+
+            //----------------- EXIBIR SUCESSO ---------------//
+
+            setSucesso('Cargo cadastrado com sucesso!');
 
         } catch (erroApi) {
 
-            setErro(erroApi.message);
+            setErro(
+                erroApi.message || 'Não foi possível cadastrar o cargo.'
+            );
 
         } finally {
 
@@ -215,6 +296,8 @@ function CadastroCargo({ voltar }) {
     return (
 
         <>
+
+            {/* CABEÇALHO */}
 
             <div className="cabecalho-novo-cargo">
 
@@ -232,7 +315,9 @@ function CadastroCargo({ voltar }) {
                             Cargos
                         </button>
 
-                        <span className="seta">&gt;</span>
+                        <span className="seta">
+                            &gt;
+                        </span>
 
                         <span className="pagina-atual-cargo">
                             Novo cargo
@@ -245,12 +330,14 @@ function CadastroCargo({ voltar }) {
             </div>
 
 
-            {/* noValidate permite exibir as mensagens personalizadas */}
+            {/* FORMULÁRIO */}
 
             <form
                 onSubmit={salvarCargo}
                 noValidate
             >
+
+                {/* INFORMAÇÕES DO CARGO */}
 
                 <Informacoes
                     titulo="Informações do cargo"
@@ -269,27 +356,39 @@ function CadastroCargo({ voltar }) {
                     limparErroCodigo={() => setErroCodigo('')}
 
                     descricao={descricao}
-                    setDescricao={setDescricao}
+                    setDescricao={alterarDescricao}
 
                     status={status}
-                    setStatus={setStatus}
+                    setStatus={alterarStatus}
 
-                    campos={['nome', 'codigo', 'descricao', 'status']}
+                    campos={[
+                        'nome',
+                        'codigo',
+                        'descricao',
+                        'status'
+                    ]}
                 />
 
+
+                {/* REVISÃO DOS DADOS */}
 
                 <Revisao
                     nome={nome}
                     codigo={codigo}
                     descricao={descricao}
                     status={status}
+
                     tituloNome="Nome do cargo"
                     tituloCodigo="Código do cargo"
+
                     mostrarResponsavel={false}
+
                     erro={erro}
                     sucesso={sucesso}
                 />
 
+
+                {/* BOTÕES */}
 
                 <BotaoSalvarCancelar
                     onCancelar={voltar}
@@ -301,8 +400,14 @@ function CadastroCargo({ voltar }) {
             </form>
 
 
+            {/* CARREGAMENTO */}
+
             {carregando && (
-                <p>Carregando dados...</p>
+
+                <p>
+                    Carregando dados...
+                </p>
+
             )}
 
         </>
