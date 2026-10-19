@@ -9,7 +9,6 @@
     margin-top: 23px;
     background-color: rgb(255, 255, 255);
     color: #172033;
-
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
@@ -73,6 +72,7 @@
     background: #f1f2ff;
     color: #202a40;
     font-size: 12px;
+    box-sizing: border-box;
 }
 
 .campo-formulario input,
@@ -84,6 +84,27 @@
 .campo-formulario textarea:focus,
 .campo-formulario select:focus {
     outline: 1px solid #2452e8;
+}
+
+
+/* CAMPO COM ERRO */
+
+.campo-formulario .campo-invalido {
+    border: 1px solid #dc2626;
+    background-color: #fff7f7;
+    outline: none;
+}
+
+.campo-formulario .campo-invalido:focus {
+    border-color: #dc2626;
+    outline: 1px solid #dc2626;
+}
+
+.mensagem-erro-colaborador {
+    margin-top: 5px;
+    color: #dc2626;
+    font-size: 11px;
+    line-height: 15px;
 }
 
 

@@ -3,25 +3,35 @@ import { useState } from 'react';
 
 import './JornadaEscala.css';
 
-function JornadaEscala({ dados, setDados, jornadas = [] }) {
+function JornadaEscala({
+    dados,
+    setDados,
+    jornadas = [],
+    erros = {},
+    aoAlterarCampo
+}) {
 
     //----------------- ESTADOS -----------------------------//
 
     const [listaAberta, setListaAberta] = useState(false);
 
-
     //----------------- FUNÇÕES -----------------------------//
 
     function atualizarJornada(jornada) {
-        setDados({
-            ...dados,
-            idJornadaEscala:
-                jornada.id_jornada_escala ?? jornada.id
-        });
+        const idJornada =
+            jornada.id_jornada_escala ?? jornada.id;
+
+        if (aoAlterarCampo) {
+            aoAlterarCampo('idJornadaEscala', idJornada);
+        } else {
+            setDados({
+                ...dados,
+                idJornadaEscala: idJornada
+            });
+        }
 
         setListaAberta(false);
     }
-
 
     function formatarHorario(horario) {
         if (!horario) {
@@ -30,7 +40,6 @@ function JornadaEscala({ dados, setDados, jornadas = [] }) {
 
         return String(horario).slice(0, 5);
     }
-
 
     function formatarDias(jornada) {
         const dias = jornada.dias_semana || jornada.dias || [];
@@ -72,7 +81,6 @@ function JornadaEscala({ dados, setDados, jornadas = [] }) {
             .join(', ');
     }
 
-
     function nomeJornada(jornada) {
         return (
             jornada.nome ||
@@ -82,11 +90,7 @@ function JornadaEscala({ dados, setDados, jornadas = [] }) {
         );
     }
 
-
     function horarioJornada(jornada) {
-
-        // A API retorna hora_inicio e hora_fim.
-        // Os outros nomes ficam como alternativas.
         const horarioEntrada =
             jornada.hora_inicio ||
             jornada.horario_entrada ||
@@ -99,19 +103,13 @@ function JornadaEscala({ dados, setDados, jornadas = [] }) {
             jornada.hora_saida ||
             jornada.fim;
 
-        const entrada = formatarHorario(horarioEntrada);
-        const saida = formatarHorario(horarioSaida);
-
-        return `${entrada} às ${saida}`;
+        return `${formatarHorario(horarioEntrada)} às ${formatarHorario(horarioSaida)}`;
     }
-
 
     function diasJornada(jornada) {
         const dias = formatarDias(jornada);
-
         return dias ? `(${dias})` : '';
     }
-
 
     //----------------- JORNADA SELECIONADA ------------------//
 
@@ -125,14 +123,12 @@ function JornadaEscala({ dados, setDados, jornadas = [] }) {
         );
     });
 
-
-    //----------------- TELA --------------------------------//
+    //----------------- TELA ---------------------------------//
 
     return (
         <section className="card-jornada-escala">
 
             <div className="cabecalho-jornada-escala">
-
                 <div>
                     <h2>Jornada e escala</h2>
 
@@ -144,26 +140,25 @@ function JornadaEscala({ dados, setDados, jornadas = [] }) {
                 <span className="etapa-jornada-escala">
                     Etapa essencial
                 </span>
-
             </div>
-
 
             <div className="conteudo-jornada-escala">
 
                 <label className="rotulo-jornada-escala">
-                    Jornada de trabalho
+                    Jornada de trabalho *
                 </label>
-
 
                 <div className="seletor-jornada-escala">
 
                     <button
                         type="button"
-                        className="botao-jornada-escala"
+                        className={`botao-jornada-escala ${
+                            erros.idJornadaEscala ? 'campo-invalido' : ''
+                        }`}
                         onClick={() => setListaAberta(!listaAberta)}
                         aria-expanded={listaAberta}
+                        aria-invalid={Boolean(erros.idJornadaEscala)}
                     >
-
                         <div className="texto-jornada-selecionada">
 
                             <span className="nome-jornada-selecionada">
@@ -203,17 +198,19 @@ function JornadaEscala({ dados, setDados, jornadas = [] }) {
                                 />
                             </svg>
                         </span>
-
                     </button>
 
+                    {erros.idJornadaEscala && (
+                        <span className="mensagem-erro-colaborador">
+                            {erros.idJornadaEscala}
+                        </span>
+                    )}
 
                     {listaAberta && (
                         <div className="lista-jornadas-escala">
 
                             {jornadas.length > 0 ? (
-
                                 jornadas.map((jornada) => {
-
                                     const idJornada =
                                         jornada.id_jornada_escala ??
                                         jornada.id;
@@ -233,7 +230,6 @@ function JornadaEscala({ dados, setDados, jornadas = [] }) {
                                                 atualizarJornada(jornada)
                                             }
                                         >
-
                                             <span className="icone-relogio-jornada">
                                                 <svg
                                                     width="19"
@@ -260,9 +256,7 @@ function JornadaEscala({ dados, setDados, jornadas = [] }) {
                                                 </svg>
                                             </span>
 
-
                                             <span className="texto-opcao-jornada">
-
                                                 <span className="nome-opcao-jornada">
                                                     {nomeJornada(jornada)}
                                                 </span>
@@ -272,9 +266,7 @@ function JornadaEscala({ dados, setDados, jornadas = [] }) {
                                                     {' '}
                                                     {diasJornada(jornada)}
                                                 </span>
-
                                             </span>
-
 
                                             {selecionada && (
                                                 <span className="confirmacao-jornada">
@@ -295,26 +287,19 @@ function JornadaEscala({ dados, setDados, jornadas = [] }) {
                                                     </svg>
                                                 </span>
                                             )}
-
                                         </button>
                                     );
                                 })
-
                             ) : (
-
                                 <p className="mensagem-sem-jornada">
                                     Nenhuma jornada disponível.
                                 </p>
-
                             )}
 
                         </div>
                     )}
-
                 </div>
-
             </div>
-
         </section>
     );
 }

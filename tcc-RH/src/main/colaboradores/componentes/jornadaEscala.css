@@ -1,8 +1,8 @@
+
 /*----------------- CARD PRINCIPAL -------------------------*/
 
 .card-jornada-escala {
     display: flex;
-    margin-top: 24px;
     flex-direction: column;
     width: 100%;
     box-sizing: border-box;
@@ -12,7 +12,6 @@
     border: 1px solid #E6E8F0;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(20, 31, 56, 0.04);
-
 }
 
 
@@ -84,6 +83,7 @@
     width: 100%;
     min-height: 62px;
     padding: 12px 15px;
+    box-sizing: border-box;
     color: #26334A;
     background-color: #F8F7FF;
     border: 1px solid #E3DFF7;
@@ -100,6 +100,30 @@
 .botao-jornada-escala:focus-visible {
     outline: 2px solid #8B79D9;
     outline-offset: 2px;
+}
+
+
+/*----------------- SELETOR COM ERRO -----------------------*/
+
+.botao-jornada-escala.campo-invalido {
+    border-color: #DC2626;
+    background-color: #FFF7F7;
+}
+
+.botao-jornada-escala.campo-invalido:focus-visible {
+    outline-color: #DC2626;
+}
+
+
+/*----------------- MENSAGEM DE ERRO -----------------------*/
+
+.mensagem-erro-colaborador {
+    display: block;
+    margin-top: 7px;
+    color: #DC2626;
+    font-size: 11px;
+    line-height: 1.4;
+    font-weight: 400;
 }
 
 
