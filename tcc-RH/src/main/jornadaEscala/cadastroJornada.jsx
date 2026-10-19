@@ -1,5 +1,4 @@
-
- //----------------- IMPORTAÇÕES -----------------------------//
+//----------------- IMPORTAÇÕES -----------------------------//
 
 import { useEffect, useState } from 'react';
 
@@ -34,7 +33,6 @@ const opcoesDiasSemana = [
 //----------------- IDENTIFICAR A JORNADA -------------------//
 
 function obterIdJornadaDoDia(dia) {
-
     if (dia.id_jornada_escala != null) {
         return Number(dia.id_jornada_escala);
     }
@@ -69,7 +67,6 @@ function obterIdJornadaDoDia(dia) {
 //----------------- FORMATAR HORÁRIO ------------------------//
 
 function formatarHorario(valor) {
-
     const numeros = valor.replace(/\D/g, '').slice(0, 4);
 
     if (numeros.length > 2) {
@@ -89,6 +86,8 @@ function CadastroJornada({
     modoEdicao = false
 }) {
 
+    //----------------- ESTADOS DOS CAMPOS -------------------//
+
     const [nome, setNome] = useState('');
     const [descricao, setDescricao] = useState('');
     const [status, setStatus] = useState(1);
@@ -100,13 +99,19 @@ function CadastroJornada({
         'Seg', 'Ter', 'Qua', 'Qui', 'Sex'
     ]);
 
+    //----------------- ESTADOS DOS ERROS --------------------//
+
+    const [erroNome, setErroNome] = useState('');
+    const [erroHorarioInicio, setErroHorarioInicio] = useState('');
+    const [erroHorarioTermino, setErroHorarioTermino] = useState('');
+    const [erroDiasAtivos, setErroDiasAtivos] = useState('');
+
     const [salvando, setSalvando] = useState(false);
 
 
     //----------------- PREENCHER EDIÇÃO ----------------------//
 
     useEffect(() => {
-
         if (!modoEdicao || !jornada) {
             return;
         }
@@ -142,41 +147,106 @@ function CadastroJornada({
 
         setDiasAtivos(diasSelecionados);
 
+        // Limpar erros ao carregar os dados para edição
+        setErroNome('');
+        setErroHorarioInicio('');
+        setErroHorarioTermino('');
+        setErroDiasAtivos('');
+
     }, [modoEdicao, jornada, diasRecebidos]);
 
 
-    //----------------- ALTERAR DIA --------------------------//
+    //----------------- ALTERAR NOME --------------------------//
+
+    function alterarNome(valor) {
+        setNome(valor);
+
+        // Limpar o erro assim que o usuário corrigir o campo
+        if (erroNome) {
+            setErroNome('');
+        }
+    }
+
+
+    //----------------- ALTERAR DIA ---------------------------//
 
     function alterarDia(dia) {
-
         setDiasAtivos((diasAtuais) => {
+            let novosDias;
 
             if (diasAtuais.includes(dia)) {
-                return diasAtuais.filter((item) => item !== dia);
+                novosDias = diasAtuais.filter((item) => item !== dia);
+            } else {
+                novosDias = [...diasAtuais, dia];
             }
 
-            return [...diasAtuais, dia];
+            // Limpar o erro quando algum dia for selecionado
+            if (novosDias.length > 0) {
+                setErroDiasAtivos('');
+            }
+
+            return novosDias;
         });
     }
 
 
-    //----------------- SALVAR JORNADA ------------------------//
+    //----------------- ALTERAR HORÁRIOS ----------------------//
 
-    async function salvarJornada() {
+    function alterarHorarioInicio(evento) {
+        const valor = formatarHorario(evento.target.value);
 
-        if (salvando) {
-            return;
+        setHorarioInicio(valor);
+
+        if (erroHorarioInicio) {
+            setErroHorarioInicio('');
         }
 
-        const mensagemErro = validarJornada({
+        // Se os horários ficarem diferentes, limpar o erro de igualdade
+        if (valor !== horarioTermino && erroHorarioTermino) {
+            setErroHorarioTermino('');
+        }
+    }
+
+    function alterarHorarioTermino(evento) {
+        const valor = formatarHorario(evento.target.value);
+
+        setHorarioTermino(valor);
+
+        if (erroHorarioTermino) {
+            setErroHorarioTermino('');
+        }
+    }
+
+
+    //----------------- VALIDAR FORMULÁRIO --------------------//
+
+    function validarFormulario() {
+        const resultado = validarJornada({
             nome,
             horarioInicio,
             horarioTermino,
             diasAtivos
         });
 
-        if (mensagemErro) {
-            alert(mensagemErro);
+        // Mostrar o erro correspondente a cada campo
+        setErroNome(resultado.erroNome);
+        setErroHorarioInicio(resultado.erroHorarioInicio);
+        setErroHorarioTermino(resultado.erroHorarioTermino);
+        setErroDiasAtivos(resultado.erroDiasAtivos);
+
+        return resultado.valido;
+    }
+
+
+    //----------------- SALVAR JORNADA ------------------------//
+
+    async function salvarJornada() {
+        if (salvando) {
+            return;
+        }
+
+        // Validar os campos antes de chamar a API
+        if (!validarFormulario()) {
             return;
         }
 
@@ -200,12 +270,12 @@ function CadastroJornada({
             }))
         };
 
+
         //----------------- REGISTROS EXISTENTES --------------//
 
         let diasExistentes = [];
 
         if (modoEdicao) {
-
             const idJornada = Number(jornada.id);
 
             diasExistentes = diasRecebidos.filter((dia) => {
@@ -213,7 +283,6 @@ function CadastroJornada({
             });
 
             // Não exige sete registros: a API pode retornar menos dias.
-
             if (
                 diasExistentes.length === 0 ||
                 diasExistentes.some((dia) => dia.id == null)
@@ -226,6 +295,9 @@ function CadastroJornada({
             }
         }
 
+
+        //----------------- ENVIAR PARA A API ------------------//
+
         setSalvando(true);
 
         try {
@@ -233,7 +305,6 @@ function CadastroJornada({
             //----------------- EDITAR -------------------------//
 
             if (modoEdicao) {
-
                 await editarJornadaApi(
                     jornada.id,
                     dadosJornada,
@@ -246,6 +317,7 @@ function CadastroJornada({
 
                 return;
             }
+
 
             //----------------- CADASTRAR ----------------------//
 
@@ -265,7 +337,6 @@ function CadastroJornada({
             );
 
             if (!modoEdicao && erro.jornadaCriada) {
-
                 alert(
                     `A jornada foi criada, mas ocorreu um erro ao cadastrar os dias da semana.\n\n` +
                     `ID da jornada: ${erro.idJornada}\n` +
@@ -293,17 +364,6 @@ function CadastroJornada({
     }
 
 
-    //----------------- ALTERAR HORÁRIOS ---------------------//
-
-    function alterarHorarioInicio(evento) {
-        setHorarioInicio(formatarHorario(evento.target.value));
-    }
-
-    function alterarHorarioTermino(evento) {
-        setHorarioTermino(formatarHorario(evento.target.value));
-    }
-
-
     //----------------- TÍTULOS -------------------------------//
 
     const tituloPagina = modoEdicao
@@ -315,22 +375,18 @@ function CadastroJornada({
         : 'Defina os horários e os dias de trabalho desta jornada para organizar a alocação dos colaboradores.';
 
 
-    //----------------- TELA ---------------------------------//
+    //----------------- TELA ----------------------------------//
 
     return (
         <>
-
             {/* CABEÇALHO */}
 
             <div className="cabecalho-nova-jornada">
-
                 <BotaoCadastro
                     titulo={tituloPagina}
                     descricao={descricaoPagina}
                 >
-
                     <nav className="caminho-cadastro-jornada">
-
                         <button
                             type="button"
                             onClick={voltar}
@@ -343,11 +399,8 @@ function CadastroJornada({
                         <span className="pagina-atual-jornada">
                             {tituloPagina}
                         </span>
-
                     </nav>
-
                 </BotaoCadastro>
-
             </div>
 
 
@@ -358,7 +411,9 @@ function CadastroJornada({
                 descricaoCard="Informe os dados básicos para identificar a jornada de trabalho."
                 nomeEntidade="jornada"
                 nome={nome}
-                setNome={setNome}
+                setNome={alterarNome}
+                erroNome={erroNome}
+                limparErroNome={() => setErroNome('')}
                 descricao={descricao}
                 setDescricao={setDescricao}
                 status={status}
@@ -372,95 +427,130 @@ function CadastroJornada({
             <section className="cartao-horarios-jornada">
 
                 <div className="cabecalho-horarios-jornada">
-
                     <div>
-
                         <h2>Horário de trabalho</h2>
 
                         <p>
                             Indique o horário padrão de início e término.
                             Não há registro ou controle eletrônico de ponto.
                         </p>
-
                     </div>
-
                 </div>
+
 
                 <div className="campos-horarios-jornada">
 
-                    <div className="campo-formulario-jornada">
+                    {/* HORÁRIO DE INÍCIO */}
 
+                    <div className="campo-formulario-jornada">
                         <label htmlFor="horario-inicio-jornada">
                             Horário de início
                         </label>
 
-                        <div className="input-horario-jornada">
-
+                        <div
+                            className={`input-horario-jornada ${
+                                erroHorarioInicio ? 'input-erro' : ''
+                            }`}
+                        >
                             <img src={horarioInicioIcone} alt="" />
 
                             <input
                                 id="horario-inicio-jornada"
                                 type="text"
-                                placeholder="08:00"
+                                placeholder={
+                                    erroHorarioInicio || '08:00'
+                                }
                                 value={horarioInicio}
                                 onChange={alterarHorarioInicio}
                                 maxLength={5}
                                 inputMode="numeric"
-                                required
+                                aria-invalid={Boolean(erroHorarioInicio)}
+                                aria-describedby={
+                                    erroHorarioInicio
+                                        ? 'erro-horario-inicio'
+                                        : undefined
+                                }
                             />
-
                         </div>
 
+                        {erroHorarioInicio && (
+                            <small
+                                id="erro-horario-inicio"
+                                className="mensagem-erro-jornada"
+                            >
+                                {erroHorarioInicio}
+                            </small>
+                        )}
                     </div>
 
-                    <div className="campo-formulario-jornada">
 
+                    {/* HORÁRIO DE TÉRMINO */}
+
+                    <div className="campo-formulario-jornada">
                         <label htmlFor="horario-termino-jornada">
                             Horário de término
                         </label>
 
-                        <div className="input-horario-jornada">
-
+                        <div
+                            className={`input-horario-jornada ${
+                                erroHorarioTermino ? 'input-erro' : ''
+                            }`}
+                        >
                             <img src={horarioFimIcone} alt="" />
 
                             <input
                                 id="horario-termino-jornada"
                                 type="text"
-                                placeholder="17:00"
+                                placeholder={
+                                    erroHorarioTermino || '17:00'
+                                }
                                 value={horarioTermino}
                                 onChange={alterarHorarioTermino}
                                 maxLength={5}
                                 inputMode="numeric"
-                                required
+                                aria-invalid={Boolean(erroHorarioTermino)}
+                                aria-describedby={
+                                    erroHorarioTermino
+                                        ? 'erro-horario-termino'
+                                        : undefined
+                                }
                             />
-
                         </div>
 
+                        {erroHorarioTermino && (
+                            <small
+                                id="erro-horario-termino"
+                                className="mensagem-erro-jornada"
+                            >
+                                {erroHorarioTermino}
+                            </small>
+                        )}
                     </div>
 
                 </div>
-
             </section>
 
 
             {/* DIAS DE TRABALHO */}
 
-            <section className="cartao-dias-jornada">
+            <section
+                className={`cartao-dias-jornada ${
+                    erroDiasAtivos ? 'cartao-dias-jornada-erro' : ''
+                }`}
+            >
 
                 <div className="cabecalho-dias-jornada">
-
                     <h2>Dias de trabalho da jornada</h2>
 
                     <p>
                         Selecione os dias da semana em que há atividade nesta jornada.
                     </p>
-
                 </div>
+
 
                 <div className="lista-dias-jornada">
 
                     {opcoesDiasSemana.map((dia) => {
-
                         const diaAtivo = diasAtivos.includes(dia.sigla);
 
                         return (
@@ -478,7 +568,6 @@ function CadastroJornada({
                                     diaAtivo ? 'Ativo' : 'Folga'
                                 }`}
                             >
-
                                 <span className="sigla-dia-jornada">
                                     {dia.sigla}
                                 </span>
@@ -486,12 +575,17 @@ function CadastroJornada({
                                 <span className="status-dia-jornada">
                                     {diaAtivo ? 'Ativo' : 'Folga'}
                                 </span>
-
                             </button>
                         );
                     })}
 
                 </div>
+
+                {erroDiasAtivos && (
+                    <small className="mensagem-erro-jornada">
+                        {erroDiasAtivos}
+                    </small>
+                )}
 
             </section>
 
@@ -499,7 +593,6 @@ function CadastroJornada({
             {/* BOTÕES */}
 
             <div className="botoes-cadastro-jornada">
-
                 <BotaoSalvarCancelar
                     onCancelar={voltar}
                     onSalvar={salvarJornada}
@@ -510,9 +603,7 @@ function CadastroJornada({
                             : 'Salvar jornada'
                     }
                 />
-
             </div>
-
         </>
     );
 }
