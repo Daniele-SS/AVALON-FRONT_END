@@ -36,6 +36,10 @@ function CadastroCargo({ voltar }) {
     const [erro, setErro] = useState('');
     const [sucesso, setSucesso] = useState('');
 
+    // Erros individuais dos campos
+    const [erroNome, setErroNome] = useState('');
+    const [erroCodigo, setErroCodigo] = useState('');
+
 
     //----------------- BUSCAR DADOS ------------------------//
 
@@ -66,17 +70,44 @@ function CadastroCargo({ voltar }) {
     }, []);
 
 
+    //----------------- ALTERAR NOME -------------------------//
+
+    function alterarNome(valor) {
+
+        setNome(valor);
+
+        if (erroNome) {
+            setErroNome('');
+        }
+
+        setErro('');
+        setSucesso('');
+
+    }
+
+
+    //----------------- ALTERAR CÓDIGO -----------------------//
+
+    function alterarCodigo(valor) {
+
+        setCodigo(valor);
+
+        if (erroCodigo) {
+            setErroCodigo('');
+        }
+
+        setErro('');
+        setSucesso('');
+
+    }
+
+
     //----------------- VALIDAÇÃO ---------------------------//
 
     const validacao = validarCargo(
         { nome, codigo, descricao, status },
         cargos
     );
-
-    const formularioValido =
-        validacao.valido &&
-        !carregando &&
-        !salvando;
 
 
     //----------------- CADASTRAR CARGO ---------------------//
@@ -88,9 +119,52 @@ function CadastroCargo({ voltar }) {
         setErro('');
         setSucesso('');
 
-        if (!formularioValido) {
+        if (carregando || salvando) {
+            return;
+        }
 
-            setErro('Verifique o nome, o código e a descrição do cargo.');
+        // Validar novamente ao clicar em salvar
+        const resultado = validarCargo(
+            { nome, codigo, descricao, status },
+            cargos
+        );
+
+        // Validar nome
+        if (resultado.erros.nome) {
+
+            setNome('');
+            setErroNome(resultado.erros.nome);
+
+        } else {
+
+            setErroNome('');
+
+        }
+
+        // Validar código
+        if (resultado.erros.codigo) {
+
+            setCodigo('');
+            setErroCodigo(resultado.erros.codigo);
+
+        } else {
+
+            setErroCodigo('');
+
+        }
+
+        // Impedir requisição se houver erros
+        if (!resultado.valido) {
+
+            if (
+                resultado.erros.descricao ||
+                resultado.erros.status
+            ) {
+                setErro(
+                    resultado.erros.descricao ||
+                    resultado.erros.status
+                );
+            }
 
             return;
 
@@ -119,6 +193,9 @@ function CadastroCargo({ voltar }) {
             setCodigo('');
             setDescricao('');
             setStatus(1);
+
+            setErroNome('');
+            setErroCodigo('');
 
         } catch (erroApi) {
 
@@ -168,20 +245,35 @@ function CadastroCargo({ voltar }) {
             </div>
 
 
-            <form onSubmit={salvarCargo}>
+            {/* noValidate permite exibir as mensagens personalizadas */}
+
+            <form
+                onSubmit={salvarCargo}
+                noValidate
+            >
 
                 <Informacoes
                     titulo="Informações do cargo"
                     descricaoCard="Preencha os dados do cargo."
+
                     nomeEntidade="cargo"
+
                     nome={nome}
-                    setNome={setNome}
+                    setNome={alterarNome}
+                    erroNome={erroNome}
+                    limparErroNome={() => setErroNome('')}
+
                     codigo={codigo}
-                    setCodigo={setCodigo}
+                    setCodigo={alterarCodigo}
+                    erroCodigo={erroCodigo}
+                    limparErroCodigo={() => setErroCodigo('')}
+
                     descricao={descricao}
                     setDescricao={setDescricao}
+
                     status={status}
                     setStatus={setStatus}
+
                     campos={['nome', 'codigo', 'descricao', 'status']}
                 />
 

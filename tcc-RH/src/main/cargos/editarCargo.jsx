@@ -8,8 +8,10 @@ import Revisao from '../../componentes/cardRevisao/revisao.jsx';
 import BotaoSalvarCancelar from '../../componentes/botoes/botaoSalvarCancelar.jsx';
 import Alerta from '../../componentes/cardAlerta/alerta.jsx';
 
-import { buscarDadosCadastro } from './servicos/editarCargoApi.js';
-import { atualizarCargo } from './servicos/editarCargoApi.js';
+import {
+    buscarDadosCadastro,
+    atualizarCargo
+} from './servicos/editarCargoApi.js';
 
 import validarCargo from './funcoes/editarCargo/validarCargo.js';
 
@@ -35,6 +37,11 @@ function EditarCargo({ cargo, voltar }) {
     const [erro, setErro] = useState('');
     const [sucesso, setSucesso] = useState('');
 
+    // Erros específicos dos campos
+    const [erroNome, setErroNome] = useState('');
+    const [erroCodigo, setErroCodigo] = useState('');
+
+    // Alerta de inativação
     const [alertaAberto, setAlertaAberto] = useState(false);
 
 
@@ -43,10 +50,17 @@ function EditarCargo({ cargo, voltar }) {
     useEffect(() => {
 
         if (cargo) {
+
             setNome(cargo.nome || cargo.nome_cargo || '');
             setCodigo(cargo.codigo || '');
             setDescricao(cargo.descricao || '');
             setStatus(Number(cargo.status ?? 1));
+
+            setErroNome('');
+            setErroCodigo('');
+            setErro('');
+            setSucesso('');
+
         }
 
     }, [cargo]);
@@ -81,18 +95,45 @@ function EditarCargo({ cargo, voltar }) {
     }, []);
 
 
+    //----------------- ALTERAR NOME -------------------------//
+
+    function alterarNome(valor) {
+
+        setNome(valor);
+
+        if (erroNome) {
+            setErroNome('');
+        }
+
+        setErro('');
+        setSucesso('');
+
+    }
+
+
+    //----------------- ALTERAR CÓDIGO -----------------------//
+
+    function alterarCodigo(valor) {
+
+        setCodigo(valor);
+
+        if (erroCodigo) {
+            setErroCodigo('');
+        }
+
+        setErro('');
+        setSucesso('');
+
+    }
+
+
     //----------------- VALIDAR CARGO -----------------------//
 
     const validacao = validarCargo(
         { nome, codigo, descricao, status },
         cargos,
-        cargo?.cargo_id ?? cargo?.id
+        cargo?.cargo_id ?? cargo?.id ?? null
     );
-
-    const formularioValido =
-        validacao.valido &&
-        !carregando &&
-        !salvando;
 
 
     //----------------- ALTERAR STATUS ----------------------//
@@ -129,25 +170,91 @@ function EditarCargo({ cargo, voltar }) {
         setSucesso('');
 
         if (!cargo) {
+
             setErro('Nenhum cargo foi selecionado para edição.');
+
+            return;
+
+        }
+
+        if (carregando || salvando) {
             return;
         }
 
-        if (!formularioValido) {
-            setErro('Verifique o nome, o código e a descrição do cargo.');
-            return;
+        // Valida novamente os dados antes de enviar
+        const resultado = validarCargo(
+            { nome, codigo, descricao, status },
+            cargos,
+            cargo.cargo_id ?? cargo.id
+        );
+
+
+        //----------------- VALIDAR NOME ---------------------//
+
+        if (resultado.erros.nome) {
+
+            setNome('');
+            setErroNome(resultado.erros.nome);
+
+        } else {
+
+            setErroNome('');
+
         }
+
+
+        //----------------- VALIDAR CÓDIGO -------------------//
+
+        if (resultado.erros.codigo) {
+
+            setCodigo('');
+            setErroCodigo(resultado.erros.codigo);
+
+        } else {
+
+            setErroCodigo('');
+
+        }
+
+
+        //----------------- IMPEDIR ENVIO --------------------//
+
+        if (!resultado.valido) {
+
+            if (
+                resultado.erros.descricao ||
+                resultado.erros.status
+            ) {
+
+                setErro(
+                    resultado.erros.descricao ||
+                    resultado.erros.status
+                );
+
+            }
+
+            return;
+
+        }
+
+
+        //----------------- ATUALIZAR CARGO ------------------//
 
         setSalvando(true);
 
         try {
 
-            await atualizarCargo(cargo.cargo_id ?? cargo.id, {
+            const dadosCargo = {
                 nome: nome.trim(),
                 codigo: codigo.trim(),
-                descricao: descricao.trim(),
+                descricao: descricao.trim() || 'Nenhuma descrição informada.',
                 status: Number(status)
-            });
+            };
+
+            await atualizarCargo(
+                cargo.cargo_id ?? cargo.id,
+                dadosCargo
+            );
 
             setSucesso('Cargo atualizado com sucesso!');
 
@@ -188,7 +295,10 @@ function EditarCargo({ cargo, voltar }) {
 
                     <nav className="caminho-cadastro-cargo">
 
-                        <button type="button" onClick={voltar}>
+                        <button
+                            type="button"
+                            onClick={voltar}
+                        >
                             Cargos
                         </button>
 
@@ -205,20 +315,35 @@ function EditarCargo({ cargo, voltar }) {
             </div>
 
 
-            <form onSubmit={salvarAlteracoes}>
+            {/* noValidate permite mostrar nossos erros personalizados */}
+
+            <form
+                onSubmit={salvarAlteracoes}
+                noValidate
+            >
 
                 <Informacoes
                     titulo="Informações do cargo"
                     descricaoCard="Edite os dados de identificação e classificação do cargo."
+
                     nomeEntidade="cargo"
+
                     nome={nome}
-                    setNome={setNome}
+                    setNome={alterarNome}
+                    erroNome={erroNome}
+                    limparErroNome={() => setErroNome('')}
+
                     codigo={codigo}
-                    setCodigo={setCodigo}
+                    setCodigo={alterarCodigo}
+                    erroCodigo={erroCodigo}
+                    limparErroCodigo={() => setErroCodigo('')}
+
                     descricao={descricao}
                     setDescricao={setDescricao}
+
                     status={status}
                     setStatus={alterarStatus}
+
                     campos={['nome', 'codigo', 'descricao', 'status']}
                 />
 
@@ -246,11 +371,15 @@ function EditarCargo({ cargo, voltar }) {
             </form>
 
 
+            {/* ALERTA DE INATIVAÇÃO */}
+
             <Alerta
                 aberto={alertaAberto}
                 titulo="Inativar cargo?"
                 entidade="cargo"
+
                 mensagem="Ao inativar este cargo, ele não poderá ser utilizado em novos cadastros. O histórico dos registros existentes será preservado."
+
                 informacoes={[
                     {
                         titulo: 'Cargo selecionado:',
@@ -268,7 +397,9 @@ function EditarCargo({ cargo, voltar }) {
                         tipo: 'integridade'
                     }
                 ]}
+
                 textoBotao="Inativar"
+
                 cancelar={() => setAlertaAberto(false)}
                 confirmar={confirmarInativacao}
             />
