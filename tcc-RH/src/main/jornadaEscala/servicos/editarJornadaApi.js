@@ -1,6 +1,25 @@
-//----------------- CONFIGURAÇÃO DA API -----------------------------//
+
+ //----------------- CONFIGURAÇÃO DA API -----------------------------//
 
 const API = 'http://localhost:8080/v1/senai/avalon';
+
+
+//----------------- CONFIGURAR AUTENTICAÇÃO --------------------------//
+
+function obterConfiguracao() {
+
+    const token = localStorage.getItem('access_token');
+
+    if (!token) {
+        throw new Error('Token não encontrado. Faça login novamente.');
+    }
+
+    return {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+    };
+}
+
 
 //----------------- ATUALIZAR JORNADA E DIAS ------------------------//
 
@@ -11,9 +30,7 @@ async function editarJornadaApi(idJornada, dadosJornada, diasExistentes) {
         `${API}/jornada_escala/${idJornada}`,
         {
             method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: obterConfiguracao(),
             body: JSON.stringify({
                 nome: dadosJornada.nome,
                 descricao: dadosJornada.descricao,
@@ -25,6 +42,11 @@ async function editarJornadaApi(idJornada, dadosJornada, diasExistentes) {
     );
 
     const resultadoJornada = await respostaJornada.json();
+
+    if (respostaJornada.status === 401) {
+        localStorage.removeItem('access_token');
+        throw new Error('Sua autenticação expirou. Faça login novamente.');
+    }
 
     if (!respostaJornada.ok) {
         throw new Error(
@@ -59,9 +81,7 @@ async function editarJornadaApi(idJornada, dadosJornada, diasExistentes) {
             `${API}/dia_semana/${diaExistente.id}`,
             {
                 method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: obterConfiguracao(),
                 body: JSON.stringify({
                     id_jornada_escala: Number(idJornada),
                     dia_semana: dia.dia_semana,
@@ -72,6 +92,13 @@ async function editarJornadaApi(idJornada, dadosJornada, diasExistentes) {
         );
 
         const resultadoDia = await respostaDia.json();
+
+        if (respostaDia.status === 401) {
+            localStorage.removeItem('access_token');
+            throw new Error(
+                'Sua autenticação expirou. Faça login novamente.'
+            );
+        }
 
         if (!respostaDia.ok) {
             throw new Error(
@@ -88,5 +115,8 @@ async function editarJornadaApi(idJornada, dadosJornada, diasExistentes) {
         mensagem: 'Jornada atualizada com sucesso.'
     };
 }
+
+
+//----------------- EXPORTAÇÃO ---------------------------------------//
 
 export default editarJornadaApi;

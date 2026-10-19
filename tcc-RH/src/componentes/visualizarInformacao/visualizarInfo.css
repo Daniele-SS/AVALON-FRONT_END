@@ -1,0 +1,468 @@
+
+/*----------------------------------------------------------*/
+/* ÁREA COMPLETA DE VISUALIZAÇÃO                            */
+/*----------------------------------------------------------*/
+
+.visualizar-info-pagina {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+
+/*----------------------------------------------------------*/
+/* CARTÃO PRINCIPAL                                         */
+/*----------------------------------------------------------*/
+
+.card-visualizar-info {
+    width: 100%;
+    min-height: 150px;
+    box-sizing: border-box;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 30px;
+    padding: 25px 30px;
+
+    background-color: #FFFFFF;
+    border: 1px solid #E1E5EB;
+    border-radius: 12px;
+
+    box-shadow: 0 2px 8px rgba(0, 31, 63, 0.05);
+}
+
+
+/*----------------------------------------------------------*/
+/* FOTO, NOME E INFORMAÇÕES PRINCIPAIS                      */
+/*----------------------------------------------------------*/
+
+.visualizar-info-principal {
+    min-width: 0;
+    flex: 1;
+
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+
+/* Foto do colaborador */
+
+.visualizar-info-foto {
+    width: 84px;
+    height: 84px;
+    flex-shrink: 0;
+
+    overflow: hidden;
+    border-radius: 50%;
+    background-color: #E8EDF4;
+}
+
+.visualizar-info-foto img {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+
+/* Quando não existe foto */
+
+.visualizar-info-foto-vazia {
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background-color: #E8EDF4;
+    color: #445D80;
+
+    font-size: 30px;
+    font-weight: 600;
+}
+
+
+/* Conteúdo ao lado da foto */
+
+.visualizar-info-conteudo {
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+
+/* Nome do colaborador */
+
+.visualizar-info-nome {
+    margin: 0;
+
+    color: #001F3F;
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+
+/* Cargo, setor e status */
+
+.visualizar-info-lista {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+
+    gap: 8px;
+    min-width: 0;
+
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+
+/* Cargo */
+
+.visualizar-info-cargo {
+    display: inline-flex;
+    align-items: center;
+
+    color: #344054;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.4;
+}
+
+
+/* Separadores */
+
+.visualizar-info-separador {
+    color: #98A2B3;
+    font-size: 12px;
+    line-height: 1;
+}
+
+
+/* Setor */
+
+.visualizar-info-tag {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    max-width: 100%;
+    box-sizing: border-box;
+
+    padding: 4px 10px;
+    border-radius: 100px;
+
+    background-color: #E5EEFF;
+    color: #445D80;
+
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.4;
+
+    overflow-wrap: anywhere;
+}
+
+
+/* Status */
+
+.visualizar-info-status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+
+    padding: 4px 10px;
+    border-radius: 100px;
+
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.4;
+
+    white-space: nowrap;
+}
+
+
+/* Status ativo */
+
+.visualizar-info-status.ativo {
+    background-color: #E1FFEC;
+    color: #006645;
+}
+
+
+/* Status inativo */
+
+.visualizar-info-status.inativo {
+    background-color: #E5E7EB;
+    color: #6B7280;
+}
+
+
+/* Ponto do status */
+
+.visualizar-info-status-ponto {
+    font-size: 10px;
+    line-height: 1;
+}
+
+
+/*----------------------------------------------------------*/
+/* BOTÕES DO CARTÃO PRINCIPAL                               */
+/*----------------------------------------------------------*/
+
+.visualizar-info-acoes {
+    flex-shrink: 0;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+
+    gap: 12px;
+}
+
+
+/* Estilo compartilhado dos botões */
+
+.visualizar-info-botao-desativar,
+.visualizar-info-botao-editar {
+    min-height: 40px;
+    box-sizing: border-box;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 10px 16px;
+    border-radius: 8px;
+
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 500;
+    text-align: center;
+    white-space: nowrap;
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        color 0.2s ease;
+}
+
+
+/* Botão desativar */
+
+.visualizar-info-botao-desativar {
+    border: 1px solid #BA1A1A;
+    background-color: #FFFFFF;
+    color: #BA1A1A;
+}
+
+.visualizar-info-botao-desativar:hover:not(:disabled) {
+    background-color: #FFF1F1;
+    border-color: #BA1A1A;
+    color: #BA1A1A;
+}
+
+
+/* Botão editar */
+
+.visualizar-info-botao-editar {
+    border: 1px solid #0066FF;
+    background-color: #0066FF;
+    color: #FFFFFF;
+}
+
+.visualizar-info-botao-editar:hover:not(:disabled) {
+    background-color: #0052CC;
+    border-color: #0052CC;
+    color: #FFFFFF;
+}
+
+
+/* Botões desabilitados */
+
+.visualizar-info-botao-desativar:disabled,
+.visualizar-info-botao-editar:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+
+/*----------------------------------------------------------*/
+/* GRADE DOS CARDS INFERIORES                               */
+/*----------------------------------------------------------*/
+
+.visualizar-info-cards-detalhes {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    gap: 24px;
+    margin-top: 24px;
+}
+
+
+/*----------------------------------------------------------*/
+/* CARD INDIVIDUAL DE DETALHES                              */
+/*----------------------------------------------------------*/
+
+.visualizar-info-card-detalhe {
+    min-width: 0;
+    box-sizing: border-box;
+
+    padding: 24px;
+
+    background-color: #FFFFFF;
+    border: 1px solid #E1E5EB;
+    border-radius: 12px;
+
+    box-shadow: 0 2px 8px rgba(0, 31, 63, 0.05);
+}
+
+
+/* Card que ocupa a linha inteira */
+
+.visualizar-info-card-detalhe.visualizar-info-linha-toda {
+    grid-column: 1 / -1;
+}
+
+
+/* Último card ocupa a linha inteira quando a quantidade é ímpar */
+
+.visualizar-info-card-detalhe:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+}
+
+
+/*----------------------------------------------------------*/
+/* TÍTULO DOS CARDS INFERIORES                              */
+/*----------------------------------------------------------*/
+
+.visualizar-info-card-titulo {
+    margin: 0 0 22px;
+
+    color: #001F3F;
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+
+/*----------------------------------------------------------*/
+/* CONTEÚDO DOS CARDS                                       */
+/*----------------------------------------------------------*/
+
+.visualizar-info-card-conteudo {
+    display: flex;
+    flex-direction: column;
+
+    gap: 18px;
+    min-width: 0;
+}
+
+
+/* Campo individual */
+
+.visualizar-info-card-campo {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+
+    gap: 5px;
+    min-width: 0;
+}
+
+
+/* Nome do campo */
+
+.visualizar-info-card-rotulo {
+    color: #667085;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.5;
+}
+
+
+/* Valor do campo */
+
+.visualizar-info-card-valor {
+    max-width: 100%;
+
+    color: #344054;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.5;
+
+    overflow-wrap: anywhere;
+}
+
+
+/* Mensagem para cards vazios */
+
+.visualizar-info-card-vazio {
+    margin: 0;
+
+    color: #667085;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+
+/*----------------------------------------------------------*/
+/* BOTÃO VOLTAR                                              */
+/*----------------------------------------------------------*/
+
+.visualizar-info-rodape {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    box-sizing: border-box;
+
+    margin-top: 24px;
+    padding-bottom: 29px;
+    padding-right: 40px;
+}
+
+.visualizar-info-botao-voltar {
+    width: 153px;
+    height: 60px;
+    box-sizing: border-box;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: none;
+    border-radius: 8px;
+
+    background-color: #E2E7FF;
+    color: #001F3F;
+
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 500;
+
+    cursor: pointer;
+
+    transition: background-color 0.2s ease;
+}
+
+.visualizar-info-botao-voltar:hover {
+    background-color: #D1D9FF;
+}
+

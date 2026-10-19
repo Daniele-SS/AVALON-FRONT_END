@@ -1,36 +1,72 @@
+
 //----------------- CONFIGURAÇÕES ---------------------------//
 
 const API_BASE = 'http://localhost:8080/v1/senai/avalon';
 
 
-//----------------- REQUISIÇÃO À API -----------------------------//
+//----------------- REQUISIÇÃO À API ------------------------//
 
 async function requisicaoApi(rota, opcoes = {}) {
+
+    const token = localStorage.getItem('access_token');
+
+    if (!token) {
+        throw new Error('Token não encontrado. Faça login novamente.');
+    }
+
     const resposta = await fetch(`${API_BASE}${rota}`, {
+
         ...opcoes,
+
         headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
             ...opcoes.headers
         }
+
     });
 
+
     // Guarda a resposta como texto para não perder a mensagem original.
+
     const textoResposta = await resposta.text();
 
     let dados = {};
 
     try {
+
         dados = textoResposta ? JSON.parse(textoResposta) : {};
+
     } catch (erro) {
+
         dados = {
             mensagem: textoResposta
         };
+
     }
 
+
     // Mostra a resposta original da API no terminal do navegador.
+
     console.log('Rota:', `${API_BASE}${rota}`);
     console.log('Status HTTP:', resposta.status);
     console.log('Resposta da API:', dados);
+
+
+    // Verifica se a autenticação expirou.
+
+    if (resposta.status === 401) {
+
+        localStorage.removeItem('access_token');
+
+        throw new Error(
+            'Sua autenticação expirou. Faça login novamente.'
+        );
+
+    }
+
+
+    // Verifica se a requisição apresentou algum erro.
 
     if (
         !resposta.ok ||
@@ -38,6 +74,7 @@ async function requisicaoApi(rota, opcoes = {}) {
         dados.success === false ||
         Number(dados.status_code) >= 400
     ) {
+
         const mensagem =
             dados.mensagem ||
             dados.message ||
@@ -46,9 +83,11 @@ async function requisicaoApi(rota, opcoes = {}) {
             'Não foi possível processar a requisição.';
 
         throw new Error(mensagem);
+
     }
 
     return dados;
+
 }
 
 
@@ -135,11 +174,13 @@ export async function buscarSetores() {
     const resposta = await requisicaoApi('/setor');
 
     return localizarLista(resposta).map((setor) => ({
+
         ...setor,
 
         id: setor.id_setor ?? setor.id,
 
         nome: setor.nome ?? setor.nome_setor ?? ''
+
     }));
 
 }
@@ -152,11 +193,13 @@ export async function buscarCargos() {
     const resposta = await requisicaoApi('/cargo');
 
     return localizarLista(resposta).map((cargo) => ({
+
         ...cargo,
 
         id: cargo.id_cargo ?? cargo.id,
 
         nome: cargo.nome ?? cargo.nome_cargo ?? ''
+
     }));
 
 }
@@ -169,11 +212,13 @@ export async function buscarNiveisAcesso() {
     const resposta = await requisicaoApi('/nivel_acesso');
 
     return localizarLista(resposta).map((nivel) => ({
+
         ...nivel,
 
         id: nivel.id_nivel_acesso ?? nivel.id,
 
         nome: nivel.nome ?? nivel.nome_nivel_acesso ?? ''
+
     }));
 
 }
@@ -218,9 +263,11 @@ export async function buscarJornadas() {
                 dia.idJornadaEscala;
 
             return String(idJornadaDia) === String(idJornada);
+
         });
 
         return {
+
             ...jornada,
 
             id: idJornada,
@@ -232,6 +279,7 @@ export async function buscarJornadas() {
                 'Jornada',
 
             dias_semana: diasDaJornada
+
         };
 
     });
@@ -255,9 +303,11 @@ export async function buscarColaboradores() {
 export async function cadastrarColaborador(dadosColaborador) {
 
     return await requisicaoApi('/colaborador', {
+
         method: 'POST',
 
         body: JSON.stringify(dadosColaborador)
+
     });
 
 }
@@ -268,9 +318,11 @@ export async function cadastrarColaborador(dadosColaborador) {
 export async function cadastrarUsuario(dadosUsuario) {
 
     return await requisicaoApi('/usuario', {
+
         method: 'POST',
 
         body: JSON.stringify(dadosUsuario)
+
     });
 
 }
@@ -325,4 +377,5 @@ export function extrairIdColaborador(dados, profundidade = 0) {
     }
 
     return null;
+
 }

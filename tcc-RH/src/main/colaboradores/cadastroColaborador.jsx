@@ -22,6 +22,11 @@ import {
     extrairIdColaborador
 } from './servicos/cadastroColaboradoresApi.js';
 
+import {
+    editarColaborador,
+    editarUsuario
+} from './servicos/editarColaborador.js';
+
 import validarColaborador from './funcoes/cadastroColaborador/validarColaborador.js';
 import montarDadosColaborador from './funcoes/cadastroColaborador/montarDadosColaborador.js';
 import montarDadosUsuario from './funcoes/cadastroColaborador/montarDadosUsuario.js';
@@ -31,7 +36,13 @@ import './css-colaboradores/cadastroColaborador.css';
 
 //----------------- COMPONENTE ------------------------------//
 
-function CadastroColaborador({ onVoltar, onSalvar }) {
+function CadastroColaborador({
+    onVoltar,
+    onSalvar,
+    modoEdicao = false,
+    colaborador = null,
+    usuario = null
+}) {
 
     //----------------- ESTADOS -----------------------------//
 
@@ -66,14 +77,28 @@ function CadastroColaborador({ onVoltar, onSalvar }) {
     const [idColaboradorCriado, setIdColaboradorCriado] = useState(null);
 
 
+    //----------------- FORMATAR DATA ------------------------//
+
+    function formatarData(data) {
+
+        if (!data) {
+            return '';
+        }
+
+        return String(data).split('T')[0];
+    }
+
+
     //----------------- CARREGAR OPÇÕES ----------------------//
 
     useEffect(() => {
 
         async function carregarOpcoes() {
+
             setCarregandoOpcoes(true);
 
             try {
+
                 const [
                     listaCargos,
                     listaSetores,
@@ -92,23 +117,117 @@ function CadastroColaborador({ onVoltar, onSalvar }) {
                 setJornadas(listaJornadas);
 
             } catch (erro) {
+
                 console.error(
-                    'Erro ao carregar opções do cadastro:',
+                    'Erro ao carregar opções do formulário:',
                     erro
                 );
 
                 alert(
-                    'Não foi possível carregar as opções do cadastro. Verifique se a API está funcionando.'
+                    'Não foi possível carregar as opções do formulário. Verifique se a API está funcionando.'
                 );
 
             } finally {
+
                 setCarregandoOpcoes(false);
+
             }
         }
 
         carregarOpcoes();
 
     }, []);
+
+
+    //----------------- PREENCHER OS DADOS DA EDIÇÃO ----------//
+
+    useEffect(() => {
+
+        if (!modoEdicao || !colaborador) {
+            return;
+        }
+
+        // O setor pode vir como uma lista ou um objeto.
+        const setor = Array.isArray(colaborador.setor)
+            ? colaborador.setor[0]
+            : colaborador.setor;
+
+        // O cargo pode vir dentro de cargo.classificacao.
+        let cargo = colaborador.cargo;
+
+        if (Array.isArray(cargo?.classificacao)) {
+            cargo = cargo.classificacao[0];
+        }
+
+        // A jornada pode vir como uma lista ou um objeto.
+        const jornada = Array.isArray(colaborador.jornada_escala)
+            ? colaborador.jornada_escala[0]
+            : colaborador.jornada_escala;
+
+        // O nível de acesso pode vir dentro de outra lista.
+        let nivel = usuario?.nivel_acesso;
+
+        if (Array.isArray(nivel?.nivel_acesso)) {
+            nivel = nivel.nivel_acesso[0];
+        }
+
+        setDados({
+
+            nome: colaborador.nome ?? '',
+            email: colaborador.email ?? '',
+            cpf: colaborador.cpf ?? '',
+            telefone: colaborador.telefone ?? '',
+
+            dataNascimento: formatarData(
+                colaborador.data_nascimento
+            ),
+
+            dataDesligamento: formatarData(
+                colaborador.data_desligamento
+            ),
+
+            status:
+                String(colaborador.status).toLowerCase() === 'inativo' ||
+                    Number(colaborador.status) === 0
+                    ? 0
+                    : 1,
+
+            matricula: colaborador.matricula ?? '',
+
+            idCargo:
+                colaborador.id_cargo ??
+                cargo?.id_cargo ??
+                cargo?.id ??
+                '',
+
+            idSetor:
+                colaborador.id_setor ??
+                setor?.id_setor ??
+                setor?.id ??
+                '',
+
+            tipoVinculo: colaborador.tipo_vinculo ?? '',
+
+            login: usuario?.login ?? '',
+
+            // Não preencher a senha atual no formulário.
+            senha: '',
+
+            idNivelAcesso:
+                usuario?.id_nivel_acesso ??
+                nivel?.id_nivel_acesso ??
+                nivel?.id ??
+                '',
+
+            idJornadaEscala:
+                colaborador.id_jornada_escala ??
+                jornada?.id_jornada_escala ??
+                jornada?.id ??
+                ''
+
+        });
+
+    }, [modoEdicao, colaborador, usuario]);
 
 
     //----------------- VOLTAR -------------------------------//
@@ -130,11 +249,83 @@ function CadastroColaborador({ onVoltar, onSalvar }) {
     }
 
 
+    //----------------- VALIDAR EDIÇÃO -----------------------//
+
+    function validarEdicao() {
+
+        if (!dados.nome.trim()) {
+            alert('Informe o nome do colaborador.');
+            return false;
+        }
+
+        if (!dados.email.trim()) {
+            alert('Informe o e-mail do colaborador.');
+            return false;
+        }
+
+        if (!dados.cpf || dados.cpf.replace(/\D/g, '').length !== 11) {
+            alert('Informe um CPF válido com 11 números.');
+            return false;
+        }
+
+        if (!dados.matricula.trim()) {
+            alert('Informe a matrícula do colaborador.');
+            return false;
+        }
+
+        if (!dados.idCargo) {
+            alert('Selecione o cargo do colaborador.');
+            return false;
+        }
+
+        if (!dados.idSetor) {
+            alert('Selecione o setor do colaborador.');
+            return false;
+        }
+
+        if (!dados.tipoVinculo) {
+            alert('Selecione o tipo de vínculo do colaborador.');
+            return false;
+        }
+
+        if (!dados.idJornadaEscala) {
+            alert('Selecione a jornada do colaborador.');
+            return false;
+        }
+
+        if (!dados.idNivelAcesso) {
+            alert('Selecione o nível de acesso do usuário.');
+            return false;
+        }
+
+        if (!dados.login.trim()) {
+            alert('Informe o login do usuário.');
+            return false;
+        }
+
+        return true;
+    }
+
+
     //----------------- AVANÇAR PARA REVISÃO ----------------//
 
     function avancarParaConfirmacao() {
 
-        if (salvando || !validarColaborador(dados)) {
+        if (salvando) {
+            return;
+        }
+
+        if (modoEdicao) {
+
+            if (!validarEdicao()) {
+                return;
+            }
+
+            salvarColaborador();
+            return;
+        }
+
+        if (!validarColaborador(dados)) {
             return;
         }
 
@@ -147,7 +338,7 @@ function CadastroColaborador({ onVoltar, onSalvar }) {
     }
 
 
-    //----------------- CONFIRMAR E CADASTRAR ----------------//
+    //----------------- SALVAR CADASTRO OU EDIÇÃO -------------//
 
     async function salvarColaborador() {
 
@@ -161,11 +352,64 @@ function CadastroColaborador({ onVoltar, onSalvar }) {
 
         try {
 
-            //----------------- CADASTRAR COLABORADOR ----------//
+            //----------------- MODO DE EDIÇÃO ----------------//
+
+            if (modoEdicao) {
+
+                idColaborador =
+                    colaborador?.id_colaborador ??
+                    colaborador?.id ??
+                    colaborador?.idColaborador;
+
+                const idUsuario = usuario?.id;
+
+                if (!idColaborador) {
+                    throw new Error(
+                        'Não foi possível identificar o colaborador que será editado.'
+                    );
+                }
+
+                if (!idUsuario) {
+                    throw new Error(
+                        'Não foi possível identificar o usuário de acesso que será editado.'
+                    );
+                }
+
+                // Atualiza os dados do colaborador existente.
+                await editarColaborador(
+                    idColaborador,
+                    dados,
+                    colaborador
+                );
+
+                // Atualiza o usuário existente.
+                await editarUsuario(
+                    idUsuario,
+                    dados,
+                    idColaborador,
+                    usuario
+                );
+
+                alert('Colaborador atualizado com sucesso!');
+
+                if (onSalvar) {
+                    await onSalvar(idColaborador);
+                }
+
+                if (onVoltar) {
+                    await onVoltar();
+                }
+
+                return;
+            }
+
+
+            //----------------- MODO DE CADASTRO ----------------//
 
             if (!idColaborador) {
 
-                const dadosParaCadastro = montarDadosColaborador(dados);
+                const dadosParaCadastro =
+                    montarDadosColaborador(dados);
 
                 const respostaCadastro = await enviarColaborador(
                     dadosParaCadastro
@@ -180,8 +424,8 @@ function CadastroColaborador({ onVoltar, onSalvar }) {
                     const colaboradores = await buscarColaboradores();
 
                     const colaboradorEncontrado = colaboradores.find(
-                        (colaborador) =>
-                            String(colaborador.matricula) ===
+                        (item) =>
+                            String(item.matricula) ===
                             String(dados.matricula.trim())
                     );
 
@@ -211,7 +455,7 @@ function CadastroColaborador({ onVoltar, onSalvar }) {
             await cadastrarUsuario(dadosParaUsuario);
 
 
-            //----------------- CONCLUSÃO ----------------------//
+            //----------------- CONCLUSÃO DO CADASTRO -----------//
 
             alert(
                 'Colaborador e usuário cadastrados com sucesso!'
@@ -228,32 +472,29 @@ function CadastroColaborador({ onVoltar, onSalvar }) {
         } catch (erro) {
 
             console.error(
-                'Erro ao confirmar o cadastro do colaborador:',
+                modoEdicao
+                    ? 'Erro ao editar colaborador:'
+                    : 'Erro ao confirmar o cadastro do colaborador:',
                 erro
             );
 
-            if (idColaborador) {
-
-                alert(
-                    `O colaborador já foi cadastrado (ID ${idColaborador}), mas não foi possível concluir a criação do usuário.\n\nVerifique a mensagem da API antes de tentar novamente.\n\nErro: ${erro.message}`
-                );
-
-            } else {
-
-                alert(
-                    `Não foi possível concluir o cadastro.\n\nErro: ${erro.message}`
-                );
-            }
+            alert(
+                `Não foi possível ${modoEdicao ? 'atualizar' : 'concluir o cadastro de'
+                } o colaborador.\n\nErro: ${erro.message}`
+            );
 
         } finally {
+
             setSalvando(false);
+
         }
     }
 
 
     //----------------- TELA DE CONFIRMAÇÃO ------------------//
 
-    if (mostrarConfirmacao) {
+    if (!modoEdicao && mostrarConfirmacao) {
+
         return (
             <Confirmacao
                 dados={dados}
@@ -272,16 +513,31 @@ function CadastroColaborador({ onVoltar, onSalvar }) {
     }
 
 
+    //----------------- TÍTULOS DA TELA ----------------------//
+
+    const tituloPagina = modoEdicao
+        ? 'Editar colaborador'
+        : 'Novo colaborador';
+
+    const descricaoPagina = modoEdicao
+        ? 'Atualize os dados pessoais e profissionais do colaborador.'
+        : 'Cadastre os dados pessoais e profissionais do colaborador.';
+
+
     //----------------- FORMULÁRIO ---------------------------//
 
     return (
         <>
+
+            {/* CABEÇALHO */}
+
             <div className="cabecalho-novo-colaborador">
 
                 <BotaoCadastro
-                    titulo="Novo colaborador"
-                    descricao="Cadastre os dados pessoais e profissionais do colaborador."
+                    titulo={tituloPagina}
+                    descricao={descricaoPagina}
                 >
+
                     <nav className="caminho-cadastro-colaborador">
 
                         <button
@@ -295,22 +551,26 @@ function CadastroColaborador({ onVoltar, onSalvar }) {
                         <span className="seta">&gt;</span>
 
                         <span className="pagina-atual-colaborador">
-                            Novo colaborador
+                            {tituloPagina}
                         </span>
 
                     </nav>
+
                 </BotaoCadastro>
 
             </div>
 
 
+            {/* CAMPOS DO FORMULÁRIO */}
+
             {carregandoOpcoes ? (
 
-                <p>Carregando as opções do cadastro...</p>
+                <p>Carregando as opções do formulário...</p>
 
             ) : (
 
                 <>
+
                     <Dadospessoais
                         dados={dados}
                         setDados={setDados}
@@ -322,6 +582,7 @@ function CadastroColaborador({ onVoltar, onSalvar }) {
                         cargos={cargos}
                         setores={setores}
                         niveisAcesso={niveisAcesso}
+                        modoEdicao={modoEdicao}
                     />
 
                     <JornadaEscala
@@ -334,13 +595,22 @@ function CadastroColaborador({ onVoltar, onSalvar }) {
                         onCancelar={voltar}
                         onSalvar={avancarParaConfirmacao}
                         salvando={salvando}
-                        textoBotao="Revisar cadastro"
+                        textoBotao={
+                            modoEdicao
+                                ? 'Salvar alterações'
+                                : 'Revisar cadastro'
+                        }
                     />
+
                 </>
 
             )}
+
         </>
     );
 }
+
+
+//----------------- EXPORTAÇÃO ------------------------------//
 
 export default CadastroColaborador;

@@ -1,4 +1,5 @@
 
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import loginIMG from "./img/icone-login.svg";
@@ -9,8 +10,71 @@ import ilustracao from "./img/ilustacao.svg";
 function Login() {
     const navegar = useNavigate();
 
-    function entrar() {
-        navegar('/dashboard');
+    const [email, setEmail] = useState('');
+    const [senha, setSenha] = useState('');
+    const [mensagemErro, setMensagemErro] = useState('');
+    const [carregando, setCarregando] = useState(false);
+
+    async function entrar() {
+        setMensagemErro('');
+
+        if (!email.trim() || !senha) {
+            setMensagemErro('Preencha o login e a senha.');
+            return;
+        }
+
+        try {
+            setCarregando(true);
+
+            const resposta = await fetch(
+                'http://localhost:8080/v1/senai/avalon/auth/login',
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        login: email.trim(),
+                        senha: senha
+                    })
+                }
+            );
+
+            const dados = await resposta.json();
+
+            if (!resposta.ok) {
+                setMensagemErro(
+                    dados.message ||
+                    dados.mensagem ||
+                    'Login ou senha inválidos.'
+                );
+                return;
+            }
+
+            const token =
+                dados.access_token ||
+                dados.response?.access_token;
+
+            if (!token) {
+                setMensagemErro(
+                    'A API não retornou o token de autenticação.'
+                );
+                return;
+            }
+
+            localStorage.setItem('access_token', token);
+
+            navegar('/dashboard');
+
+        } catch (erro) {
+            console.error('Erro ao fazer login:', erro);
+
+            setMensagemErro(
+                'Não foi possível conectar à API.'
+            );
+        } finally {
+            setCarregando(false);
+        }
     }
 
     return (
@@ -37,9 +101,11 @@ function Login() {
 
                             <input
                                 id="email"
-                                type="email"
+                                type="text"
                                 name="email"
                                 placeholder="Digite seu e-mail"
+                                value={email}
+                                onChange={(evento) => setEmail(evento.target.value)}
                             />
                         </div>
                     </div>
@@ -55,6 +121,8 @@ function Login() {
                                 type="password"
                                 name="senha"
                                 placeholder="Digite sua senha"
+                                value={senha}
+                                onChange={(evento) => setSenha(evento.target.value)}
                             />
                         </div>
                     </div>
@@ -65,9 +133,24 @@ function Login() {
                         </p>
                     </div>
 
+                    {mensagemErro && (
+                        <p
+                            style={{
+                                color: '#d32f2f',
+                                fontSize: '14px'
+                            }}
+                        >
+                            {mensagemErro}
+                        </p>
+                    )}
+
                     <div className="btn-entrar">
-                        <button type="button" onClick={entrar}>
-                            Entrar
+                        <button
+                            type="button"
+                            onClick={entrar}
+                            disabled={carregando}
+                        >
+                            {carregando ? 'Entrando...' : 'Entrar'}
                         </button>
                     </div>
                 </div>

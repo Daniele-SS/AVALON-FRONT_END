@@ -11,7 +11,8 @@ function Dadosprofissionais({
     setDados,
     cargos = [],
     setores = [],
-    niveisAcesso = []
+    niveisAcesso = [],
+    modoEdicao = false
 }) {
 
     //----------------- ATUALIZAR CAMPOS ---------------------//
@@ -72,10 +73,7 @@ function Dadosprofissionais({
                         placeholder="Digite a matrícula"
                         value={dados.matricula || ''}
                         onChange={(evento) =>
-                            atualizarCampo(
-                                'matricula',
-                                evento.target.value
-                            )
+                            atualizarCampo('matricula', evento.target.value)
                         }
                     />
 
@@ -95,10 +93,7 @@ function Dadosprofissionais({
                         name="idCargo"
                         value={dados.idCargo || ''}
                         onChange={(evento) =>
-                            atualizarCampo(
-                                'idCargo',
-                                evento.target.value
-                            )
+                            atualizarCampo('idCargo', evento.target.value)
                         }
                     >
 
@@ -135,10 +130,7 @@ function Dadosprofissionais({
                         name="idSetor"
                         value={dados.idSetor || ''}
                         onChange={(evento) =>
-                            atualizarCampo(
-                                'idSetor',
-                                evento.target.value
-                            )
+                            atualizarCampo('idSetor', evento.target.value)
                         }
                     >
 
@@ -175,10 +167,7 @@ function Dadosprofissionais({
                         name="tipoVinculo"
                         value={dados.tipoVinculo || ''}
                         onChange={(evento) =>
-                            atualizarCampo(
-                                'tipoVinculo',
-                                evento.target.value
-                            )
+                            atualizarCampo('tipoVinculo', evento.target.value)
                         }
                     >
 
@@ -213,10 +202,7 @@ function Dadosprofissionais({
                         autoComplete="username"
                         value={dados.login || ''}
                         onChange={(evento) =>
-                            atualizarCampo(
-                                'login',
-                                evento.target.value
-                            )
+                            atualizarCampo('login', evento.target.value)
                         }
                     />
 
@@ -228,22 +214,26 @@ function Dadosprofissionais({
                 <div className="campo-profissional">
 
                     <label htmlFor="senha">
-                        Senha
+                        {modoEdicao ? 'Nova senha' : 'Senha'}
                     </label>
 
                     <input
                         type="password"
                         id="senha"
                         name="senha"
-                        placeholder="Digite a senha de acesso"
-                        autoComplete="new-password"
+                        placeholder={
+                            modoEdicao
+                                ? 'Deixe em branco para manter a senha atual'
+                                : 'Digite a senha de acesso'
+                        }
+                        autoComplete={
+                            modoEdicao ? 'new-password' : 'new-password'
+                        }
                         value={dados.senha || ''}
                         onChange={(evento) =>
-                            atualizarCampo(
-                                'senha',
-                                evento.target.value
-                            )
+                            atualizarCampo('senha', evento.target.value)
                         }
+                        required={!modoEdicao}
                     />
 
                 </div>
@@ -262,10 +252,7 @@ function Dadosprofissionais({
                         name="idNivelAcesso"
                         value={dados.idNivelAcesso || ''}
                         onChange={(evento) =>
-                            atualizarCampo(
-                                'idNivelAcesso',
-                                evento.target.value
-                            )
+                            atualizarCampo('idNivelAcesso', evento.target.value)
                         }
                     >
 
