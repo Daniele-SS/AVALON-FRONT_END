@@ -48,6 +48,7 @@ function EditarSetor({ setor, voltar }) {
     useEffect(() => {
 
         if (setor) {
+
             setNome(setor.nome || '');
             setCodigo(setor.codigo || '');
             setDescricao(setor.descricao || '');
@@ -56,8 +57,12 @@ function EditarSetor({ setor, voltar }) {
             // Limpa os erros ao selecionar outro setor
             setErroNome('');
             setErroCodigo('');
+
             setErro('');
             setSucesso('');
+
+            setAlertaAberto(false);
+
         }
 
     }, [setor]);
@@ -77,7 +82,9 @@ function EditarSetor({ setor, voltar }) {
 
             } catch (erroApi) {
 
-                setErro(erroApi.message);
+                setErro(
+                    erroApi.message || 'Não foi possível carregar os setores.'
+                );
 
             } finally {
 
@@ -113,12 +120,24 @@ function EditarSetor({ setor, voltar }) {
 
     function alterarCodigo(valor) {
 
-        setCodigo(valor);
+        setCodigo(valor.toUpperCase());
 
         // Remove o erro visual quando começar a digitar
         if (erroCodigo) {
             setErroCodigo('');
         }
+
+        setErro('');
+        setSucesso('');
+
+    }
+
+
+    //----------------- ALTERAR DESCRIÇÃO --------------------//
+
+    function alterarDescricao(valor) {
+
+        setDescricao(valor);
 
         setErro('');
         setSucesso('');
@@ -154,12 +173,18 @@ function EditarSetor({ setor, voltar }) {
 
     function alterarStatus(novoStatus) {
 
-        if (Number(novoStatus) === 0) {
+        if (Number(novoStatus) === 0 && status !== 0) {
+
             setAlertaAberto(true);
+
             return;
+
         }
 
         setStatus(Number(novoStatus));
+
+        setErro('');
+        setSucesso('');
 
     }
 
@@ -169,7 +194,11 @@ function EditarSetor({ setor, voltar }) {
     function confirmarInativacao() {
 
         setStatus(0);
+
         setAlertaAberto(false);
+
+        setErro('');
+        setSucesso('');
 
     }
 
@@ -183,16 +212,24 @@ function EditarSetor({ setor, voltar }) {
         setErro('');
         setSucesso('');
 
+        // Verifica se existe um setor selecionado
         if (!setor) {
+
             setErro('Nenhum setor foi selecionado para edição.');
+
             return;
+
         }
 
+        // Impede o envio durante o carregamento ou outro salvamento
         if (carregando || salvando) {
+
             return;
+
         }
 
-        // Valida os dados novamente no momento de salvar
+        //----------------- VALIDAR DADOS -------------------//
+
         const resultado = validarSetor(
             nome,
             codigo,
@@ -200,10 +237,12 @@ function EditarSetor({ setor, voltar }) {
             setor.id
         );
 
-        // Verifica o nome
+
+        //----------------- VALIDAR NOME --------------------//
+
         if (resultado.nomeComErro) {
 
-            setNome('');
+            // Mantém o valor digitado no campo
             setErroNome(resultado.erroNome);
 
         } else {
@@ -212,10 +251,12 @@ function EditarSetor({ setor, voltar }) {
 
         }
 
-        // Verifica o código
+
+        //----------------- VALIDAR CÓDIGO ------------------//
+
         if (resultado.codigoComErro) {
 
-            setCodigo('');
+            // Mantém o valor digitado no campo
             setErroCodigo(resultado.erroCodigo);
 
         } else {
@@ -224,34 +265,57 @@ function EditarSetor({ setor, voltar }) {
 
         }
 
-        // Não continua se houver erros nos campos
+
+        //----------------- INTERROMPER SE INVÁLIDO ---------//
+
         if (
             resultado.nomeComErro ||
             resultado.codigoComErro
         ) {
+
             return;
+
         }
+
+
+        //----------------- INICIAR SALVAMENTO --------------//
 
         setSalvando(true);
 
         try {
 
             const dadosSetor = {
+
                 nome: nome.trim(),
-                codigo: codigo.trim(),
+
+                codigo: codigo.trim().toUpperCase(),
+
                 descricao: descricao.trim() || 'Nenhuma descrição informada.',
+
                 status: Number(status)
+
             };
+
+
+            //----------------- ENVIAR PARA API --------------//
 
             await atualizarSetor(setor.id, dadosSetor);
 
+
+            //----------------- SUCESSO ---------------------//
+
             setSucesso('Setor atualizado com sucesso!');
+
+            setErroNome('');
+            setErroCodigo('');
 
             voltar();
 
         } catch (erroApi) {
 
-            setErro(erroApi.message);
+            setErro(
+                erroApi.message || 'Não foi possível atualizar o setor.'
+            );
 
         } finally {
 
@@ -265,7 +329,9 @@ function EditarSetor({ setor, voltar }) {
     //----------------- VERIFICAR SETOR ----------------------//
 
     if (!setor) {
+
         return <p>Nenhum setor foi selecionado para edição.</p>;
+
     }
 
 
@@ -274,6 +340,8 @@ function EditarSetor({ setor, voltar }) {
     return (
 
         <>
+
+            {/* CABEÇALHO */}
 
             <div className="cabecalho-novo-setor">
 
@@ -291,7 +359,9 @@ function EditarSetor({ setor, voltar }) {
                             Setores
                         </button>
 
-                        <span className="seta">&gt;</span>
+                        <span className="seta">
+                            &gt;
+                        </span>
 
                         <span className="pagina-atual-setor">
                             Editar setor
@@ -304,12 +374,14 @@ function EditarSetor({ setor, voltar }) {
             </div>
 
 
-            {/* noValidate permite exibir nossas mensagens personalizadas */}
+            {/* FORMULÁRIO */}
 
             <form
                 onSubmit={salvarAlteracoes}
                 noValidate
             >
+
+                {/* INFORMAÇÕES DO SETOR */}
 
                 <Informacoes
                     titulo="Informações do setor"
@@ -328,27 +400,39 @@ function EditarSetor({ setor, voltar }) {
                     limparErroCodigo={() => setErroCodigo('')}
 
                     descricao={descricao}
-                    setDescricao={setDescricao}
+                    setDescricao={alterarDescricao}
 
                     status={status}
                     setStatus={alterarStatus}
 
-                    campos={['nome', 'codigo', 'descricao', 'status']}
+                    campos={[
+                        'nome',
+                        'codigo',
+                        'descricao',
+                        'status'
+                    ]}
                 />
 
+
+                {/* REVISÃO DOS DADOS */}
 
                 <Revisao
                     nome={nome}
                     codigo={codigo}
                     descricao={descricao}
                     status={status}
+
                     tituloNome="Nome do setor"
                     tituloCodigo="Código do setor"
+
                     mostrarResponsavel={false}
+
                     erro={erro}
                     sucesso={sucesso}
                 />
 
+
+                {/* BOTÕES */}
 
                 <BotaoSalvarCancelar
                     onCancelar={voltar}
@@ -366,6 +450,7 @@ function EditarSetor({ setor, voltar }) {
                 aberto={alertaAberto}
                 titulo="Inativar setor?"
                 entidade="setor"
+
                 mensagem="Ao inativar este setor, ele não poderá ser utilizado em novos cadastros. Os colaboradores atualmente vinculados continuarão associados ao setor e seu histórico será preservado."
 
                 informacoes={[
@@ -375,7 +460,8 @@ function EditarSetor({ setor, voltar }) {
                     },
                     {
                         titulo: 'Colaboradores impactados:',
-                        valor: setor.quantidade_colaboradores
+                        valor:
+                            setor.quantidade_colaboradores
                             ?? setor.colaboradores?.length
                             ?? 'Não informado',
                         tipo: 'colaboradores'
@@ -389,12 +475,19 @@ function EditarSetor({ setor, voltar }) {
                 textoBotao="Inativar"
 
                 cancelar={() => setAlertaAberto(false)}
+
                 confirmar={confirmarInativacao}
             />
 
 
+            {/* CARREGAMENTO */}
+
             {carregando && (
-                <p>Carregando dados...</p>
+
+                <p>
+                    Carregando dados...
+                </p>
+
             )}
 
         </>

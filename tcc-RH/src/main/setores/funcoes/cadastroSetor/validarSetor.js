@@ -2,67 +2,102 @@
 
 function validarSetor(nome, codigo, setores) {
 
-    const nomeFormatado = nome.trim().toLowerCase();
-    const codigoFormatado = codigo.trim().toLowerCase();
+    //----------------- FORMATAR ----------------------------//
 
-    const nomeValido = nome.trim() !== '';
-    const codigoValido = codigo.trim() !== '';
+    const nomeFormatado =
+        nome.trim().toLowerCase();
+
+    const codigoFormatado =
+        codigo.trim().toLowerCase();
 
 
-    //----------------- VERIFICAR DUPLICIDADE ----------------//
+    //----------------- VALIDAÇÃO ---------------------------//
+
+    const nomeValido =
+        nome.trim() !== '';
+
+    const codigoValido =
+        codigo.trim() !== '';
+
+
+    //----------------- DUPLICIDADE -------------------------//
 
     const nomeDuplicado = setores.some(setor =>
-        (setor.nome || '').trim().toLowerCase() === nomeFormatado
+
+        (setor.nome || '')
+            .trim()
+            .toLowerCase() === nomeFormatado
+
     );
+
 
     const codigoDuplicado = setores.some(setor =>
-        String(setor.codigo || '').trim().toLowerCase() === codigoFormatado
+
+        String(setor.codigo || '')
+            .trim()
+            .toLowerCase() === codigoFormatado
+
     );
 
 
-    //----------------- MENSAGENS DE ERRO --------------------//
+    //----------------- MENSAGENS ---------------------------//
 
     let erroNome = '';
+
     let erroCodigo = '';
 
 
+    //----------------- NOME -------------------------------//
+
     if (!nomeValido) {
 
-        erroNome = 'Informe o nome do setor';
+        erroNome =
+            'Informe o nome do setor';
 
     } else if (nomeDuplicado) {
 
-        erroNome = 'Este nome de setor já está cadastrado';
+        erroNome =
+            'Este nome de setor já está cadastrado';
 
     }
 
+
+    //----------------- CÓDIGO -----------------------------//
 
     if (!codigoValido) {
 
-        erroCodigo = 'Informe o código do setor';
+        erroCodigo =
+            'Informe o código do setor';
 
     } else if (codigoDuplicado) {
 
-        erroCodigo = 'Este código de setor já está cadastrado';
+        erroCodigo =
+            'Este código de setor já está cadastrado';
 
     }
 
 
-    //----------------- RETORNO ------------------------------//
+    //----------------- RETORNO ----------------------------//
 
     return {
 
         nomeValido,
+
         codigoValido,
 
         nomeDuplicado,
+
         codigoDuplicado,
 
         erroNome,
+
         erroCodigo,
 
-        nomeComErro: erroNome !== '',
-        codigoComErro: erroCodigo !== ''
+        nomeComErro:
+            erroNome !== '',
+
+        codigoComErro:
+            erroCodigo !== ''
 
     };
 

@@ -177,3 +177,65 @@
     background: #e1e4ef;
     color: #51576b;
 }
+
+/*==========================================================
+    CAMPO COM ERRO
+==========================================================*/
+
+.campo-formulario.campo-com-erro input {
+    border-color: #dc2626;
+    background-color: #fff5f5;
+}
+
+
+/*==========================================================
+    INPUT COM ERRO
+==========================================================*/
+
+.campo-formulario input.input-com-erro {
+    border-color: #dc2626;
+    background-color: #fff5f5;
+}
+
+
+/*==========================================================
+    INPUT COM ERRO EM FOCO
+==========================================================*/
+
+.campo-formulario input.input-com-erro:focus {
+    border-color: #dc2626;
+
+    background-color: #ffffff;
+
+    outline: none;
+
+    box-shadow:
+        0 0 0 2px rgba(220, 38, 38, 0.10);
+}
+
+
+/*==========================================================
+    LABEL COM ERRO
+==========================================================*/
+
+.campo-formulario.campo-com-erro label {
+    color: #b91c1c;
+}
+
+
+/*==========================================================
+    MENSAGEM DE ERRO
+==========================================================*/
+
+.mensagem-erro-campo {
+    display: block;
+
+    margin-top: 5px;
+
+    color: #dc2626;
+
+    font-size: 12px;
+    font-weight: 500;
+
+    line-height: 16px;
+}

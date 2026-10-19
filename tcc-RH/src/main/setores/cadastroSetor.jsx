@@ -21,6 +21,7 @@ import './css-setores/cadastroSetor.css';
 
 function CadastroSetor({ voltar }) {
 
+
     //----------------- ESTADOS -----------------------------//
 
     const [nome, setNome] = useState('');
@@ -36,7 +37,6 @@ function CadastroSetor({ voltar }) {
     const [erro, setErro] = useState('');
     const [sucesso, setSucesso] = useState('');
 
-    // Erros específicos dos campos
     const [erroNome, setErroNome] = useState('');
     const [erroCodigo, setErroCodigo] = useState('');
 
@@ -49,7 +49,8 @@ function CadastroSetor({ voltar }) {
 
             try {
 
-                const dadosSetores = await buscarDadosCadastro();
+                const dadosSetores =
+                    await buscarDadosCadastro();
 
                 setSetores(dadosSetores);
 
@@ -76,7 +77,6 @@ function CadastroSetor({ voltar }) {
 
         setNome(valor);
 
-        // Remove o erro assim que o usuário começar a digitar
         if (erroNome) {
             setErroNome('');
         }
@@ -93,7 +93,6 @@ function CadastroSetor({ voltar }) {
 
         setCodigo(valor);
 
-        // Remove o erro assim que o usuário começar a digitar
         if (erroCodigo) {
             setErroCodigo('');
         }
@@ -104,17 +103,28 @@ function CadastroSetor({ voltar }) {
     }
 
 
-    //----------------- VALIDAÇÃO ---------------------------//
+    //----------------- ALTERAR DESCRIÇÃO --------------------//
 
-    const validacao = validarSetor(nome, codigo, setores);
+    function alterarDescricao(valor) {
 
-    const formularioValido =
-        validacao.nomeValido &&
-        validacao.codigoValido &&
-        !validacao.nomeDuplicado &&
-        !validacao.codigoDuplicado &&
-        !carregando &&
-        !salvando;
+        setDescricao(valor);
+
+        setErro('');
+        setSucesso('');
+
+    }
+
+
+    //----------------- ALTERAR STATUS -----------------------//
+
+    function alterarStatus(valor) {
+
+        setStatus(valor);
+
+        setErro('');
+        setSucesso('');
+
+    }
 
 
     //----------------- SALVAR SETOR ------------------------//
@@ -126,16 +136,23 @@ function CadastroSetor({ voltar }) {
         setErro('');
         setSucesso('');
 
-        // Executa novamente a validação
-        const resultado = validarSetor(nome, codigo, setores);
+
+        //----------------- VALIDAR --------------------------//
+
+        const resultado = validarSetor(
+            nome,
+            codigo,
+            setores
+        );
 
 
-        //----------------- VERIFICAR NOME -------------------//
+        //----------------- VALIDAR NOME ---------------------//
 
         if (resultado.nomeComErro) {
 
-            setNome('');
-            setErroNome(resultado.erroNome);
+            setErroNome(
+                resultado.erroNome
+            );
 
         } else {
 
@@ -144,12 +161,13 @@ function CadastroSetor({ voltar }) {
         }
 
 
-        //----------------- VERIFICAR CÓDIGO -----------------//
+        //----------------- VALIDAR CÓDIGO -------------------//
 
         if (resultado.codigoComErro) {
 
-            setCodigo('');
-            setErroCodigo(resultado.erroCodigo);
+            setErroCodigo(
+                resultado.erroCodigo
+            );
 
         } else {
 
@@ -196,11 +214,17 @@ function CadastroSetor({ voltar }) {
             await cadastrarSetor(dadosSetor);
 
 
-            setSucesso('Setor cadastrado com sucesso!');
+            //----------------- SUCESSO ----------------------//
+
+            setSucesso(
+                'Setor cadastrado com sucesso!'
+            );
 
 
-            // Atualiza a lista de setores
-            const dadosSetores = await buscarDadosCadastro();
+            //----------------- ATUALIZAR LISTA -------------//
+
+            const dadosSetores =
+                await buscarDadosCadastro();
 
             setSetores(dadosSetores);
 
@@ -218,7 +242,9 @@ function CadastroSetor({ voltar }) {
 
         } catch (erroApi) {
 
-            setErro(erroApi.message);
+            setErro(
+                erroApi.message
+            );
 
         } finally {
 
@@ -268,26 +294,57 @@ function CadastroSetor({ voltar }) {
 
             <form onSubmit={salvarSetor}>
 
+
                 <Informacoes
+
                     titulo="Informações do setor"
+
                     descricaoCard="Dados de identificação institucional e classificação organizacional."
+
                     nomeEntidade="setor"
 
+
+                    /* NOME */
+
                     nome={nome}
+
                     setNome={alterarNome}
+
                     erroNome={erroNome}
-                    limparErroNome={() => setErroNome('')}
+
+                    limparErroNome={() =>
+                        setErroNome('')
+                    }
+
+
+                    /* CÓDIGO */
 
                     codigo={codigo}
+
                     setCodigo={alterarCodigo}
+
                     erroCodigo={erroCodigo}
-                    limparErroCodigo={() => setErroCodigo('')}
+
+                    limparErroCodigo={() =>
+                        setErroCodigo('')
+                    }
+
+
+                    /* DESCRIÇÃO */
 
                     descricao={descricao}
-                    setDescricao={setDescricao}
+
+                    setDescricao={alterarDescricao}
+
+
+                    /* STATUS */
 
                     status={status}
-                    setStatus={setStatus}
+
+                    setStatus={alterarStatus}
+
+
+                    /* CAMPOS */
 
                     campos={[
                         'nome',
@@ -295,39 +352,54 @@ function CadastroSetor({ voltar }) {
                         'descricao',
                         'status'
                     ]}
+
                 />
 
 
                 <Revisao
+
                     nome={nome}
+
                     codigo={codigo}
+
                     descricao={descricao}
+
                     status={status}
 
                     tituloNome="Nome do setor"
+
                     tituloCodigo="Código do setor"
 
                     mostrarResponsavel={false}
 
                     erro={erro}
+
                     sucesso={sucesso}
+
                 />
 
 
                 <BotaoSalvarCancelar
+
                     onCancelar={voltar}
+
                     onSalvar={salvarSetor}
+
                     salvando={salvando}
+
                     textoBotao="Salvar setor"
+
                 />
 
             </form>
 
 
             {carregando && (
+
                 <p>
                     Carregando dados...
                 </p>
+
             )}
 
         </>
