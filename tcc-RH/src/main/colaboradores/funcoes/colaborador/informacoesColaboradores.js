@@ -2,7 +2,6 @@
 
 function montarInformacoesColaboradores(colaboradores, usuarios = []) {
 
-
     //----------------- OBTER ID DO SETOR -------------------//
 
     function obterIdSetor(colaborador) {
@@ -11,8 +10,11 @@ function montarInformacoesColaboradores(colaboradores, usuarios = []) {
             ? colaborador.setor[0]
             : colaborador.setor;
 
-        return colaborador.id_setor ?? setorColaborador?.id;
-
+        return (
+            colaborador.id_setor ??
+            setorColaborador?.id ??
+            setorColaborador?.id_setor
+        );
     }
 
 
@@ -24,8 +26,11 @@ function montarInformacoesColaboradores(colaboradores, usuarios = []) {
             ? colaborador.setor[0]
             : colaborador.setor;
 
-        return setorColaborador?.nome || 'Não definido';
-
+        return (
+            colaborador.nome_setor ??
+            setorColaborador?.nome ??
+            'Não definido'
+        );
     }
 
 
@@ -33,33 +38,91 @@ function montarInformacoesColaboradores(colaboradores, usuarios = []) {
 
     function obterNomeCargo(colaborador) {
 
-        const classificacoes = colaborador.cargo?.classificacao || [];
+        const classificacoes =
+            colaborador.cargo?.classificacao || [];
 
         const nomesCargos = classificacoes
             .map(cargo => cargo.nome)
             .filter(Boolean);
 
-        return nomesCargos.join(', ') || 'Não definido';
-
+        return (
+            colaborador.nome_cargo ??
+            (nomesCargos.length > 0
+                ? nomesCargos.join(', ')
+                : 'Não definido')
+        );
     }
 
 
-    //----------------- IDENTIFICAR GESTOR DO SETOR ---------//
+    //----------------- LOCALIZAR USUÁRIO -------------------//
+
+    function localizarUsuario(colaborador) {
+
+        const idColaborador =
+            colaborador.id_colaborador ??
+            colaborador.id ??
+            colaborador.idColaborador;
+
+        if (idColaborador == null) {
+            return null;
+        }
+
+        return usuarios.find(usuario => {
+
+            // Caso o usuário tenha o ID do colaborador diretamente.
+            const idDireto =
+                usuario.id_colaborador ??
+                usuario.idColaborador;
+
+            if (
+                idDireto != null &&
+                String(idDireto) === String(idColaborador)
+            ) {
+                return true;
+            }
+
+            // Caso o usuário tenha colaboradores relacionados.
+            let colaboradoresUsuario =
+                usuario.colaborador ||
+                usuario.colaboradores ||
+                [];
+
+            if (!Array.isArray(colaboradoresUsuario)) {
+                colaboradoresUsuario = [colaboradoresUsuario];
+            }
+
+            return colaboradoresUsuario.some(item => {
+
+                const id =
+                    item.id_colaborador ??
+                    item.id ??
+                    item.idColaborador;
+
+                return (
+                    id != null &&
+                    String(id) === String(idColaborador)
+                );
+            });
+
+        }) || null;
+    }
+
+
+    //----------------- IDENTIFICAR GESTOR ------------------//
 
     function obterGestorDireto(colaborador) {
 
-        const idSetorColaborador = obterIdSetor(colaborador);
+        const idSetorColaborador =
+            obterIdSetor(colaborador);
 
         if (idSetorColaborador == null) {
             return 'Não definido';
         }
 
-
-        //----------------- PROCURAR USUÁRIO GESTOR ----------//
-
         const usuarioGestor = usuarios.find(usuario => {
 
-            const niveis = usuario.nivel_acesso?.nivel_acesso || [];
+            const niveis =
+                usuario.nivel_acesso?.nivel_acesso || [];
 
             const temNivelGestor = niveis.some(nivel =>
                 nivel.nome === 'Gestor' &&
@@ -70,50 +133,66 @@ function montarInformacoesColaboradores(colaboradores, usuarios = []) {
                 return false;
             }
 
+            let colaboradoresUsuario =
+                usuario.colaborador ||
+                usuario.colaboradores ||
+                [];
 
-            //----------------- COLABORADORES DO USUÁRIO ------//
+            if (!Array.isArray(colaboradoresUsuario)) {
+                colaboradoresUsuario = [colaboradoresUsuario];
+            }
 
-            const colaboradoresUsuario = usuario.colaborador || [];
+            return colaboradoresUsuario.some(item => {
 
-            return colaboradoresUsuario.some(colaboradorUsuario => {
-
-                //----------------- STATUS DO GESTOR ---------//
-
-                if (colaboradorUsuario.status !== 'Ativo') {
+                if (
+                    String(item.status).toLowerCase() !== 'ativo'
+                ) {
                     return false;
                 }
 
-                //----------------- MESMO SETOR ---------------//
+                const idSetorGestor =
+                    obterIdSetor(item);
 
-                const idSetorGestor = obterIdSetor(colaboradorUsuario);
-
-                return Number(idSetorGestor) === Number(idSetorColaborador);
-
+                return (
+                    Number(idSetorGestor) ===
+                    Number(idSetorColaborador)
+                );
             });
 
         });
-
-
-        //----------------- NOME DO GESTOR -------------------//
 
         if (!usuarioGestor) {
             return 'Não definido';
         }
 
-        const colaboradoresGestor = usuarioGestor.colaborador || [];
+        let colaboradoresGestor =
+            usuarioGestor.colaborador ||
+            usuarioGestor.colaboradores ||
+            [];
 
-        const colaboradorGestor = colaboradoresGestor.find(item => {
+        if (!Array.isArray(colaboradoresGestor)) {
+            colaboradoresGestor = [colaboradoresGestor];
+        }
 
-            if (item.status !== 'Ativo') {
-                return false;
-            }
+        const colaboradorGestor =
+            colaboradoresGestor.find(item => {
 
-            return Number(obterIdSetor(item)) === Number(idSetorColaborador);
+                if (
+                    String(item.status).toLowerCase() !== 'ativo'
+                ) {
+                    return false;
+                }
 
-        });
+                return (
+                    Number(obterIdSetor(item)) ===
+                    Number(idSetorColaborador)
+                );
+            });
 
-        return colaboradorGestor?.nome || 'Não definido';
-
+        return (
+            colaboradorGestor?.nome ||
+            'Não definido'
+        );
     }
 
 
@@ -121,20 +200,28 @@ function montarInformacoesColaboradores(colaboradores, usuarios = []) {
 
     return colaboradores.map(colaborador => {
 
+        const usuario =
+            localizarUsuario(colaborador);
+
         return {
 
+            // Mantém TODOS os dados vindos da API.
             ...colaborador,
 
-            nome_setor: obterNomeSetor(colaborador),
+            // Informações calculadas.
+            nome_setor:
+                obterNomeSetor(colaborador),
 
-            nome_cargo: obterNomeCargo(colaborador),
+            nome_cargo:
+                obterNomeCargo(colaborador),
 
-            gestor_direto: obterGestorDireto(colaborador)
+            gestor_direto:
+                obterGestorDireto(colaborador),
 
+            // Usuário relacionado ao colaborador.
+            usuario
         };
-
     });
-
 }
 
 

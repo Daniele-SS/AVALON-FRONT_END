@@ -1,5 +1,5 @@
-
 import CadastroColaborador from './cadastroColaborador.jsx';
+
 
 //----------------- COMPONENTE ------------------------------//
 
@@ -9,6 +9,7 @@ function EditarColaborador({
     voltar,
     onSalvar
 }) {
+
     return (
         <CadastroColaborador
             modoEdicao={true}
@@ -19,6 +20,7 @@ function EditarColaborador({
         />
     );
 }
+
 
 //----------------- EXPORTAÇÃO ------------------------------//
 

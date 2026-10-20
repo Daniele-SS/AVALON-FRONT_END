@@ -230,21 +230,22 @@ function Colaboradores() {
     }
 
 
-    //----------------- EXIBIR EDIÇÃO -----------------------//
+//----------------- EXIBIR EDIÇÃO -----------------------//
 
-    if (tela === 'edicao') {
-        const usuarioSelecionado =
-            localizarUsuarioDoColaborador(colaboradorSelecionado);
+if (tela === 'edicao') {
 
-        return (
-            <EditarColaborador
-                colaborador={colaboradorSelecionado}
-                usuario={usuarioSelecionado}
-                voltar={voltarParaVisualizacao}
-                onSalvar={atualizarDadosDepoisDaEdicao}
-            />
-        );
-    }
+    const usuarioSelecionado =
+        colaboradorSelecionado?.usuario || null;
+
+    return (
+        <EditarColaborador
+            colaborador={colaboradorSelecionado}
+            usuario={usuarioSelecionado}
+            voltar={voltarParaVisualizacao}
+            onSalvar={atualizarDadosDepoisDaEdicao}
+        />
+    );
+}
 
 
     //----------------- EXIBIR VISUALIZAÇÃO -----------------//
