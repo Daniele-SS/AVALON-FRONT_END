@@ -1,4 +1,5 @@
-//----------------- IMPORTAÇÕES -----------------------------//
+
+ //----------------- IMPORTAÇÕES -----------------------------//
 
 import { useEffect, useState } from 'react';
 
@@ -187,7 +188,7 @@ function Colaboradores() {
 
         return usuarios.find((usuario) => {
 
-            // Algumas respostas podem trazer o vínculo diretamente.
+            // Verifica se o usuário possui o ID do colaborador diretamente.
             const idDireto =
                 usuario.id_colaborador ??
                 usuario.idColaborador;
@@ -199,7 +200,7 @@ function Colaboradores() {
                 return true;
             }
 
-            // Outras respostas trazem os colaboradores relacionados.
+            // Algumas respostas trazem os colaboradores relacionados em uma lista.
             let colaboradoresUsuario = usuario.colaborador || [];
 
             if (!Array.isArray(colaboradoresUsuario)) {
@@ -230,22 +231,21 @@ function Colaboradores() {
     }
 
 
-//----------------- EXIBIR EDIÇÃO -----------------------//
+    //----------------- EXIBIR EDIÇÃO -----------------------//
 
-if (tela === 'edicao') {
+    if (tela === 'edicao') {
+        const usuarioSelecionado =
+            localizarUsuarioDoColaborador(colaboradorSelecionado);
 
-    const usuarioSelecionado =
-        colaboradorSelecionado?.usuario || null;
-
-    return (
-        <EditarColaborador
-            colaborador={colaboradorSelecionado}
-            usuario={usuarioSelecionado}
-            voltar={voltarParaVisualizacao}
-            onSalvar={atualizarDadosDepoisDaEdicao}
-        />
-    );
-}
+        return (
+            <EditarColaborador
+                colaborador={colaboradorSelecionado}
+                usuario={usuarioSelecionado}
+                voltar={voltarParaVisualizacao}
+                onSalvar={atualizarDadosDepoisDaEdicao}
+            />
+        );
+    }
 
 
     //----------------- EXIBIR VISUALIZAÇÃO -----------------//

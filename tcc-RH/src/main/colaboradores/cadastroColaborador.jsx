@@ -1,4 +1,3 @@
-
 //----------------- IMPORTAÇÕES -----------------------------//
 
 import { useEffect, useState } from 'react';
@@ -34,6 +33,46 @@ import montarDadosUsuario from './funcoes/cadastroColaborador/montarDadosUsuario
 import './css-colaboradores/cadastroColaborador.css';
 
 
+//----------------- VERIFICAR SE ESTÁ ATIVO -----------------//
+
+function estaAtivo(item) {
+    const status = item?.status;
+
+    return (
+        status === 1 ||
+        status === '1' ||
+        String(status).toLowerCase() === 'ativo' ||
+        String(status).toLowerCase() === 'ativa'
+    );
+}
+
+
+//----------------- FILTRAR OPÇÕES --------------------------//
+
+function filtrarOpcoes(lista, idAtual, modoEdicao, obterId) {
+    return lista.filter((item) => {
+        // As opções ativas aparecem tanto no cadastro quanto na edição.
+        if (estaAtivo(item)) {
+            return true;
+        }
+
+        // Na edição, mantém a opção inativa já vinculada
+        // para não perder a associação existente.
+        if (
+            modoEdicao &&
+            idAtual !== null &&
+            idAtual !== undefined &&
+            idAtual !== ''
+        ) {
+            return String(obterId(item)) === String(idAtual);
+        }
+
+        // No cadastro, opções inativas não aparecem.
+        return false;
+    });
+}
+
+
 //----------------- COMPONENTE ------------------------------//
 
 function CadastroColaborador({
@@ -65,6 +104,8 @@ function CadastroColaborador({
         idJornadaEscala: ''
     });
 
+    const [erros, setErros] = useState({});
+
     const [cargos, setCargos] = useState([]);
     const [setores, setSetores] = useState([]);
     const [niveisAcesso, setNiveisAcesso] = useState([]);
@@ -80,7 +121,6 @@ function CadastroColaborador({
     //----------------- FORMATAR DATA ------------------------//
 
     function formatarData(data) {
-
         if (!data) {
             return '';
         }
@@ -89,16 +129,35 @@ function CadastroColaborador({
     }
 
 
+    //----------------- ATUALIZAR CAMPO E LIMPAR ERRO --------//
+
+    function aoAlterarCampo(campo, valor) {
+        setDados((dadosAtuais) => ({
+            ...dadosAtuais,
+            [campo]: valor
+        }));
+
+        setErros((errosAtuais) => {
+            if (!errosAtuais[campo]) {
+                return errosAtuais;
+            }
+
+            const novosErros = { ...errosAtuais };
+
+            delete novosErros[campo];
+
+            return novosErros;
+        });
+    }
+
+
     //----------------- CARREGAR OPÇÕES ----------------------//
 
     useEffect(() => {
-
         async function carregarOpcoes() {
-
             setCarregandoOpcoes(true);
 
             try {
-
                 const [
                     listaCargos,
                     listaSetores,
@@ -111,13 +170,89 @@ function CadastroColaborador({
                     buscarJornadas()
                 ]);
 
-                setCargos(listaCargos);
-                setSetores(listaSetores);
+                // Identificar o setor atual do colaborador.
+                const setorAtual = Array.isArray(colaborador?.setor)
+                    ? colaborador.setor[0]
+                    : colaborador?.setor;
+
+                // Identificar o cargo atual do colaborador.
+                let cargoAtual = colaborador?.cargo;
+
+                if (Array.isArray(cargoAtual?.classificacao)) {
+                    cargoAtual = cargoAtual.classificacao[0];
+                }
+
+                // Identificar a jornada atual do colaborador.
+                const jornadaAtual = Array.isArray(
+                    colaborador?.jornada_escala
+                )
+                    ? colaborador.jornada_escala[0]
+                    : colaborador?.jornada_escala;
+
+
+                //----------------- IDS ATUAIS -----------------//
+
+                const idCargoAtual =
+                    colaborador?.id_cargo ??
+                    cargoAtual?.id_cargo ??
+                    cargoAtual?.id ??
+                    '';
+
+                const idSetorAtual =
+                    colaborador?.id_setor ??
+                    setorAtual?.id_setor ??
+                    setorAtual?.id ??
+                    '';
+
+                const idJornadaAtual =
+                    colaborador?.id_jornada_escala ??
+                    jornadaAtual?.id_jornada_escala ??
+                    jornadaAtual?.id ??
+                    '';
+
+
+                //----------------- FILTRAR CARGOS --------------//
+
+                const cargosFiltrados = filtrarOpcoes(
+                    listaCargos,
+                    idCargoAtual,
+                    modoEdicao,
+                    (cargo) => cargo.id_cargo ?? cargo.id
+                );
+
+                setCargos(cargosFiltrados);
+
+
+                //----------------- FILTRAR SETORES ------------//
+
+                const setoresFiltrados = filtrarOpcoes(
+                    listaSetores,
+                    idSetorAtual,
+                    modoEdicao,
+                    (setor) => setor.id_setor ?? setor.id
+                );
+
+                setSetores(setoresFiltrados);
+
+
+                //----------------- NÍVEIS DE ACESSO ------------//
+
                 setNiveisAcesso(listaNiveis);
-                setJornadas(listaJornadas);
+
+
+                //----------------- FILTRAR JORNADAS -----------//
+
+                const jornadasFiltradas = filtrarOpcoes(
+                    listaJornadas,
+                    idJornadaAtual,
+                    modoEdicao,
+                    (jornada) =>
+                        jornada.id_jornada_escala ?? jornada.id
+                );
+
+                setJornadas(jornadasFiltradas);
 
             } catch (erro) {
-
                 console.error(
                     'Erro ao carregar opções do formulário:',
                     erro
@@ -128,43 +263,35 @@ function CadastroColaborador({
                 );
 
             } finally {
-
                 setCarregandoOpcoes(false);
-
             }
         }
 
         carregarOpcoes();
-
-    }, []);
+    }, [modoEdicao, colaborador]);
 
 
     //----------------- PREENCHER OS DADOS DA EDIÇÃO ----------//
 
     useEffect(() => {
-
         if (!modoEdicao || !colaborador) {
             return;
         }
 
-        // O setor pode vir como uma lista ou um objeto.
         const setor = Array.isArray(colaborador.setor)
             ? colaborador.setor[0]
             : colaborador.setor;
 
-        // O cargo pode vir dentro de cargo.classificacao.
         let cargo = colaborador.cargo;
 
         if (Array.isArray(cargo?.classificacao)) {
             cargo = cargo.classificacao[0];
         }
 
-        // A jornada pode vir como uma lista ou um objeto.
         const jornada = Array.isArray(colaborador.jornada_escala)
             ? colaborador.jornada_escala[0]
             : colaborador.jornada_escala;
 
-        // O nível de acesso pode vir dentro de outra lista.
         let nivel = usuario?.nivel_acesso;
 
         if (Array.isArray(nivel?.nivel_acesso)) {
@@ -172,7 +299,6 @@ function CadastroColaborador({
         }
 
         setDados({
-
             nome: colaborador.nome ?? '',
             email: colaborador.email ?? '',
             cpf: colaborador.cpf ?? '',
@@ -188,7 +314,7 @@ function CadastroColaborador({
 
             status:
                 String(colaborador.status).toLowerCase() === 'inativo' ||
-                    Number(colaborador.status) === 0
+                Number(colaborador.status) === 0
                     ? 0
                     : 1,
 
@@ -224,16 +350,15 @@ function CadastroColaborador({
                 jornada?.id_jornada_escala ??
                 jornada?.id ??
                 ''
-
         });
 
+        setErros({});
     }, [modoEdicao, colaborador, usuario]);
 
 
     //----------------- VOLTAR -------------------------------//
 
     function voltar() {
-
         if (salvando) {
             return;
         }
@@ -249,57 +374,22 @@ function CadastroColaborador({
     }
 
 
-    //----------------- VALIDAR EDIÇÃO -----------------------//
+    //----------------- VALIDAR FORMULÁRIO -------------------//
 
-    function validarEdicao() {
+    function validarFormulario() {
+        const resultado = validarColaborador(
+            dados,
+            modoEdicao
+        );
 
-        if (!dados.nome.trim()) {
-            alert('Informe o nome do colaborador.');
-            return false;
-        }
+        setErros(resultado.erros);
 
-        if (!dados.email.trim()) {
-            alert('Informe o e-mail do colaborador.');
-            return false;
-        }
+        if (!resultado.valido) {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
 
-        if (!dados.cpf || dados.cpf.replace(/\D/g, '').length !== 11) {
-            alert('Informe um CPF válido com 11 números.');
-            return false;
-        }
-
-        if (!dados.matricula.trim()) {
-            alert('Informe a matrícula do colaborador.');
-            return false;
-        }
-
-        if (!dados.idCargo) {
-            alert('Selecione o cargo do colaborador.');
-            return false;
-        }
-
-        if (!dados.idSetor) {
-            alert('Selecione o setor do colaborador.');
-            return false;
-        }
-
-        if (!dados.tipoVinculo) {
-            alert('Selecione o tipo de vínculo do colaborador.');
-            return false;
-        }
-
-        if (!dados.idJornadaEscala) {
-            alert('Selecione a jornada do colaborador.');
-            return false;
-        }
-
-        if (!dados.idNivelAcesso) {
-            alert('Selecione o nível de acesso do usuário.');
-            return false;
-        }
-
-        if (!dados.login.trim()) {
-            alert('Informe o login do usuário.');
             return false;
         }
 
@@ -310,22 +400,16 @@ function CadastroColaborador({
     //----------------- AVANÇAR PARA REVISÃO ----------------//
 
     function avancarParaConfirmacao() {
-
         if (salvando) {
             return;
         }
 
-        if (modoEdicao) {
-
-            if (!validarEdicao()) {
-                return;
-            }
-
-            salvarColaborador();
+        if (!validarFormulario()) {
             return;
         }
 
-        if (!validarColaborador(dados)) {
+        if (modoEdicao) {
+            salvarColaborador();
             return;
         }
 
@@ -341,7 +425,6 @@ function CadastroColaborador({
     //----------------- SALVAR CADASTRO OU EDIÇÃO -------------//
 
     async function salvarColaborador() {
-
         if (salvando) {
             return;
         }
@@ -351,11 +434,9 @@ function CadastroColaborador({
         let idColaborador = idColaboradorCriado;
 
         try {
-
             //----------------- MODO DE EDIÇÃO ----------------//
 
             if (modoEdicao) {
-
                 idColaborador =
                     colaborador?.id_colaborador ??
                     colaborador?.id ??
@@ -375,14 +456,12 @@ function CadastroColaborador({
                     );
                 }
 
-                // Atualiza os dados do colaborador existente.
                 await editarColaborador(
                     idColaborador,
                     dados,
                     colaborador
                 );
 
-                // Atualiza o usuário existente.
                 await editarUsuario(
                     idUsuario,
                     dados,
@@ -407,7 +486,6 @@ function CadastroColaborador({
             //----------------- MODO DE CADASTRO ----------------//
 
             if (!idColaborador) {
-
                 const dadosParaCadastro =
                     montarDadosColaborador(dados);
 
@@ -420,7 +498,6 @@ function CadastroColaborador({
                 );
 
                 if (!idColaborador) {
-
                     const colaboradores = await buscarColaboradores();
 
                     const colaboradorEncontrado = colaboradores.find(
@@ -470,7 +547,6 @@ function CadastroColaborador({
             }
 
         } catch (erro) {
-
             console.error(
                 modoEdicao
                     ? 'Erro ao editar colaborador:'
@@ -479,14 +555,15 @@ function CadastroColaborador({
             );
 
             alert(
-                `Não foi possível ${modoEdicao ? 'atualizar' : 'concluir o cadastro de'
-                } o colaborador.\n\nErro: ${erro.message}`
+                `Não foi possível ${
+                    modoEdicao
+                        ? 'atualizar'
+                        : 'concluir o cadastro do'
+                } colaborador.\n\nErro: ${erro.message}`
             );
 
         } finally {
-
             setSalvando(false);
-
         }
     }
 
@@ -494,7 +571,6 @@ function CadastroColaborador({
     //----------------- TELA DE CONFIRMAÇÃO ------------------//
 
     if (!modoEdicao && mostrarConfirmacao) {
-
         return (
             <Confirmacao
                 dados={dados}
@@ -528,18 +604,14 @@ function CadastroColaborador({
 
     return (
         <>
-
             {/* CABEÇALHO */}
 
             <div className="cabecalho-novo-colaborador">
-
                 <BotaoCadastro
                     titulo={tituloPagina}
                     descricao={descricaoPagina}
                 >
-
                     <nav className="caminho-cadastro-colaborador">
-
                         <button
                             type="button"
                             onClick={voltar}
@@ -553,27 +625,22 @@ function CadastroColaborador({
                         <span className="pagina-atual-colaborador">
                             {tituloPagina}
                         </span>
-
                     </nav>
-
                 </BotaoCadastro>
-
             </div>
 
 
             {/* CAMPOS DO FORMULÁRIO */}
 
             {carregandoOpcoes ? (
-
                 <p>Carregando as opções do formulário...</p>
-
             ) : (
-
                 <>
-
                     <Dadospessoais
                         dados={dados}
                         setDados={setDados}
+                        erros={erros}
+                        aoAlterarCampo={aoAlterarCampo}
                     />
 
                     <Dadosprofissionais
@@ -583,12 +650,16 @@ function CadastroColaborador({
                         setores={setores}
                         niveisAcesso={niveisAcesso}
                         modoEdicao={modoEdicao}
+                        erros={erros}
+                        aoAlterarCampo={aoAlterarCampo}
                     />
 
                     <JornadaEscala
                         dados={dados}
                         setDados={setDados}
                         jornadas={jornadas}
+                        erros={erros}
+                        aoAlterarCampo={aoAlterarCampo}
                     />
 
                     <BotaoSalvarCancelar
@@ -601,11 +672,8 @@ function CadastroColaborador({
                                 : 'Revisar cadastro'
                         }
                     />
-
                 </>
-
             )}
-
         </>
     );
 }
