@@ -8,6 +8,7 @@ import '../../componentes/cardNomePag/nomePag.css';
 import './css-ferias/ferias.css';
 
 import Minicards from '../../componentes/minicard/minicard.jsx';
+import Solicitacao from './componentes/solicitacao/cardSolicitacao.jsx'
 
 import buscarDadosFerias from './servicos/ferias.js';
 
@@ -139,6 +140,7 @@ function Ferias() {
                 />
 
             </div>
+            <Solicitacao/>
 
 
             {/* CARREGAMENTO */}
