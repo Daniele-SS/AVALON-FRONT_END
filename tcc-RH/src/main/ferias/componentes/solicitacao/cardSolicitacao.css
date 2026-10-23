@@ -1,4 +1,5 @@
-.card-solicitacao{
+
+.card-solicitacao {
     display: flex;
     flex-direction: column;
 
@@ -10,57 +11,72 @@
 
     justify-content: space-between;
 
+    padding: 17px 16px;
+    box-sizing: border-box;
 }
 
-.cabecalho-card{
+
+/* ================= CABEÇALHO ================= */
+
+.cabecalho-card {
     display: flex;
     justify-content: space-between;
-    padding-top: 17px;
-    padding-left: 16px;
-    padding-right: 16px;
+    align-items: flex-start;
+
+    gap: 12px;
 }
 
-.introducao{
+.introducao {
     display: flex;
+    min-width: 0;
 }
 
-.icone{
+.icone {
     display: flex;
     align-items: center;
     justify-content: center;
 
     width: 36px;
     height: 36px;
-    border-radius: 8px;
+    flex-shrink: 0;
 
-    background-color: #E2E7FF ;
+    border-radius: 8px;
+    background-color: #E2E7FF;
 }
 
-.nomes{
+.nomes {
     display: flex;
     flex-direction: column;
-    padding-left: 8px 
+
+    padding-left: 8px;
+    min-width: 0;
 }
 
-.nomes h2{
+.nomes h2 {
+    margin: 0;
+
     font-size: 18px;
     font-weight: 600;
 }
 
-.nomes p{
+.nomes p {
+    margin: 0;
+
     font-size: 13px;
     font-weight: 600;
     color: #444653;
 }
 
-.ver-tudo{
+.ver-tudo {
     display: flex;
+    align-items: center;
+
     max-width: 187px;
     padding-top: 10px;
+
     font-size: 12px;
     font-family: "Geist", sans-serif;
     font-weight: 600;
-
     color: #00288E;
 
     background: none;
@@ -69,6 +85,259 @@
     box-shadow: none;
 
     cursor: pointer;
+    white-space: nowrap;
 }
 
 
+/* ================= CONTAINER DOS PEDIDOS ================= */
+
+.card-pedidos {
+    width: 100%;
+    min-width: 0;
+}
+
+.lista-pedidos {
+    display: grid;
+
+    /* Dois cards com a mesma largura */
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    /* Espaçamento horizontal entre os cards */
+    column-gap: 12px;
+
+    width: 100%;
+}
+
+
+/* ================= CARD INDIVIDUAL ================= */
+
+.pedido {
+    display: flex;
+    flex-direction: column;
+
+    width: 100%;
+    height: 153px;
+    min-width: 0;
+
+    padding: 8px;
+    box-sizing: border-box;
+
+    background: #F1F3FF;
+    border-radius: 12px;
+}
+
+
+/* ================= TOPO DO PEDIDO ================= */
+
+.pedido-topo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 6px;
+    min-width: 0;
+}
+
+.colaborador {
+    display: flex;
+    align-items: center;
+
+    gap: 8px;
+    min-width: 0;
+}
+
+.avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    background: #E2E7FF;
+    color: #2949B8;
+
+    font-size: 13px;
+    font-weight: 700;
+}
+
+
+/* ================= NOME E IDENTIFICAÇÃO ================= */
+
+.nome {
+    display: flex;
+    align-items: baseline;
+
+    gap: 4px;
+
+    font-size: 14px;
+    font-weight: 700;
+    color: #172033;
+
+    white-space: nowrap;
+}
+
+.nome span {
+    font-size: 9px;
+    color: #6B7280;
+}
+
+.subtitulo {
+    margin-top: 2px;
+
+    font-size: 9px;
+    color: #4B5563;
+
+    white-space: nowrap;
+}
+
+
+/* ================= STATUS ================= */
+
+.status {
+    display: flex;
+    align-items: center;
+
+    gap: 5px;
+    padding: 5px 8px;
+
+    flex-shrink: 0;
+
+    border-radius: 20px;
+
+    background: #DCE6FF;
+    color: #172D70;
+
+    font-size: 9px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.status span {
+    width: 6px;
+    height: 6px;
+    flex-shrink: 0;
+
+    border-radius: 50%;
+    background: #1454D9;
+}
+
+
+/* ================= INFORMAÇÕES DO PEDIDO ================= */
+
+.pedido-info {
+    display: flex;
+
+    width: 100%;
+    min-width: 0;
+
+    margin-top: 7px;
+    padding: 6px 8px;
+
+    box-sizing: border-box;
+
+    background: #FFFFFF;
+    border-radius: 8px;
+}
+
+.pedido-info > div {
+    display: flex;
+    flex-direction: column;
+
+    flex: 1;
+    min-width: 0;
+
+    gap: 2px;
+}
+
+.pedido-info > div + div {
+    padding-left: 10px;
+    border-left: 1px solid #E5E7EB;
+}
+
+.pedido-info label {
+    font-size: 9px;
+    color: #6B7280;
+    white-space: nowrap;
+}
+
+.pedido-info strong {
+    font-size: 10px;
+    font-weight: 600;
+    color: #172033;
+
+    white-space: nowrap;
+}
+
+
+/* ================= RODAPÉ ================= */
+
+.pedido-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 6px;
+    margin-top: auto;
+    padding-top: 6px;
+
+    min-width: 0;
+}
+
+.sem-sobreposicao {
+    display: flex;
+    align-items: center;
+
+    gap: 5px;
+    min-width: 0;
+
+    font-size: 9px;
+    color: #4B5563;
+    white-space: nowrap;
+}
+
+.sem-sobreposicao span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 13px;
+    height: 13px;
+    flex-shrink: 0;
+
+    border: 1px solid #3971A8;
+    border-radius: 50%;
+
+    color: #3971A8;
+    font-size: 8px;
+}
+
+.pedido-footer button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 156px;
+    height: 36px;
+
+    border: none;
+    border-radius: 6px;
+
+    padding: 7px 10px;
+
+    background: #2949B8;
+    color: #FFFFFF;
+
+    font-size: 9px;
+    font-weight: 600;
+    white-space: nowrap;
+
+    cursor: pointer;
+}
+
+.pedido-footer img{
+    padding-left: 4px;
+}
