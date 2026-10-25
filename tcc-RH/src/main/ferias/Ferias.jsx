@@ -8,7 +8,7 @@
  import Filtro from '../../componentes/cardFiltros/filtros.jsx';
  import Tabela from '../../componentes/cardTabela/tabela.jsx';
  
- //import CadastroFerias from './cadastroFerias.jsx';
+ import CadastroFerias from './CadastroFerias.jsx';
  //import EditarFerias from './editarFerias.jsx';
  
  import CardSolicitacao from './componentes/solicitacao/cardSolicitacao.jsx';

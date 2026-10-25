@@ -1,0 +1,795 @@
+/* =========================================================
+   CADASTRO DE FÉRIAS
+========================================================= */
+
+.cadastro-ferias {
+    width: 100%;
+    padding-bottom: 40px;
+}
+
+
+/* =========================================================
+   CABEÇALHO
+========================================================= */
+
+.cabecalho-nova-ferias {
+    width: 100%;
+    min-height: 129px;
+}
+
+.cabecalho-nova-ferias .card-tiulo {
+    width: 100%;
+    height: 129px;
+    min-height: 129px;
+}
+
+
+/* =========================================================
+   CAMINHO
+========================================================= */
+
+.caminho-cadastro-ferias {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    margin-bottom: 8px;
+
+    font-size: 13px;
+}
+
+.caminho-cadastro-ferias button {
+    width: auto;
+    height: auto;
+    padding: 0;
+
+    border: none;
+    background: transparent;
+
+    color: #434655;
+    font-size: 13px;
+    font-weight: 500;
+
+    cursor: pointer;
+}
+
+.caminho-cadastro-ferias button:hover {
+    color: #0866FF;
+    text-decoration: underline;
+}
+
+.caminho-cadastro-ferias .seta {
+    color: #9AA3B2;
+}
+
+.caminho-cadastro-ferias .pagina-atual-ferias {
+    color: #131B2E;
+    font-weight: 500;
+}
+
+
+/* =========================================================
+   CARDS
+========================================================= */
+
+.cartao-cadastro-ferias {
+    box-sizing: border-box;
+
+    width: 100%;
+    margin-top: 23px;
+    padding: 22px 19px;
+
+    background: #FFFFFF;
+    border-radius: 8px;
+
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.cabecalho-card-ferias {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+
+    margin-bottom: 22px;
+}
+
+.cabecalho-card-ferias h2 {
+    margin: 0;
+
+    color: #172033;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.cabecalho-card-ferias p {
+    margin: 6px 0 0;
+
+    color: #52586B;
+    font-size: 12px;
+    line-height: 18px;
+}
+
+
+/* =========================================================
+   CAMPOS
+========================================================= */
+
+.campo-ferias {
+    width: 100%;
+    min-width: 0;
+}
+
+.campo-ferias label {
+    display: block;
+
+    margin-bottom: 8px;
+
+    color: #202A40;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.obrigatorio {
+    margin-left: 3px;
+    color: #DC2626;
+}
+
+
+/* =========================================================
+   DROPDOWN COLABORADOR
+========================================================= */
+
+.dropdown-colaborador-ferias {
+    position: relative;
+    width: 100%;
+}
+
+.input-colaborador-ferias {
+    box-sizing: border-box;
+
+    display: flex;
+    align-items: center;
+    gap: 9px;
+
+    width: 100%;
+    height: 36px;
+    padding: 0 10px;
+
+    background: #F1F2FF;
+
+    border: 1px solid transparent;
+    border-radius: 5px;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.input-colaborador-ferias:focus-within {
+    border-color: #2452E8;
+    box-shadow: 0 0 0 2px rgba(36, 82, 232, 0.10);
+}
+
+.input-colaborador-ferias > img {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+}
+
+.input-colaborador-ferias input {
+    box-sizing: border-box;
+
+    flex: 1;
+
+    width: 100%;
+    min-width: 0;
+    height: 34px;
+
+    padding: 0;
+
+    border: none;
+    outline: none;
+
+    background: transparent;
+
+    color: #202A40;
+
+    font-family: inherit;
+    font-size: 12px;
+}
+
+.input-colaborador-ferias input::placeholder {
+    color: #777D90;
+    opacity: 1;
+}
+
+.status-ativo-ferias {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    height: 22px;
+    padding: 0 8px;
+
+    border-radius: 12px;
+
+    background: #E8F5EF;
+    color: #14705C;
+
+    font-size: 10px;
+    font-weight: 600;
+
+    white-space: nowrap;
+}
+
+.seta-dropdown-ferias {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    width: 18px;
+    height: 18px;
+
+    color: #777D90;
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   LISTA DO DROPDOWN
+========================================================= */
+
+.lista-dropdown-ferias {
+    position: absolute;
+    z-index: 100;
+
+    top: calc(100% + 5px);
+    left: 0;
+
+    width: 100%;
+    max-height: 260px;
+
+    overflow-y: auto;
+
+    box-sizing: border-box;
+
+    padding: 4px 0;
+
+    background: #FFFFFF;
+
+    border: 1px solid #E1E4ED;
+    border-radius: 6px;
+
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.10);
+}
+
+.opcao-colaborador-ferias {
+    box-sizing: border-box;
+
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    width: 100%;
+    min-height: 56px;
+
+    padding: 9px 12px;
+
+    margin: 0;
+
+    border: none;
+    border-bottom: 1px solid #EEF0F5;
+
+    background: #FFFFFF;
+
+    font-family: inherit;
+    text-align: left;
+
+    cursor: pointer;
+
+    transition: background-color 0.15s ease;
+}
+
+.opcao-colaborador-ferias:last-child {
+    border-bottom: none;
+}
+
+.opcao-colaborador-ferias:hover {
+    background: #F5F6FF;
+}
+
+
+/* Avatar com iniciais */
+
+.icone-opcao-colaborador {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    width: 32px;
+    height: 32px;
+
+    border-radius: 50%;
+
+    background: #E8F0FE;
+    color: #1967D2;
+
+    font-size: 11px;
+    font-weight: 600;
+}
+
+
+/* Nome + matrícula */
+
+.dados-opcao-colaborador {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+
+    flex: 1;
+    min-width: 0;
+
+    text-align: left;
+}
+
+.dados-opcao-colaborador strong {
+    width: 100%;
+
+    overflow: hidden;
+
+    color: #202A40;
+
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 17px;
+
+    text-align: left;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.dados-opcao-colaborador small {
+    width: 100%;
+
+    overflow: hidden;
+
+    color: #777D90;
+
+    font-size: 11px;
+    line-height: 15px;
+
+    text-align: left;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.dropdown-vazio-ferias {
+    display: flex;
+    align-items: center;
+
+    min-height: 50px;
+    padding: 12px;
+
+    color: #777D90;
+    font-size: 12px;
+}
+
+
+/* =========================================================
+   INFORMAÇÕES DO COLABORADOR
+========================================================= */
+
+.informacoes-colaborador-ferias {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+
+    width: 100%;
+
+    margin-top: 20px;
+    padding: 14px;
+
+    box-sizing: border-box;
+
+    background: #F1F2FF;
+    border-radius: 6px;
+}
+
+.info-colaborador-ferias {
+    box-sizing: border-box;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    min-width: 0;
+    min-height: 88px;
+
+    padding: 12px;
+
+    background: #FFFFFF;
+
+    border: 1px solid #E8EAF2;
+    border-radius: 6px;
+}
+
+.rotulo-info-ferias {
+    display: block;
+
+    margin-bottom: 6px;
+
+    color: #777D90;
+
+    font-size: 10px;
+    font-weight: 600;
+
+    letter-spacing: 0.04em;
+}
+
+.info-colaborador-ferias strong {
+    display: block;
+
+    overflow: hidden;
+
+    color: #202A40;
+
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 17px;
+
+    text-overflow: ellipsis;
+}
+
+.info-colaborador-ferias small {
+    margin-top: 5px;
+
+    color: #777D90;
+
+    font-size: 11px;
+    line-height: 15px;
+}
+
+.mensagem-vinculo-ferias {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+
+    margin-top: 12px;
+
+    color: #626B80;
+
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.mensagem-vinculo-ferias span {
+    color: #14705C;
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   PERÍODO
+========================================================= */
+
+.campos-periodo-ferias {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.input-data-ferias {
+    box-sizing: border-box;
+
+    display: flex;
+    align-items: center;
+    gap: 9px;
+
+    width: 100%;
+    height: 36px;
+
+    padding: 0 10px;
+
+    background: #F1F2FF;
+
+    border: 1px solid transparent;
+    border-radius: 5px;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.input-data-ferias:focus-within {
+    border-color: #2452E8;
+    box-shadow: 0 0 0 2px rgba(36, 82, 232, 0.10);
+}
+
+.input-data-ferias > img {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+}
+
+.input-data-ferias input {
+    box-sizing: border-box;
+
+    width: 100%;
+    min-width: 0;
+    height: 34px;
+
+    padding: 0;
+
+    border: none;
+    outline: none;
+
+    background: transparent;
+
+    color: #202A40;
+
+    font-family: inherit;
+    font-size: 12px;
+}
+
+.erro-periodo-ferias {
+    margin-top: 10px;
+
+    color: #DC2626;
+
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 17px;
+}
+
+.mensagem-erro-ferias {
+    display: block;
+
+    width: 100%;
+    margin-top: 0;
+
+    color: #DC2626;
+
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 17px;
+
+    overflow-wrap: break-word;
+}
+
+.input-ferias-erro {
+    background: #FFF5F5 !important;
+
+    border: 1px solid #DC2626 !important;
+
+    box-shadow: 0 0 0 1px rgba(220, 38, 38, 0.08);
+}
+
+.input-ferias-erro:focus-within {
+    background: #FFFFFF !important;
+
+    border-color: #DC2626 !important;
+
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.12);
+}
+
+
+/* =========================================================
+   RESUMO
+========================================================= */
+
+.resumo-ferias {
+    box-sizing: border-box;
+
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    width: 100%;
+    min-height: 82px;
+
+    margin-top: 22px;
+    padding: 14px 16px;
+
+    background: #F1F2FF;
+
+    border: 1px solid #E5E7F2;
+    border-radius: 6px;
+}
+
+.icone-resumo-ferias {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    width: 40px;
+    height: 40px;
+
+    border-radius: 6px;
+    background: #1E40AF;
+}
+
+.icone-resumo-ferias img {
+    width: 20px;
+    height: 20px;
+}
+
+.texto-resumo-ferias {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    flex: 1;
+    min-width: 0;
+}
+
+.texto-resumo-ferias strong {
+    color: #172033;
+
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 20px;
+}
+
+.texto-resumo-ferias strong span {
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.texto-resumo-ferias small {
+    color: #626B80;
+
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.texto-resumo-ferias small b {
+    color: #1E40AF;
+}
+
+.limite-anual-ferias {
+    box-sizing: border-box;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+
+    min-width: 150px;
+
+    padding: 9px 14px;
+
+    background: #FFFFFF;
+
+    border: 1px solid #E5E7F2;
+    border-radius: 6px;
+}
+
+.limite-anual-ferias span {
+    color: #777D90;
+
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.limite-anual-ferias strong {
+    color: #1E40AF;
+
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.limite-anual-ferias small {
+    color: #777D90;
+    font-size: 10px;
+}
+
+.saldo-esgotado-ferias {
+    background: #FFF5F5;
+    border-color: #F0C7CC;
+}
+
+.saldo-esgotado-ferias .icone-resumo-ferias {
+    background: #DC2626;
+}
+
+
+/* =========================================================
+   OBSERVAÇÕES
+========================================================= */
+
+.observacao-cabecalho-ferias {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+}
+
+.icone-observacao-ferias {
+    flex-shrink: 0;
+
+    color: #777D90;
+    font-size: 18px;
+}
+
+.campo-observacao-ferias textarea {
+    box-sizing: border-box;
+
+    width: 100%;
+    min-height: 100px;
+
+    padding: 10px;
+
+    resize: vertical;
+
+    border: 1px solid transparent;
+    border-radius: 5px;
+    outline: none;
+
+    background: #F1F2FF;
+    color: #202A40;
+
+    font-family: inherit;
+    font-size: 12px;
+    line-height: 18px;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.campo-observacao-ferias textarea:focus {
+    background: #FFFFFF;
+
+    border-color: #2452E8;
+
+    box-shadow: 0 0 0 2px rgba(36, 82, 232, 0.10);
+}
+
+.campo-observacao-ferias textarea::placeholder {
+    color: #777D90;
+}
+
+.rodape-observacao-ferias {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+
+    margin-top: 8px;
+}
+
+.rodape-observacao-ferias span {
+    color: #777D90;
+
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.rodape-observacao-ferias strong {
+    flex-shrink: 0;
+
+    color: #1E40AF;
+
+    font-size: 11px;
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   BOTÕES
+========================================================= */
+
+.botoes-cadastro-ferias {
+    display: flex;
+    justify-content: flex-end;
+
+    width: 100%;
+    margin-top: 24px;
+}
