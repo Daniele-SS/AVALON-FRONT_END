@@ -1,7 +1,6 @@
+//----------------- FILTRAR FÉRIAS --------------------------//
 
- //----------------- FILTRAR FÉRIAS --------------------------//
-
- function filtrarFerias(ferias, filtros) {
+function filtrarFerias(ferias, filtros) {
 
     return ferias.filter(feriasItem => {
 
@@ -36,15 +35,38 @@
             .trim()
             .toLowerCase();
 
-        const correspondeStatus =
+
+        //----------------- TODOS -----------------------------//
+
+        if (
             !statusSelecionado ||
-            statusSelecionado === 'todos' ||
+            statusSelecionado === 'todos'
+        ) {
+
+            // Férias finalizadas só aparecem
+            // quando o usuário seleciona esse filtro.
+
+            if (statusFerias === 'férias finalizadas') {
+                return false;
+            }
+
+            return correspondePesquisa;
+
+        }
+
+
+        //----------------- STATUS ESPECÍFICO -----------------//
+
+        const correspondeStatus =
             statusFerias === statusSelecionado;
 
 
         //----------------- RESULTADO -------------------------//
 
-        return correspondePesquisa && correspondeStatus;
+        return (
+            correspondePesquisa &&
+            correspondeStatus
+        );
 
     });
 

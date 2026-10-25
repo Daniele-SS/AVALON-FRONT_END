@@ -409,7 +409,16 @@ function CadastroFerias({ voltar }) {
                 data_inicio: dataInicio,
                 data_fim: dataFim,
                 quantidade_dias: Number(quantidadeDias),
-                observacao: observacao.trim()
+                observacao: observacao.trim(),
+
+                // Cadastro direto feito pelo RH
+                origem: 'RH',
+
+                // RH já está autorizando o cadastro
+                status_aprovacao: 'APROVADA',
+
+                // O status das férias depende da data
+                status: 'PENDENTE'
             });
 
             alert('Férias cadastradas com sucesso!');
