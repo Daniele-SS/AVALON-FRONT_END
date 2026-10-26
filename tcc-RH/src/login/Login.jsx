@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -26,6 +25,8 @@ function Login() {
         try {
             setCarregando(true);
 
+            const login = email.trim();
+
             const resposta = await fetch(
                 'http://localhost:8080/v1/senai/avalon/auth/login',
                 {
@@ -34,7 +35,7 @@ function Login() {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        login: email.trim(),
+                        login: login,
                         senha: senha
                     })
                 }
@@ -42,15 +43,22 @@ function Login() {
 
             const dados = await resposta.json();
 
+            console.log(
+                'Resposta completa do login:',
+                dados
+            );
+
             if (!resposta.ok) {
                 setMensagemErro(
                     dados.message ||
                     dados.mensagem ||
                     'Login ou senha inválidos.'
                 );
+
                 return;
             }
 
+            // TOKEN
             const token =
                 dados.access_token ||
                 dados.response?.access_token;
@@ -59,15 +67,85 @@ function Login() {
                 setMensagemErro(
                     'A API não retornou o token de autenticação.'
                 );
+
                 return;
             }
 
-            localStorage.setItem('access_token', token);
+            // USUÁRIO
+            const usuario =
+                dados.usuario ||
+                dados.response?.usuario;
 
+            if (!usuario) {
+                setMensagemErro(
+                    'A API não retornou os dados do usuário.'
+                );
+
+                return;
+            }
+
+            // MENUS
+            const menus =
+                dados.menus ||
+                dados.response?.menus ||
+                [];
+
+            if (!Array.isArray(menus)) {
+                setMensagemErro(
+                    'A API retornou os menus em um formato inválido.'
+                );
+
+                return;
+            }
+
+            console.log(
+                'Usuário logado:',
+                usuario
+            );
+
+            console.log(
+                'Menus permitidos:',
+                menus
+            );
+
+            // LIMPA DADOS ANTIGOS
+            localStorage.removeItem('usuario');
+            localStorage.removeItem('usuarioLogin');
+            localStorage.removeItem('menus');
+            localStorage.removeItem('access_token');
+
+            // SALVA TOKEN
+            localStorage.setItem(
+                'access_token',
+                token
+            );
+
+            // SALVA USUÁRIO
+            localStorage.setItem(
+                'usuario',
+                JSON.stringify(usuario)
+            );
+
+            // SALVA LOGIN
+            localStorage.setItem(
+                'usuarioLogin',
+                usuario.login || login
+            );
+
+            // SALVA MENUS
+            localStorage.setItem(
+                'menus',
+                JSON.stringify(menus)
+            );
+
+            // VAI PARA O DASHBOARD
             navegar('/dashboard');
 
         } catch (erro) {
-            console.error('Erro ao fazer login:', erro);
+            console.error(
+                'Erro ao fazer login:',
+                erro
+            );
 
             setMensagemErro(
                 'Não foi possível conectar à API.'
@@ -79,25 +157,44 @@ function Login() {
 
     return (
         <div className="login-lado-direito-esquerdo">
-            <div className="lado-esquerdo">
-                <div className="login-dados">
-                    <img src={loginIMG} alt="login icone" />
 
-                    <h2>Central do Funcionário</h2>
+            <div className="lado-esquerdo">
+
+                <div className="login-dados">
+
+                    <img
+                        src={loginIMG}
+                        alt="login icone"
+                    />
+
+                    <h2>
+                        Central do Funcionário
+                    </h2>
+
                     <p className="sub-titulo">
                         Gestão e Experiência do Colaborador
                     </p>
 
-                    <p className="titulo">Faça seu login</p>
+                    <p className="titulo">
+                        Faça seu login
+                    </p>
+
                     <p className="descricao">
                         Acesse sua conta para continuar
                     </p>
 
                     <div className="email">
-                        <label htmlFor="email">E-mail</label>
+
+                        <label htmlFor="email">
+                            E-mail
+                        </label>
 
                         <div className="input-com-icone">
-                            <img src={emailIcone} alt="" />
+
+                            <img
+                                src={emailIcone}
+                                alt=""
+                            />
 
                             <input
                                 id="email"
@@ -105,16 +202,29 @@ function Login() {
                                 name="email"
                                 placeholder="Digite seu e-mail"
                                 value={email}
-                                onChange={(evento) => setEmail(evento.target.value)}
+                                onChange={(evento) =>
+                                    setEmail(
+                                        evento.target.value
+                                    )
+                                }
                             />
+
                         </div>
+
                     </div>
 
                     <div className="senha">
-                        <label htmlFor="senha">Senha</label>
+
+                        <label htmlFor="senha">
+                            Senha
+                        </label>
 
                         <div className="input-com-icone">
-                            <img src={senhaIcone} alt="" />
+
+                            <img
+                                src={senhaIcone}
+                                alt=""
+                            />
 
                             <input
                                 id="senha"
@@ -122,15 +232,23 @@ function Login() {
                                 name="senha"
                                 placeholder="Digite sua senha"
                                 value={senha}
-                                onChange={(evento) => setSenha(evento.target.value)}
+                                onChange={(evento) =>
+                                    setSenha(
+                                        evento.target.value
+                                    )
+                                }
                             />
+
                         </div>
+
                     </div>
 
                     <div className="recuperar-senha-container">
+
                         <p className="recuperar-senha">
                             Esqueci minha senha
                         </p>
+
                     </div>
 
                     {mensagemErro && (
@@ -145,20 +263,33 @@ function Login() {
                     )}
 
                     <div className="btn-entrar">
+
                         <button
                             type="button"
                             onClick={entrar}
                             disabled={carregando}
                         >
-                            {carregando ? 'Entrando...' : 'Entrar'}
+                            {carregando
+                                ? 'Entrando...'
+                                : 'Entrar'
+                            }
                         </button>
+
                     </div>
+
                 </div>
+
             </div>
 
             <div className="lado-direito">
-                <img src={ilustracao} alt="ilustração" />
+
+                <img
+                    src={ilustracao}
+                    alt="ilustração"
+                />
+
             </div>
+
         </div>
     );
 }

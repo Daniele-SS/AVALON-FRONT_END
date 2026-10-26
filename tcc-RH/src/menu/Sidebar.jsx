@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 
@@ -42,82 +41,89 @@ const icones = {
 
 function Sidebar() {
     const [menus, setMenus] = useState([]);
+
     const navegar = useNavigate();
 
     useEffect(() => {
-        async function carregarMenus() {
-            try {
-                const token = localStorage.getItem('access_token');
+        const token =
+            localStorage.getItem('access_token');
 
-                if (!token) {
-                    navegar('/');
-                    return;
-                }
+        if (!token) {
+            navegar('/login');
+            return;
+        }
 
-                const resposta = await fetch(
-                    'http://localhost:8080/v1/senai/avalon/menu',
-                    {
-                        method: 'GET',
-                        headers: {
-                            'Authorization': `Bearer ${token}`,
-                            'Content-Type': 'application/json'
-                        }
-                    }
+        const menusSalvos =
+            localStorage.getItem('menus');
+
+        if (!menusSalvos) {
+            console.log(
+                'Nenhum menu encontrado no localStorage.'
+            );
+
+            setMenus([]);
+
+            return;
+        }
+
+        try {
+            const menusConvertidos =
+                JSON.parse(menusSalvos);
+
+            if (!Array.isArray(menusConvertidos)) {
+                console.error(
+                    'Os menus salvos não são uma lista.'
                 );
 
-                if (resposta.status === 401) {
-                    localStorage.removeItem('access_token');
-                    navegar('/');
-                    return;
-                }
+                setMenus([]);
 
-                if (!resposta.ok) {
-                    throw new Error(
-                        `Erro ao buscar menus. Código: ${resposta.status}`
-                    );
-                }
+                return;
+            }
 
-                const dados = await resposta.json();
-
-                console.log('Resposta da API de menus:', dados);
-
-                // Confere se a API retornou a lista de menus.
-                const listaMenus = dados.response?.menu;
-
-                if (!Array.isArray(listaMenus)) {
-                    throw new Error(
-                        'A resposta da API não contém uma lista válida de menus.'
-                    );
-                }
-
-                const menusOrdenados = [...listaMenus].sort(
+            const menusOrdenados =
+                [...menusConvertidos].sort(
                     (a, b) => a.ordem - b.ordem
                 );
 
-                setMenus(menusOrdenados);
-            } catch (erro) {
-                console.error('Erro ao carregar menus:', erro);
-            }
+            console.log(
+                'Menus carregados no Sidebar:',
+                menusOrdenados
+            );
+
+            setMenus(menusOrdenados);
+
+        } catch (erro) {
+            console.error(
+                'Erro ao carregar menus:',
+                erro
+            );
+
+            setMenus([]);
         }
 
-        carregarMenus();
     }, [navegar]);
 
     return (
         <aside className="sidebar">
+
             <div className="sidebar-logo">
                 <h2>Avalon</h2>
             </div>
 
             <nav className="sidebar-menu">
+
                 {menus.map((menu) => (
+
                     <NavLink
                         key={menu.id}
                         to={menu.rota}
                         className={({ isActive }) =>
-                            isActive ? 'menu-ativo' : ''
+                            isActive
+                                ? 'menu-ativo'
+                                : ''
                         }
                     >
+
                         <img
                             src={icones[menu.icone]}
                             alt=""
@@ -127,9 +133,13 @@ function Sidebar() {
                         <span className="sidebar-menu-text">
                             {menu.nome}
                         </span>
+
                     </NavLink>
+
                 ))}
+
             </nav>
+
         </aside>
     );
 }
