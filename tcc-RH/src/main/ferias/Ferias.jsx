@@ -137,10 +137,35 @@ function Ferias() {
 
     //----------------- FILTRAR DADOS --------------------------//
 
-    const feriasFiltradas = filtrarFerias(
-        feriasComInformacoes,
-        filtros
-    );
+const feriasParaLista = feriasComInformacoes.filter(feriasItem => {
+
+    const origem =
+        String(feriasItem.origem || '')
+            .trim()
+            .toUpperCase();
+
+    const statusAprovacao =
+        String(feriasItem.status_aprovacao || '')
+            .trim()
+            .toUpperCase();
+
+    // Solicitação pendente do gestor
+    // NÃO aparece na Lista de Férias.
+    if (
+        origem === 'GESTOR' &&
+        statusAprovacao === 'PENDENTE'
+    ) {
+        return false;
+    }
+
+    return true;
+
+});
+
+const feriasFiltradas = filtrarFerias(
+    feriasParaLista,
+    filtros
+);
 
 
     //----------------- COLUNAS DA TABELA ----------------------//
