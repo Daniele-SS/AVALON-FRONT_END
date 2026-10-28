@@ -11,6 +11,7 @@ import CadastroFerias from './CadastroFerias.jsx';
 import EditarFerias from './EditaFerias.jsx';
 
 import CardSolicitacao from './componentes/solicitacao/cardSolicitacao.jsx';
+import ModalSolicitacoes from './componentes/solicitacao/ModalSolicitacoes.jsx';
 
 import '../../componentes/cardNomePag/nomePag.css';
 import './css-ferias/ferias.css';
@@ -49,6 +50,9 @@ function Ferias() {
     const [carregando, setCarregando] = useState(true);
 
     const [erro, setErro] = useState('');
+
+    const [modalSolicitacoesAberto, setModalSolicitacoesAberto] =
+        useState(false);
 
 
     //----------------- CARREGAR DADOS ------------------------//
@@ -137,35 +141,35 @@ function Ferias() {
 
     //----------------- FILTRAR DADOS --------------------------//
 
-const feriasParaLista = feriasComInformacoes.filter(feriasItem => {
+    const feriasParaLista = feriasComInformacoes.filter(feriasItem => {
 
-    const origem =
-        String(feriasItem.origem || '')
-            .trim()
-            .toUpperCase();
+        const origem =
+            String(feriasItem.origem || '')
+                .trim()
+                .toUpperCase();
 
-    const statusAprovacao =
-        String(feriasItem.status_aprovacao || '')
-            .trim()
-            .toUpperCase();
+        const statusAprovacao =
+            String(feriasItem.status_aprovacao || '')
+                .trim()
+                .toUpperCase();
 
-    // Solicitação pendente do gestor
-    // NÃO aparece na Lista de Férias.
-    if (
-        origem === 'GESTOR' &&
-        statusAprovacao === 'PENDENTE'
-    ) {
-        return false;
-    }
+        // Solicitação pendente do gestor
+        // NÃO aparece na Lista de Férias.
+        if (
+            origem === 'GESTOR' &&
+            statusAprovacao === 'PENDENTE'
+        ) {
+            return false;
+        }
 
-    return true;
+        return true;
 
-});
+    });
 
-const feriasFiltradas = filtrarFerias(
-    feriasParaLista,
-    filtros
-);
+    const feriasFiltradas = filtrarFerias(
+        feriasParaLista,
+        filtros
+    );
 
 
     //----------------- COLUNAS DA TABELA ----------------------//
@@ -284,11 +288,9 @@ const feriasFiltradas = filtrarFerias(
 
     function analisarSolicitacao(solicitacao) {
 
-        const feriasOriginal =
-            feriasComInformacoes.find(
-                item =>
-                    item.id === solicitacao.id
-            );
+        const feriasOriginal = feriasComInformacoes.find(
+            item => item.id === solicitacao.id
+        );
 
         if (!feriasOriginal) {
 
@@ -300,6 +302,10 @@ const feriasFiltradas = filtrarFerias(
 
         }
 
+        // Fecha o modal antes de abrir a edição.
+        setModalSolicitacoesAberto(false);
+
+        // Abre a edição da solicitação escolhida.
         abrirEdicao(feriasOriginal);
 
     }
@@ -309,18 +315,19 @@ const feriasFiltradas = filtrarFerias(
 
     function verTodasSolicitacoes() {
 
-        setFiltros({
-
-            pesquisa: '',
-
-            status: 'Todos',
-
-            opcao: 'Pendente'
-
-        });
+        // Abre o modal sem alterar os filtros da página.
+        setModalSolicitacoesAberto(true);
 
     }
 
+
+    //----------------- FECHAR MODAL --------------------------//
+
+    function fecharModalSolicitacoes() {
+
+        setModalSolicitacoesAberto(false);
+
+    }
 
     //----------------- TELA DE CADASTRO -----------------------//
 
@@ -446,6 +453,23 @@ const feriasFiltradas = filtrarFerias(
                 onAnalisar={analisarSolicitacao}
                 onVerTodas={verTodasSolicitacoes}
             />
+
+
+
+            {/* =================================================
+                MODAL DE TODAS AS SOLICITAÇÕES PENDENTES
+            ================================================= */}
+
+            {modalSolicitacoesAberto && (
+
+                <ModalSolicitacoes
+                    solicitacoes={solicitacoes}
+                    onFechar={fecharModalSolicitacoes}
+                    onAnalisar={analisarSolicitacao}
+                />
+
+            )}
+
 
 
             {/* =================================================

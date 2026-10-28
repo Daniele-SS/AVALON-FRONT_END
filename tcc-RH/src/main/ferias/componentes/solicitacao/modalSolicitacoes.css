@@ -1,0 +1,549 @@
+/* ======================================================
+   FUNDO ESCURECIDO E DESFOCADO
+====================================================== */
+
+.modal-solicitacoes-fundo {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 24px;
+    box-sizing: border-box;
+
+    background: rgba(26, 36, 58, 0.35);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+
+
+/* ======================================================
+   MODAL PRINCIPAL
+====================================================== */
+
+.modal-solicitacoes {
+    display: flex;
+    flex-direction: column;
+
+    width: 100%;
+    max-width: 796px;
+
+    max-height: 82vh;
+    min-height: 0;
+
+    background: #FFFFFF;
+    border-radius: 9px;
+
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+
+    overflow: hidden;
+}
+
+
+/* ======================================================
+   CABEÇALHO
+====================================================== */
+
+.modal-solicitacoes-cabecalho {
+    display: grid;
+
+    grid-template-columns: minmax(0, 1fr) 30px;
+
+    grid-template-areas:
+        "titulo fechar"
+        "pesquisa pesquisa";
+
+    align-items: center;
+
+    column-gap: 12px;
+    row-gap: 16px;
+
+    flex-shrink: 0;
+
+    padding: 22px 15px 18px;
+
+    box-sizing: border-box;
+
+    background: #FFFFFF;
+    border-bottom: 1px solid #F0F1F5;
+}
+
+
+/* ======================================================
+   TÍTULO
+====================================================== */
+
+.modal-solicitacoes-titulo {
+    grid-area: titulo;
+
+    display: flex;
+    align-items: center;
+
+    gap: 9px;
+    min-width: 0;
+}
+
+.modal-solicitacoes-icone {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 33px;
+    height: 33px;
+
+    flex-shrink: 0;
+
+    border-radius: 8px;
+    background: #E2E7FF;
+}
+
+.modal-solicitacoes-icone img {
+    width: 18px;
+    height: 18px;
+}
+
+.modal-solicitacoes-titulo h2 {
+    margin: 0;
+
+    color: #172033;
+
+    font-family: "Geist", sans-serif;
+    font-size: 17px;
+    font-weight: 600;
+}
+
+
+/* ======================================================
+   BOTÃO FECHAR
+====================================================== */
+
+.modal-solicitacoes-fechar {
+    grid-area: fechar;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 30px;
+    height: 30px;
+
+    flex-shrink: 0;
+
+    padding: 0;
+
+    border: none;
+    background: transparent;
+
+    color: #737987;
+
+    font-family: Arial, sans-serif;
+    font-size: 25px;
+    font-weight: 300;
+
+    cursor: pointer;
+}
+
+.modal-solicitacoes-fechar:hover {
+    color: #172033;
+}
+
+
+/* ======================================================
+   PESQUISA DAS SOLICITAÇÕES
+   Reutiliza o componente Filtro existente.
+====================================================== */
+
+.modal-solicitacoes-pesquisa {
+    grid-area: pesquisa;
+
+    display: block;
+
+    width: 100%;
+    min-width: 0;
+
+    margin: 0;
+    padding: 0;
+
+    box-sizing: border-box;
+
+    background: #FFFFFF;
+}
+
+
+/* Esconde o título e a descrição internos do Filtro. */
+
+.modal-solicitacoes-pesquisa .string-filtro {
+    display: none;
+}
+
+
+/* Remove o espaço do card externo do Filtro. */
+
+.modal-solicitacoes-pesquisa .card-filtro {
+    width: 100%;
+
+    margin: 0;
+    padding: 0;
+
+    border: none;
+    box-shadow: none;
+
+    background: transparent;
+}
+
+
+/* Mantém somente a linha da pesquisa. */
+
+.modal-solicitacoes-pesquisa .filtros {
+    display: flex;
+    align-items: center;
+
+    width: 100%;
+
+    margin: 0;
+    padding: 0;
+
+    gap: 0;
+}
+
+
+/* Esconde status, dropdown e botão de limpar. */
+
+.modal-solicitacoes-pesquisa .filtro-selecao,
+.modal-solicitacoes-pesquisa .dropbox,
+.modal-solicitacoes-pesquisa .reset {
+    display: none;
+}
+
+
+/* Campo de pesquisa. */
+
+.modal-solicitacoes-pesquisa .filtro-de-pesquisa {
+    display: flex;
+    align-items: center;
+
+    width: 100%;
+    min-width: 0;
+    height: 40px;
+
+    box-sizing: border-box;
+}
+
+
+/* ======================================================
+   LISTA VERTICAL
+====================================================== */
+
+.modal-solicitacoes-lista {
+    display: flex;
+    flex-direction: column;
+
+    flex: 1;
+    min-height: 0;
+
+    gap: 28px;
+
+    padding: 20px 0 24px;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+
+/* ======================================================
+   CARD INDIVIDUAL
+====================================================== */
+
+.modal-solicitacao-item {
+    display: flex;
+    flex-direction: column;
+
+    flex-shrink: 0;
+
+    width: 100%;
+    min-height: 142px;
+
+    padding: 14px;
+
+    box-sizing: border-box;
+
+    background: #F1F3FF;
+    border-radius: 12px;
+}
+
+
+/* ======================================================
+   TOPO DO CARD
+====================================================== */
+
+.modal-solicitacao-topo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 12px;
+    min-width: 0;
+}
+
+.modal-solicitacao-colaborador {
+    display: flex;
+    align-items: center;
+
+    gap: 8px;
+    min-width: 0;
+}
+
+.modal-solicitacao-avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 37px;
+    height: 37px;
+
+    flex-shrink: 0;
+
+    overflow: hidden;
+
+    border-radius: 50%;
+
+    background: #DCE4FF;
+    color: #18347F;
+
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.modal-solicitacao-avatar img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+}
+
+.modal-solicitacao-identificacao {
+    display: flex;
+    flex-direction: column;
+
+    min-width: 0;
+}
+
+.modal-solicitacao-nome {
+    display: flex;
+    align-items: baseline;
+
+    flex-wrap: wrap;
+
+    gap: 5px;
+}
+
+.modal-solicitacao-nome strong {
+    color: #172033;
+
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.modal-solicitacao-nome > span {
+    color: #555D70;
+
+    font-size: 9px;
+    font-weight: 500;
+}
+
+.modal-solicitacao-identificacao p {
+    margin: 2px 0 0;
+
+    color: #4B5263;
+
+    font-size: 10px;
+    font-weight: 500;
+}
+
+
+/* ======================================================
+   STATUS
+====================================================== */
+
+.modal-solicitacao-status {
+    display: flex;
+    align-items: center;
+
+    gap: 5px;
+
+    flex-shrink: 0;
+
+    padding: 4px 7px;
+
+    border-radius: 20px;
+    background: #DCE6FF;
+
+    color: #26375E;
+
+    font-size: 9px;
+    font-weight: 600;
+
+    white-space: nowrap;
+}
+
+.modal-solicitacao-status-ponto {
+    width: 6px;
+    height: 6px;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+    background: #1454D9;
+}
+
+
+/* ======================================================
+   INFORMAÇÕES
+====================================================== */
+
+.modal-solicitacao-informacoes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+
+    gap: 12px;
+
+    width: 100%;
+
+    margin-top: 7px;
+    padding: 7px 8px;
+
+    box-sizing: border-box;
+
+    border-radius: 8px;
+    background: #FFFFFF;
+}
+
+.modal-solicitacao-informacao {
+    display: flex;
+    flex-direction: column;
+
+    gap: 2px;
+    min-width: 0;
+}
+
+.modal-solicitacao-informacao label {
+    color: #5E6575;
+
+    font-size: 10px;
+    font-weight: 500;
+}
+
+.modal-solicitacao-informacao strong {
+    color: #172033;
+
+    font-size: 11px;
+    font-weight: 600;
+
+    overflow-wrap: anywhere;
+}
+
+
+/* ======================================================
+   RODAPÉ
+====================================================== */
+
+.modal-solicitacao-rodape {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 12px;
+
+    margin-top: 7px;
+}
+
+.modal-solicitacao-sem-sobreposicao {
+    display: flex;
+    align-items: center;
+
+    gap: 5px;
+    min-width: 0;
+
+    color: #4B5263;
+
+    font-size: 10px;
+    font-weight: 500;
+}
+
+.modal-solicitacao-check {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 13px;
+    height: 13px;
+
+    flex-shrink: 0;
+
+    border: 1px solid #3971A8;
+    border-radius: 50%;
+
+    color: #245B8C;
+
+    font-size: 9px;
+    font-weight: 700;
+}
+
+.modal-solicitacao-analisar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 34px;
+    width: 134px;
+
+    padding: 8px 11px;
+
+    flex-shrink: 0;
+
+    border: none;
+    border-radius: 7px;
+
+    background: #2949B8;
+    color: #FFFFFF;
+
+    font-family: "Geist", sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+
+    white-space: nowrap;
+
+    cursor: pointer;
+}
+
+.modal-solicitacao-analisar:hover {
+    background: #183A9E;
+}
+
+.modal-solicitacao-analisar img {
+    width: 13px;
+    height: 13px;
+
+    margin-left: 4px;
+}
+
+
+/* ======================================================
+   ESTADO VAZIO
+====================================================== */
+
+.modal-solicitacoes-vazio {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 180px;
+    padding: 20px;
+
+    color: #5E6575;
+    text-align: center;
+    font-size: 14px;
+}
