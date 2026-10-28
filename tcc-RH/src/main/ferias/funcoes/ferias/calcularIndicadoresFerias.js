@@ -109,12 +109,31 @@ function calcularIndicadoresFerias(ferias = []) {
         // FÉRIAS PROGRAMADAS
         //====================================================
         //
-        // Começam depois de hoje.
+        // Conta férias futuras que não estão aguardando
+        // aprovação do gestor.
+        //
+        // Solicitações pendentes não entram no indicador.
         //
 
-        if (inicio > hoje) {
+        const origem = String(
+            feriasItem.origem || ''
+        ).trim().toUpperCase();
+
+        const statusAprovacao = String(
+            feriasItem.status_aprovacao || ''
+        ).trim().toUpperCase();
+
+        const solicitacaoPendente =
+            origem === 'GESTOR' &&
+            statusAprovacao === 'PENDENTE';
+
+        if (
+            inicio > hoje &&
+            !solicitacaoPendente
+        ) {
             programado++;
         }
+
 
 
         //====================================================

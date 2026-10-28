@@ -7,6 +7,8 @@ import Minicards from '../../componentes/minicard/minicard.jsx';
 import Filtro from '../../componentes/cardFiltros/filtros.jsx';
 import Tabela from '../../componentes/cardTabela/tabela.jsx';
 
+import ModalAnalisarSolicitacao from './componentes/solicitacao/ModalAnalisarSolicitacao.jsx';
+
 import CadastroFerias from './CadastroFerias.jsx';
 import EditarFerias from './EditaFerias.jsx';
 
@@ -51,7 +53,12 @@ function Ferias() {
 
     const [erro, setErro] = useState('');
 
+    // Controla a abertura do modal com todas as solicitações.
     const [modalSolicitacoesAberto, setModalSolicitacoesAberto] =
+        useState(false);
+
+    // Controla a abertura do modal para analisar uma solicitação.
+    const [modalAnaliseAberto, setModalAnaliseAberto] =
         useState(false);
 
 
@@ -153,13 +160,15 @@ function Ferias() {
                 .trim()
                 .toUpperCase();
 
-        // Solicitação pendente do gestor
-        // NÃO aparece na Lista de Férias.
+        // Solicitações pendentes do gestor não aparecem
+        // diretamente na tabela principal de férias.
         if (
             origem === 'GESTOR' &&
             statusAprovacao === 'PENDENTE'
         ) {
+
             return false;
+
         }
 
         return true;
@@ -193,35 +202,25 @@ function Ferias() {
 
     //----------------- SOLICITAÇÕES ---------------------------//
     //
-    // IMPORTANTE:
-    //
-    // Só aparece aqui:
+    // Exibe somente solicitações que atendam às condições:
     //
     // origem = GESTOR
     // status_aprovacao = PENDENTE
     //
-    // Férias cadastradas diretamente pelo RH:
-    //
-    // origem = RH
-    // status_aprovacao = APROVADA
-    //
-    // NÃO aparecem nesta lista.
+    // Férias cadastradas diretamente pelo RH não aparecem
+    // nessa lista de solicitações pendentes.
     //
 
     const solicitacoes = feriasComInformacoes
         .filter(feriasItem => {
 
             const origem =
-                String(
-                    feriasItem.origem || ''
-                )
+                String(feriasItem.origem || '')
                     .trim()
                     .toUpperCase();
 
             const statusAprovacao =
-                String(
-                    feriasItem.status_aprovacao || ''
-                )
+                String(feriasItem.status_aprovacao || '')
                     .trim()
                     .toUpperCase();
 
@@ -234,9 +233,7 @@ function Ferias() {
         .map(feriasItem => {
 
             const colaborador =
-                Array.isArray(
-                    feriasItem.colaborador
-                )
+                Array.isArray(feriasItem.colaborador)
                     ? feriasItem.colaborador[0] || {}
                     : feriasItem.colaborador || {};
 
@@ -288,8 +285,9 @@ function Ferias() {
 
     function analisarSolicitacao(solicitacao) {
 
+        // Localiza o registro original das férias.
         const feriasOriginal = feriasComInformacoes.find(
-            item => item.id === solicitacao.id
+            item => String(item.id) === String(solicitacao.id)
         );
 
         if (!feriasOriginal) {
@@ -298,36 +296,69 @@ function Ferias() {
                 'Férias da solicitação não encontradas.'
             );
 
+            setErro(
+                'Não foi possível localizar essa solicitação.'
+            );
+
             return;
 
         }
 
-        // Fecha o modal antes de abrir a edição.
+        // Guarda os dados originais da solicitação.
+        setFeriasSelecionadas(feriasOriginal);
+
+        // Fecha a lista de todas as solicitações.
         setModalSolicitacoesAberto(false);
 
-        // Abre a edição da solicitação escolhida.
-        abrirEdicao(feriasOriginal);
+        // Abre o modal específico de análise.
+        setModalAnaliseAberto(true);
 
     }
 
 
-    //----------------- VER TODAS SOLICITAÇÕES ---------------//
+    //----------------- VER TODAS SOLICITAÇÕES ----------------//
 
     function verTodasSolicitacoes() {
 
-        // Abre o modal sem alterar os filtros da página.
         setModalSolicitacoesAberto(true);
 
     }
 
 
-    //----------------- FECHAR MODAL --------------------------//
+    //----------------- FECHAR MODAL DE SOLICITAÇÕES ----------//
 
     function fecharModalSolicitacoes() {
 
         setModalSolicitacoesAberto(false);
 
     }
+
+
+    //----------------- FECHAR MODAL DE ANÁLISE ---------------//
+
+    function fecharModalAnalise() {
+
+        setModalAnaliseAberto(false);
+
+        setFeriasSelecionadas(null);
+
+    }
+
+
+    //----------------- CONCLUIR ANÁLISE ----------------------//
+
+    async function concluirAnalise() {
+
+        // Atualiza os dados depois da análise.
+        await carregarDados();
+
+        // Fecha o modal e limpa a solicitação selecionada.
+        setModalAnaliseAberto(false);
+
+        setFeriasSelecionadas(null);
+
+    }
+
 
     //----------------- TELA DE CADASTRO -----------------------//
 
@@ -386,9 +417,7 @@ function Ferias() {
             <div className="minicard-ferias">
 
 
-                {/* ---------------------------------------------
-                    FÉRIAS PROGRAMADAS
-                --------------------------------------------- */}
+                {/* FÉRIAS PROGRAMADAS */}
 
                 <Minicards
                     icone={CalendarioIcone}
@@ -399,9 +428,7 @@ function Ferias() {
                 />
 
 
-                {/* ---------------------------------------------
-                    EM FÉRIAS HOJE
-                --------------------------------------------- */}
+                {/* EM FÉRIAS HOJE */}
 
                 <Minicards
                     icone={GuardaSolIcone}
@@ -412,9 +439,7 @@ function Ferias() {
                 />
 
 
-                {/* ---------------------------------------------
-                    PRÓXIMOS 30 DIAS
-                --------------------------------------------- */}
+                {/* PRÓXIMOS 30 DIAS */}
 
                 <div className="minicard-proximos-30">
 
@@ -429,9 +454,7 @@ function Ferias() {
                 </div>
 
 
-                {/* ---------------------------------------------
-                    FINALIZADAS NO ANO
-                --------------------------------------------- */}
+                {/* FINALIZADAS NO ANO */}
 
                 <Minicards
                     icone={ConfereIcone}
@@ -445,7 +468,7 @@ function Ferias() {
 
 
             {/* =================================================
-                SOLICITAÇÕES
+                CARD DE SOLICITAÇÕES
             ================================================= */}
 
             <CardSolicitacao
@@ -453,7 +476,6 @@ function Ferias() {
                 onAnalisar={analisarSolicitacao}
                 onVerTodas={verTodasSolicitacoes}
             />
-
 
 
             {/* =================================================
@@ -471,6 +493,20 @@ function Ferias() {
             )}
 
 
+            {/* =================================================
+                MODAL DE ANÁLISE DA SOLICITAÇÃO
+            ================================================= */}
+
+            {modalAnaliseAberto && feriasSelecionadas && (
+
+                <ModalAnalisarSolicitacao
+                    ferias={feriasSelecionadas}
+                    onFechar={fecharModalAnalise}
+                    onConcluida={concluirAnalise}
+                />
+
+            )}
+
 
             {/* =================================================
                 FILTROS
@@ -481,7 +517,6 @@ function Ferias() {
                 placeholder="Buscar por nome, matrícula ou setor"
                 nomeDropdown="Status"
                 mostrarStatus={false}
-
                 opcoesDropdown={[
 
                     {
@@ -500,11 +535,7 @@ function Ferias() {
                     }
 
                 ]}
-
-                onFiltrosChange={
-                    atualizarFiltros
-                }
-
+                onFiltrosChange={atualizarFiltros}
             />
 
 

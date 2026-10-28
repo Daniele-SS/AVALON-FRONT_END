@@ -1,0 +1,669 @@
+/* ======================================================
+   FUNDO ESCURECIDO E DESFOCADO
+====================================================== */
+
+.analise-ferias-fundo {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 24px;
+    box-sizing: border-box;
+
+    background: rgba(26, 36, 58, 0.35);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+
+
+/* ======================================================
+   MODAL PRINCIPAL
+====================================================== */
+
+.analise-ferias-modal {
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+
+    width: 100%;
+    max-width: 796px;
+
+    max-height: 82vh;
+    min-height: 0;
+
+    overflow: hidden;
+
+    background: #FFFFFF;
+    border-radius: 9px;
+
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+
+    font-family: "Geist", sans-serif;
+}
+
+
+/* ======================================================
+   BOTÃO FECHAR
+====================================================== */
+
+.analise-ferias-fechar {
+    position: absolute;
+    top: 16px;
+    right: 15px;
+    z-index: 2;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 30px;
+    height: 30px;
+
+    flex-shrink: 0;
+
+    padding: 0;
+
+    border: none;
+    border-radius: 5px;
+
+    background: transparent;
+    color: #737987;
+
+    font-family: Arial, sans-serif;
+    font-size: 25px;
+    font-weight: 300;
+
+    cursor: pointer;
+}
+
+.analise-ferias-fechar:hover {
+    background: #F1F3FF;
+    color: #172033;
+}
+
+.analise-ferias-fechar:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+
+/* ======================================================
+   CABEÇALHO DO COLABORADOR
+====================================================== */
+
+.analise-ferias-colaborador {
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    min-height: 130px;
+
+    flex-shrink: 0;
+
+    padding: 24px 50px 20px 18px;
+
+    box-sizing: border-box;
+
+    background: #FFFFFF;
+    border-bottom: 1px solid #F0F1F5;
+
+    border-radius: 9px 9px 0 0;
+}
+
+
+/* ======================================================
+   AVATAR
+====================================================== */
+
+.analise-ferias-avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 52px;
+    height: 52px;
+
+    flex-shrink: 0;
+
+    overflow: hidden;
+
+    border: 2px solid #DCE4FF;
+    border-radius: 50%;
+
+    background: #DCE4FF;
+    color: #18347F;
+
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.analise-ferias-avatar img {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+
+/* ======================================================
+   IDENTIFICAÇÃO DO COLABORADOR
+====================================================== */
+
+.analise-ferias-identificacao {
+    display: flex;
+    flex-direction: column;
+
+    flex: 1;
+    min-width: 0;
+}
+
+.analise-ferias-etiqueta {
+    display: block;
+
+    margin-bottom: 5px;
+
+    color: #2949B8;
+
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.35px;
+}
+
+.analise-ferias-identificacao h2 {
+    margin: 0 0 5px;
+
+    color: #172033;
+
+    font-family: "Geist", sans-serif;
+    font-size: 17px;
+    font-weight: 600;
+
+    overflow-wrap: anywhere;
+}
+
+.analise-ferias-identificacao p {
+    margin: 0;
+
+    color: #4B5263;
+
+    font-size: 10px;
+    font-weight: 500;
+}
+
+.analise-ferias-identificacao p span {
+    color: #9298A7;
+}
+
+.analise-ferias-identificacao .analise-ferias-setor {
+    margin-top: 4px;
+
+    color: #5E6575;
+}
+
+
+/* ======================================================
+   STATUS DO COLABORADOR
+====================================================== */
+
+.analise-ferias-status-colaborador {
+    align-self: flex-start;
+
+    flex-shrink: 0;
+
+    margin: 9px 0 0 auto;
+    padding: 5px 9px;
+
+    border-radius: 20px;
+
+    background: #DCE6FF;
+    color: #26375E;
+
+    font-size: 9px;
+    font-weight: 600;
+
+    white-space: nowrap;
+}
+
+
+/* ======================================================
+   CONTEÚDO COM ROLAGEM
+====================================================== */
+
+.analise-ferias-conteudo {
+    flex: 1;
+    min-height: 0;
+
+    padding: 20px 18px 22px;
+
+    box-sizing: border-box;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+
+/* ======================================================
+   SUBTÍTULOS
+====================================================== */
+
+.analise-ferias-subtitulo {
+    display: flex;
+    align-items: center;
+
+    gap: 8px;
+
+    margin: 0 0 12px;
+
+    color: #172033;
+
+    font-family: "Geist", sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.analise-ferias-subtitulo span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #2949B8;
+
+    font-family: "Geist", sans-serif;
+    font-size: 19px;
+}
+
+
+/* ======================================================
+   PERÍODO SOLICITADO
+====================================================== */
+
+.analise-ferias-periodo {
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    width: 100%;
+    min-height: 105px;
+
+    padding: 14px;
+
+    box-sizing: border-box;
+
+    background: #F1F3FF;
+    border-radius: 12px;
+}
+
+
+/* ======================================================
+   QUANTIDADE DE DIAS
+====================================================== */
+
+.analise-ferias-dias {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    width: 48px;
+    height: 48px;
+
+    flex-shrink: 0;
+
+    border-radius: 10px;
+
+    background: #2949B8;
+    color: #FFFFFF;
+}
+
+.analise-ferias-dias strong {
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.analise-ferias-dias span {
+    margin-top: 2px;
+
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+}
+
+
+/* ======================================================
+   TEXTO DO PERÍODO
+====================================================== */
+
+.analise-ferias-periodo-texto {
+    display: flex;
+    flex-direction: column;
+
+    flex: 1;
+    min-width: 0;
+
+    gap: 5px;
+}
+
+.analise-ferias-periodo-texto > span,
+.analise-ferias-retorno > span {
+    color: #5E6575;
+
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+
+.analise-ferias-periodo-texto > strong {
+    color: #172033;
+
+    font-family: "Geist", sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+
+    overflow-wrap: anywhere;
+}
+
+.analise-ferias-periodo-texto p,
+.analise-ferias-retorno p {
+    margin: 0;
+
+    color: #5E6575;
+
+    font-size: 10px;
+    line-height: 1.5;
+}
+
+
+/* ======================================================
+   DATA DE RETORNO
+====================================================== */
+
+.analise-ferias-retorno {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    gap: 5px;
+
+    max-width: 145px;
+    min-width: 105px;
+
+    padding: 12px 10px;
+
+    box-sizing: border-box;
+
+    border-radius: 9px;
+
+    background: #FFFFFF;
+
+    text-align: center;
+}
+
+.analise-ferias-retorno strong {
+    color: #2949B8;
+
+    font-size: 12px;
+    font-weight: 600;
+}
+
+
+/* ======================================================
+   PROTOCOLO E ORIGEM
+====================================================== */
+
+.analise-ferias-metadados {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    gap: 10px;
+
+    width: 100%;
+
+    margin: 14px 0 0;
+}
+
+.analise-ferias-metadado {
+    min-width: 0;
+
+    padding: 12px;
+
+    box-sizing: border-box;
+
+    border: 1px solid #E8EAF2;
+    border-radius: 9px;
+
+    background: #FFFFFF;
+}
+
+.analise-ferias-metadado > span {
+    display: block;
+
+    margin-bottom: 5px;
+
+    color: #5E6575;
+
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+
+.analise-ferias-metadado strong {
+    display: block;
+
+    color: #172033;
+
+    font-size: 11px;
+    font-weight: 600;
+
+    overflow-wrap: anywhere;
+}
+
+.analise-ferias-metadado p {
+    margin: 5px 0 0;
+
+    color: #5E6575;
+
+    font-size: 10px;
+    line-height: 1.5;
+}
+
+
+/* ======================================================
+   PARECER DO GESTOR
+====================================================== */
+
+.analise-ferias-parecer {
+    margin-top: 10px;
+    padding: 13px;
+
+    border: 1px solid #DCEFE4;
+    border-radius: 9px;
+
+    background: #F0FAF4;
+}
+
+.analise-ferias-parecer h4 {
+    margin: 0 0 7px;
+
+    color: #176A50;
+
+    font-family: "Geist", sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.analise-ferias-parecer p {
+    margin: 4px 0 0;
+
+    color: #27664F;
+
+    font-size: 11px;
+    line-height: 1.6;
+
+    overflow-wrap: anywhere;
+}
+
+
+/* ======================================================
+   MENSAGEM DO COLABORADOR
+====================================================== */
+
+.analise-ferias-mensagem {
+    margin-top: 10px;
+    padding: 14px;
+
+    border-radius: 9px;
+
+    background: #F1F3FF;
+}
+
+.analise-ferias-mensagem h4 {
+    margin: 0 0 9px;
+
+    color: #2949B8;
+
+    font-family: "Geist", sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.analise-ferias-mensagem p {
+    margin: 0 0 0 15px;
+
+    color: #30394F;
+
+    font-size: 11px;
+    font-style: italic;
+    line-height: 1.7;
+
+    overflow-wrap: anywhere;
+}
+
+
+/* ======================================================
+   MENSAGENS DE RETORNO DA API
+====================================================== */
+
+.analise-ferias-erro,
+.analise-ferias-sucesso {
+    margin: 12px 0 0;
+    padding: 11px 12px;
+
+    border-radius: 8px;
+
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+.analise-ferias-erro {
+    border: 1px solid #F4D3D3;
+
+    background: #FFF0F0;
+    color: #B91C1C;
+}
+
+.analise-ferias-sucesso {
+    border: 1px solid #D6F0DF;
+
+    background: #E8F9EF;
+    color: #08784A;
+}
+
+
+/* ======================================================
+   RODAPÉ E BOTÕES
+====================================================== */
+
+.analise-ferias-acoes {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    gap: 12px;
+
+    min-height: 70px;
+
+    flex-shrink: 0;
+
+    padding: 14px 18px;
+
+    box-sizing: border-box;
+
+    border-top: 1px solid #F0F1F5;
+
+    background: #FFFFFF;
+}
+
+.analise-ferias-acoes button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 150px;
+    min-height: 38px;
+
+    padding: 9px 14px;
+
+    border: none;
+    border-radius: 7px;
+
+    color: #FFFFFF;
+
+    font-family: "Geist", sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        opacity 0.2s ease;
+}
+
+
+/* ======================================================
+   BOTÃO REJEITAR
+====================================================== */
+
+.analise-ferias-rejeitar {
+    background: #C51B1B;
+}
+
+.analise-ferias-rejeitar:hover {
+    background: #A91515;
+}
+
+
+/* ======================================================
+   BOTÃO APROVAR
+====================================================== */
+
+.analise-ferias-aprovar {
+    background: #2949B8;
+}
+
+.analise-ferias-aprovar:hover {
+    background: #183A9E;
+}
+
+
+/* ======================================================
+   BOTÕES DESABILITADOS
+====================================================== */
+
+.analise-ferias-acoes button:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+
