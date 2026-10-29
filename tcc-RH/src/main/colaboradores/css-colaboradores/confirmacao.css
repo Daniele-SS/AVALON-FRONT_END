@@ -178,7 +178,6 @@
     border-radius: 6px;
     background: #FFFFFF;
     color: #001F3F;
-    font-family: inherit;
     font-size: 12px;
     font-weight: 500;
     line-height: 1.2;
@@ -606,7 +605,6 @@
     padding: 0 22px;
     box-sizing: border-box;
     border-radius: 8px;
-    font-family: inherit;
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;

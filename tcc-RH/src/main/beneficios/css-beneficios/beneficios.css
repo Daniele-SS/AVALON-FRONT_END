@@ -1,0 +1,94 @@
+
+/*----------------- PÁGINA DE BENEFÍCIOS -------------------*/
+
+.pagina-beneficios {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+
+/*----------------- MINICARDS ------------------------------*/
+
+.pagina-beneficios .container-minicards {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+
+    gap: 20px;
+
+    width: 100%;
+    margin-top: 24px;
+    margin-bottom: 28px;
+}
+
+
+/*----------------- GRADE DE BENEFÍCIOS --------------------*/
+
+.grade-beneficios {
+    display: grid;
+
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+
+    column-gap: 30px;
+    row-gap: 18px;
+
+    width: 100%;
+    margin-top: 24px;
+}
+
+
+/*----------------- MENSAGENS ------------------------------*/
+
+.mensagem-erro-beneficios {
+    margin: 16px 0;
+
+    color: #C62828;
+    font-size: 14px;
+}
+
+
+.mensagem-carregamento-beneficios {
+    margin-top: 24px;
+
+    color: #596174;
+    font-size: 14px;
+}
+
+
+.beneficios-vazios {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    gap: 8px;
+
+    min-height: 180px;
+    margin-top: 24px;
+    padding: 24px;
+
+    background-color: #FFFFFF;
+    border: 1px solid #E6E8EF;
+    border-radius: 12px;
+
+    text-align: center;
+}
+
+
+.beneficios-vazios h3 {
+    margin: 0;
+
+    color: #172033;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+
+.beneficios-vazios p {
+    margin: 0;
+
+    color: #737B8D;
+    font-size: 13px;
+    line-height: 1.5;
+}
+

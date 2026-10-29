@@ -1,0 +1,330 @@
+
+/*----------------- CARD DO BENEFÍCIO ----------------------*/
+
+.card-beneficio {
+    width: 100%;
+    min-width: 0;
+    min-height: 245px;
+    box-sizing: border-box;
+
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+
+    padding: 22px 20px;
+
+    background-color: #FFFFFF;
+    border: 1px solid #E6E8EF;
+    border-radius: 16px;
+
+    box-shadow: 0 2px 8px rgba(0, 31, 63, 0.04);
+
+    transition:
+        box-shadow 0.2s ease,
+        border-color 0.2s ease;
+}
+
+
+/*----------------- EFEITO AO PASSAR O MOUSE ---------------*/
+
+.card-beneficio:hover {
+    border-color: #D5D9E8;
+
+    box-shadow: 0 5px 14px rgba(0, 31, 63, 0.08);
+}
+
+
+/*----------------- CABEÇALHO ------------------------------*/
+
+.cabecalho-card-beneficio {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+
+.nome-card-beneficio {
+    margin: 0;
+
+    color: #172033;
+    font-size: 17px;
+    font-weight: 600;
+    line-height: 1.4;
+
+    overflow-wrap: anywhere;
+}
+
+
+/*----------------- STATUS ---------------------------------*/
+
+.status-card-beneficio {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+
+    flex-shrink: 0;
+
+    padding: 5px 10px;
+
+    border-radius: 20px;
+
+    font-size: 12px;
+    font-weight: 500;
+}
+
+
+.status-card-beneficio.ativo {
+    color: #087443;
+    background-color: #E8FAF1;
+}
+
+
+.status-card-beneficio.inativo {
+    color: #A12B35;
+    background-color: #FCEBED;
+}
+
+
+.ponto-status-beneficio {
+    width: 6px;
+    height: 6px;
+
+    border-radius: 50%;
+    background-color: currentColor;
+}
+
+
+/*----------------- DESCRIÇÃO ------------------------------*/
+
+.descricao-card-beneficio {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+
+    overflow: hidden;
+
+    margin: 0;
+
+    color: #596174;
+    font-size: 13px;
+    line-height: 1.6;
+
+    min-height: 42px;
+}
+
+
+/*----------------- INFORMAÇÕES ----------------------------*/
+
+.informacoes-card-beneficio {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    margin-top: auto;
+    padding: 13px 12px;
+
+    background-color: #F0F3FF;
+    border-radius: 10px;
+}
+
+
+.linha-colaboradores-beneficio {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+
+    color: #444B5D;
+    font-size: 12px;
+}
+
+
+.linha-colaboradores-beneficio strong {
+    color: #172033;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+
+/*----------------- BARRA DE PROGRESSO ---------------------*/
+
+.barra-progresso-beneficio {
+    width: 100%;
+    height: 6px;
+
+    overflow: hidden;
+
+    background-color: #D9E1FA;
+    border-radius: 10px;
+}
+
+
+.progresso-beneficio {
+    height: 100%;
+
+    background-color: #9638F5;
+    border-radius: 10px;
+
+    transition: width 0.3s ease;
+}
+
+
+/*----------------- PERCENTUAL -----------------------------*/
+
+.rodape-informacoes-beneficio {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+
+    color: #444B5D;
+    font-size: 12px;
+}
+
+
+.rodape-informacoes-beneficio strong {
+    color: #30384B;
+    font-weight: 600;
+}
+
+
+/*----------------- RODAPÉ: DISPONIBILIDADE E DETALHES -----*/
+
+.rodape-card-beneficio {
+    width: 100%;
+    box-sizing: border-box;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+
+/*----------------- DISPONIBILIDADE ------------------------*/
+
+.disponibilidade-card-beneficio {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+
+.titulo-disponibilidade-beneficio {
+    color: #737B8D;
+    font-size: 11px;
+}
+
+
+.valor-disponibilidade-beneficio {
+    color: #30384B;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+
+/*----------------- BOTÃO VER DETALHES --------------------*/
+
+
+.botao-ver-detalhes-beneficio {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+    width: 81px;
+    box-sizing: border-box;
+
+    padding: 0;
+    margin: 0;
+
+    border: none;
+    background: transparent;
+
+    color: #0050CB;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.4;
+
+    cursor: pointer;
+    white-space: nowrap;
+
+    transition: color 0.2s ease;
+}
+
+.botao-ver-detalhes-beneficio:hover {
+    color: #003A96;
+}
+
+.botao-ver-detalhes-beneficio:focus-visible {
+    outline: 2px solid #0050CB;
+    outline-offset: 3px;
+    border-radius: 3px;
+}
+
+
+/*----------------- LISTA DE COLABORADORES ----------------*/
+
+.lista-colaboradores-beneficio {
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid #E5E7EB;
+}
+
+
+.titulo-lista-colaboradores-beneficio {
+    margin: 0 0 12px;
+
+    color: #001F3F;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+
+.itens-colaboradores-beneficio {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    margin: 0;
+    padding: 0;
+
+    list-style: none;
+}
+
+
+.itens-colaboradores-beneficio li {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    padding: 10px 12px;
+
+    border: 1px solid #E5E7EB;
+    border-radius: 8px;
+
+    background-color: #FFFFFF;
+}
+
+
+.nome-colaborador-beneficio {
+    color: #1F2937;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+
+.matricula-colaborador-beneficio {
+    color: #6B7280;
+    font-size: 12px;
+}
+
+
+.nenhum-colaborador-beneficio {
+    margin: 0;
+
+    color: #6B7280;
+    font-size: 13px;
+}

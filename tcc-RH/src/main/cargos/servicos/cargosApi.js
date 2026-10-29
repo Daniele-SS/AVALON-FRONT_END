@@ -82,14 +82,18 @@ async function buscarDadosCargos() {
     const dadosColaboradores = await respostaColaboradores.json();
     const dadosSetores = await respostaSetores.json();
 
+    
 
     // Retorna os dados para a tela.
 
+
+    // Retorna os dados para a tela.
     return {
-        cargos: dadosCargos.response?.classificacao || [],
+        cargos: dadosCargos.response?.cargos || [],
         colaboradores: dadosColaboradores.response?.colaborador || [],
         setores: dadosSetores.response?.setor || []
     };
+
 
 }
 
