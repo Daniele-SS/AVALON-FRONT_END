@@ -1,5 +1,5 @@
 
- //----------------- IMPORTAÇÕES -----------------------------//
+//----------------- IMPORTAÇÕES -----------------------------//
 
 import { useEffect, useState } from 'react';
 
@@ -7,6 +7,8 @@ import BotaoCadastro from '../../componentes/cardNomePag/nomePag.jsx';
 
 import buscarDadosColaboradores from './servicos/colaboradoresApi.js';
 import buscarDadosJornadaEscala from '../jornadaEscala/servicos/jornadaEscala.js';
+
+import { buscarBeneficios } from './servicos/beneficioColaboradorApi.js';
 
 import {
     localizarPorId,
@@ -98,6 +100,7 @@ export default function Confirmacao({
     setores = [],
     niveisAcesso = [],
     jornadas = [],
+    beneficiosSelecionados = [],
     onVoltar,
     onConfirmar,
     onEditarEtapa,
@@ -105,6 +108,7 @@ export default function Confirmacao({
 }) {
     const [usuarios, setUsuarios] = useState([]);
     const [diasSemana, setDiasSemana] = useState([]);
+    const [beneficios, setBeneficios] = useState([]);
 
     //----------------- CARREGAR DADOS ------------------------------//
 
@@ -115,10 +119,12 @@ export default function Confirmacao({
             try {
                 const [
                     dadosColaboradores,
-                    dadosJornadas
+                    dadosJornadas,
+                    dadosBeneficios
                 ] = await Promise.all([
                     buscarDadosColaboradores(),
-                    buscarDadosJornadaEscala()
+                    buscarDadosJornadaEscala(),
+                    buscarBeneficios()
                 ]);
 
                 if (!componenteAtivo) {
@@ -127,6 +133,8 @@ export default function Confirmacao({
 
                 setUsuarios(dadosColaboradores?.usuarios || []);
                 setDiasSemana(dadosJornadas?.diasSemana || []);
+                setBeneficios(dadosBeneficios || []);
+
             } catch (erro) {
                 console.error(
                     'Erro ao carregar dados da confirmação:',
@@ -136,6 +144,7 @@ export default function Confirmacao({
                 if (componenteAtivo) {
                     setUsuarios([]);
                     setDiasSemana([]);
+                    setBeneficios([]);
                 }
             }
         }
@@ -205,6 +214,15 @@ export default function Confirmacao({
             status: obterStatusDia(registroDia)
         };
     });
+
+    //----------------- BENEFÍCIOS -------------------------------//
+
+    const beneficiosParaExibir = beneficios.filter((beneficio) =>
+        beneficiosSelecionados.some(
+            (idSelecionado) =>
+                String(idSelecionado) === String(beneficio.id)
+        )
+    );
 
     //----------------- EXIBIÇÃO -------------------------------//
 
@@ -402,13 +420,43 @@ export default function Confirmacao({
                 </div>
             </section>
 
-            {/* ETAPA 04 - ACESSO À PLATAFORMA */}
+            {/* ETAPA 04 - BENEFÍCIOS */}
 
             <CabecalhoSecao
                 numero="04"
+                titulo="Benefícios"
+                descricao="Benefícios selecionados para o colaborador"
+                etapa={4}
+                onEditarEtapa={onEditarEtapa}
+                onVoltar={onVoltar}
+                salvando={salvando}
+            />
+
+            <section className="cartao-confirmacao">
+                {beneficiosParaExibir.length > 0 ? (
+                    <div className="dados-pessoais-detalhes-confirmacao">
+                        {beneficiosParaExibir.map((beneficio) => (
+                            <Informacao
+                                key={beneficio.id}
+                                titulo="Benefício"
+                                valor={beneficio.nome}
+                            />
+                        ))}
+                    </div>
+                ) : (
+                    <p>
+                        Nenhum benefício selecionado para este colaborador.
+                    </p>
+                )}
+            </section>
+
+            {/* ETAPA 05 - ACESSO À PLATAFORMA */}
+
+            <CabecalhoSecao
+                numero="05"
                 titulo="Acesso à plataforma"
                 descricao="Configuração de acesso do colaborador"
-                etapa={4}
+                etapa={5}
                 onEditarEtapa={onEditarEtapa}
                 onVoltar={onVoltar}
                 salvando={salvando}
