@@ -1,11 +1,12 @@
 
- //----------------- IMPORTAÇÕES -----------------------------//
+//----------------- IMPORTAÇÕES -----------------------------//
 
 import { useEffect, useState } from 'react';
 
 import BotaoCadastro from '../../componentes/cardNomePag/nomePag.jsx';
 import Minicards from '../../componentes/minicard/minicard.jsx';
 import Filtro from '../../componentes/cardFiltros/filtros.jsx';
+import CadastroBeneficio from './CadastroBeneficio.jsx';
 
 import CardBeneficio from './componentes/CardBeneficio.jsx';
 
@@ -63,39 +64,39 @@ function Beneficios() {
     //----------------- CARREGAR COLABORADORES ----------------//
 
 
-async function buscarColaboradores() {
+    async function buscarColaboradores() {
 
-    const API =
-        'http://localhost:8080/v1/senai/avalon';
+        const API =
+            'http://localhost:8080/v1/senai/avalon';
 
-    const token = localStorage.getItem('access_token');
+        const token = localStorage.getItem('access_token');
 
-    const resposta = await fetch(
-        `${API}/colaborador`,
-        {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                ...(token && {
-                    Authorization: `Bearer ${token}`
-                })
+        const resposta = await fetch(
+            `${API}/colaborador`,
+            {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(token && {
+                        Authorization: `Bearer ${token}`
+                    })
+                }
             }
-        }
-    );
-
-    const dados = await resposta.json();
-
-    if (!resposta.ok || dados.status === false) {
-        throw new Error(
-            dados.message ||
-            dados.mensagem ||
-            'Não foi possível carregar os colaboradores.'
         );
-    }
 
-    // A API retorna a lista na propriedade "colaborador".
-    return dados.response?.colaborador || [];
-}
+        const dados = await resposta.json();
+
+        if (!resposta.ok || dados.status === false) {
+            throw new Error(
+                dados.message ||
+                dados.mensagem ||
+                'Não foi possível carregar os colaboradores.'
+            );
+        }
+
+        // A API retorna a lista na propriedade "colaborador".
+        return dados.response?.colaborador || [];
+    }
 
 
 
@@ -174,7 +175,7 @@ async function buscarColaboradores() {
         vinculos,
         colaboradores
     );
-    
+
 
     // Benefícios com quantidade de colaboradores e percentual.
     const beneficiosComInformacoes =
@@ -200,16 +201,16 @@ async function buscarColaboradores() {
 
     //----------------- TELA DE CADASTRO ---------------------//
 
+    //----------------- TELA DE CADASTRO ---------------------//
+
     if (tela === 'cadastro') {
         return (
-            <div>
-                <p>
-                    A tela de cadastro será integrada na próxima etapa.
-                </p>
+            <div className="pagina-beneficios">
 
-                <button onClick={voltarParaLista}>
-                    Voltar para benefícios
-                </button>
+                <CadastroBeneficio
+                    voltar={voltarParaLista}
+                />
+
             </div>
         );
     }

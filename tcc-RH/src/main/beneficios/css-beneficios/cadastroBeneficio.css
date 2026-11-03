@@ -1,0 +1,615 @@
+
+/*----------------- CABEÇALHO NOVO BENEFÍCIO ---------------*/
+
+.cabecalho-novo-beneficio {
+    width: 100%;
+    min-height: 129px;
+}
+
+.cabecalho-novo-beneficio .card-tiulo {
+    width: 100%;
+    height: 129px;
+    min-height: 129px;
+}
+
+
+/*----------------- CAMINHO DE NAVEGAÇÃO -------------------*/
+
+.caminho-cadastro-beneficio {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    margin-bottom: 8px;
+
+    font-size: 13px;
+}
+
+.caminho-cadastro-beneficio button {
+    width: auto;
+    height: auto;
+    padding: 0;
+
+    border: none;
+    background: transparent;
+
+    color: #434655;
+    font-size: 13px;
+    font-weight: 500;
+
+    cursor: pointer;
+}
+
+.caminho-cadastro-beneficio button:hover {
+    text-decoration: underline;
+    color: #0866FF;
+}
+
+.caminho-cadastro-beneficio .seta {
+    display: flex;
+    gap: 8px;
+
+    color: #9AA3B2;
+}
+
+.caminho-cadastro-beneficio .pagina-atual-beneficio {
+    color: #131B2E;
+    font-weight: 500;
+}
+
+
+/*----------------- CARTÕES PRINCIPAIS ---------------------*/
+
+.cartao-identificacao-beneficio,
+.cartao-disponibilidade-beneficio {
+    box-sizing: border-box;
+    width: 100%;
+
+    margin-top: 23px;
+    padding: 25px 23px;
+
+    background: #FFFFFF;
+    border-radius: 8px;
+
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+
+/*----------------- CABEÇALHO DOS CARTÕES ------------------*/
+
+.cabecalho-cartao-beneficio {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 22px;
+}
+
+.cabecalho-cartao-beneficio h2 {
+    margin: 0;
+
+    color: #172033;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.cabecalho-cartao-beneficio p {
+    margin: 5px 0 0;
+
+    color: #777D90;
+    font-size: 12px;
+    line-height: 18px;
+}
+
+
+/*----------------- ETIQUETA OBRIGATÓRIO -------------------*/
+
+.etiqueta-obrigatorio {
+    padding: 3px 9px;
+
+    color: #172033;
+    background: #E1E6FF;
+
+    border-radius: 20px;
+
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+
+
+/*----------------- CAMPOS DO BENEFÍCIO --------------------*/
+
+.campo-beneficio {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.rotulo-campo-beneficio {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.rotulo-campo-beneficio label,
+.titulo-status-beneficio {
+    color: #202A40;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.rotulo-campo-beneficio label span,
+.titulo-status-beneficio span {
+    color: #DC2626;
+}
+
+.rotulo-campo-beneficio small {
+    color: #777D90;
+    font-size: 11px;
+}
+
+
+/*----------------- INPUT E TEXTAREA -----------------------*/
+
+.campo-beneficio input,
+.campo-beneficio textarea {
+    box-sizing: border-box;
+    width: 100%;
+
+    padding: 10px 11px;
+
+    color: #202A40;
+    background: #F1F2FF;
+
+    border: 1px solid transparent;
+    border-radius: 5px;
+    outline: none;
+
+    font-family: inherit;
+    font-size: 13px;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background-color 0.2s ease;
+}
+
+.campo-beneficio input {
+    height: 40px;
+}
+
+.campo-beneficio textarea {
+    min-height: 82px;
+    resize: vertical;
+
+    line-height: 19px;
+}
+
+.campo-beneficio input:focus,
+.campo-beneficio textarea:focus {
+    background: #FFFFFF;
+    border-color: #2452E8;
+
+    box-shadow: 0 0 0 2px rgba(36, 82, 232, 0.10);
+}
+
+.campo-beneficio input::placeholder,
+.campo-beneficio textarea::placeholder {
+    color: #777D90;
+    opacity: 1;
+}
+
+
+/*----------------- ERROS DOS CAMPOS -----------------------*/
+
+.campo-beneficio .campo-beneficio-erro {
+    background: #FFF5F5;
+    border-color: #DC2626;
+}
+
+.mensagem-erro-beneficio {
+    color: #DC2626;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.ajuda-campo-beneficio {
+    color: #777D90;
+    font-size: 12px;
+}
+
+
+/*----------------- STATUS OPERACIONAL ---------------------*/
+
+.campo-status-beneficio {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    width: 100%;
+}
+
+.opcoes-status-beneficio {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.opcao-status-beneficio {
+    box-sizing: border-box;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+
+    width: 100%;
+    min-height: 80px;
+    padding: 12px;
+
+    background: #F2F3FF;
+    border: 1px solid transparent;
+    border-radius: 8px;
+
+    cursor: pointer;
+
+    transition: border-color 0.2s ease;
+}
+
+.opcao-status-beneficio.status-selecionado {
+    background: #F2F3FF;
+    border-color: transparent;
+}
+
+.opcao-status-beneficio input,
+.opcao-disponibilidade-beneficio input {
+    flex-shrink: 0;
+    margin: 2px 0 0;
+
+    accent-color: #1745BD;
+
+    cursor: pointer;
+}
+
+.titulo-opcao-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.titulo-opcao-status strong {
+    color: #202A40;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.titulo-opcao-status span {
+    padding: 3px 6px;
+
+    border-radius: 12px;
+
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.status-disponivel {
+    color: #075B45;
+    background: #6FFBBE;
+}
+
+.status-disponivel i {
+    display: inline-block;
+
+    width: 5px;
+    height: 5px;
+    margin-right: 3px;
+
+    background: #075B45;
+    border-radius: 50%;
+}
+
+.status-bloqueado {
+    color: #777D90;
+    background: #E4E8FA;
+}
+
+.opcao-status-beneficio p {
+    margin: 5px 0 0;
+
+    color: #52586B;
+    font-size: 12px;
+    line-height: 18px;
+}
+
+
+/*----------------- REGRAS DE DISPONIBILIDADE ---------------*/
+
+.opcoes-disponibilidade-beneficio {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+
+    width: 100%;
+}
+
+.opcao-disponibilidade-beneficio {
+    box-sizing: border-box;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+
+    width: 100%;
+    min-height: 63px;
+    padding: 13px 12px;
+
+    background: #F2F3FF;
+    border: 1px solid transparent;
+    border-radius: 8px;
+
+    cursor: pointer;
+
+    transition: border-color 0.2s ease;
+}
+
+.opcao-disponibilidade-beneficio.disponibilidade-selecionada {
+    background: #F2F3FF;
+    border-color: transparent;
+}
+
+.conteudo-disponibilidade {
+    flex: 1;
+    min-width: 0;
+}
+
+.conteudo-disponibilidade strong {
+    display: block;
+
+    color: #202A40;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.conteudo-disponibilidade p {
+    margin: 5px 0 0;
+
+    color: #52586B;
+    font-size: 12px;
+    line-height: 17px;
+}
+
+.etiqueta-padrao {
+    margin-left: auto;
+    padding-top: 2px;
+
+    color: #0866FF;
+    font-size: 10px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+
+/*----------------- SELEÇÃO DE SETORES E CARGOS ------------*/
+
+.selecao-itens-beneficio {
+    box-sizing: border-box;
+    width: 100%;
+
+    margin-top: 18px;
+    padding: 13px;
+
+    background: #F2F3FF;
+    border-radius: 8px;
+}
+
+.cabecalho-selecao-itens {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 12px;
+}
+
+.cabecalho-selecao-itens strong {
+    color: #202A40;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.cabecalho-selecao-itens small {
+    color: #777D90;
+    font-size: 11px;
+}
+
+
+/*----------------- LISTA DE ITENS -------------------------*/
+
+.lista-itens-beneficio {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.item-selecionado-beneficio {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+
+    padding: 5px 8px;
+
+    color: #202A40;
+    background: #FFFFFF;
+    border: 1px solid #E5E7F2;
+    border-radius: 5px;
+
+    font-size: 12px;
+}
+
+.item-selecionado-beneficio button {
+    padding: 0;
+
+    color: #777D90;
+    background: transparent;
+    border: none;
+
+    font-size: 17px;
+    line-height: 14px;
+
+    cursor: pointer;
+}
+
+.item-selecionado-beneficio button:hover {
+    color: #DC2626;
+}
+
+
+/*----------------- BOTÃO ADICIONAR ITEM -------------------*/
+
+.botao-adicionar-item-beneficio {
+    padding: 5px 8px;
+
+    color: #0866FF;
+    background: #E1E6FF;
+    border: none;
+    border-radius: 5px;
+
+    font-size: 11px;
+    font-weight: 500;
+
+    cursor: pointer;
+}
+
+.botao-adicionar-item-beneficio:hover {
+    background: #D5DDFF;
+}
+
+
+/*----------------- CAMPO ADICIONAR ITEM -------------------*/
+
+.campo-adicionar-item-beneficio {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+
+    margin-top: 12px;
+}
+
+.campo-adicionar-item-beneficio input {
+    flex: 1;
+    min-width: 160px;
+    height: 34px;
+    padding: 0 9px;
+
+    background: #FFFFFF;
+    border: 1px solid #D9DDEE;
+    border-radius: 5px;
+
+    font-size: 12px;
+    outline: none;
+}
+
+.campo-adicionar-item-beneficio input:focus {
+    border-color: #2452E8;
+}
+
+.campo-adicionar-item-beneficio button {
+    padding: 0 12px;
+
+    color: #FFFFFF;
+    background: #2143B5;
+    border: none;
+    border-radius: 5px;
+
+    font-size: 11px;
+    cursor: pointer;
+}
+
+.campo-adicionar-item-beneficio button:last-child {
+    color: #202A40;
+    background: #E5E8F8;
+}
+
+
+/*----------------- BOTÕES SALVAR E CANCELAR ---------------*/
+
+.botoes-cadastro-beneficio {
+    display: flex;
+    justify-content: flex-end;
+
+    width: 100%;
+    margin-top: 24px;
+}
+
+
+
+
+/*----------------- SELEÇÃO DE SETORES E CARGOS -----------------*/
+
+.campo-adicionar-item-beneficio select {
+    min-width: 160px;
+    max-width: 240px;
+    padding: 9px 12px;
+
+    border: 1px dashed #2563EB;
+    border-radius: 6px;
+
+    background-color: #EEF3FF;
+    color: #1D4ED8;
+
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+    outline: none;
+}
+
+.campo-adicionar-item-beneficio select:focus {
+    border-style: solid;
+}
+
+.campo-adicionar-item-beneficio select:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/*----------------- ETIQUETAS SELECIONADAS ----------------------*/
+
+.item-selecionado-beneficio {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    padding: 7px 10px;
+
+    background-color: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 7px;
+
+    color: #172033;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.item-selecionado-beneficio button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 18px;
+    height: 18px;
+
+    border: none;
+    background: transparent;
+
+    color: #64748B;
+    font-size: 19px;
+
+    cursor: pointer;
+}
+
+.item-selecionado-beneficio button:hover {
+    color: #DC2626;
+}
