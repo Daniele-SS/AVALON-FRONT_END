@@ -19,12 +19,21 @@ import {
     buscarCargosBeneficio
 } from './servicos/buscarDisponibilidadeBeneficio.js';
 
+import editarBeneficioApi, {
+    buscarVinculosSetores,
+    buscarVinculosCargos
+} from './servicos/editarBeneficioApi.js';
+
 import './css-beneficios/cadastroBeneficio.css';
 
 
 //----------------- COMPONENTE ------------------------------//
 
-function CadastroBeneficio({ voltar }) {
+function CadastroBeneficio({
+    voltar,
+    beneficio = null,
+    modoEdicao = false
+}) {
 
     //----------------- ESTADOS DOS CAMPOS -------------------//
 
@@ -41,7 +50,6 @@ function CadastroBeneficio({ voltar }) {
     const [setores, setSetores] = useState([]);
     const [cargos, setCargos] = useState([]);
 
-    // Agora armazenamos objetos com ID e nome.
     const [itensSelecionados, setItensSelecionados] = useState([]);
 
     const [carregandoItens, setCarregandoItens] = useState(false);
@@ -95,9 +103,81 @@ function CadastroBeneficio({ voltar }) {
     }, []);
 
 
-    //----------------- ITENS DISPONÍVEIS ---------------------//
+    //----------------- CARREGAR DADOS PARA EDIÇÃO -------------//
 
-    // Define qual lista será exibida de acordo com a disponibilidade.
+    useEffect(() => {
+
+        async function carregarBeneficioEdicao() {
+
+            // Se não estiver editando, não precisa carregar os dados.
+            if (!modoEdicao || !beneficio) {
+                return;
+            }
+
+            try {
+
+                // Preenche os campos com os dados do benefício.
+                setNome(beneficio.nome || '');
+                setDescricao(beneficio.descricao || '');
+                setStatus(Number(beneficio.status));
+                setDisponibilidade(beneficio.disponibilidade || 'TODOS');
+
+                // Limpa os itens selecionados antes de carregar os vínculos.
+                setItensSelecionados([]);
+
+                const idBeneficio = beneficio.id_beneficio ?? beneficio.id;
+
+                // Carrega os setores vinculados ao benefício.
+                if (beneficio.disponibilidade === 'SETOR') {
+
+                    const vinculos = await buscarVinculosSetores(idBeneficio);
+
+                    const setoresSelecionados = vinculos
+                        .filter((vinculo) => vinculo.setor?.id != null)
+                        .map((vinculo) => ({
+                            id: vinculo.setor.id,
+                            nome: vinculo.setor.nome
+                        }));
+
+                    setItensSelecionados(setoresSelecionados);
+
+                }
+
+                // Carrega os cargos vinculados ao benefício.
+                if (beneficio.disponibilidade === 'CARGO') {
+
+                    const vinculos = await buscarVinculosCargos(idBeneficio);
+
+                    const cargosSelecionados = vinculos
+                        .filter((vinculo) => vinculo.cargo?.id != null)
+                        .map((vinculo) => ({
+                            id: vinculo.cargo.id,
+                            nome: vinculo.cargo.nome
+                        }));
+
+                    setItensSelecionados(cargosSelecionados);
+
+                }
+
+            } catch (erro) {
+
+                console.error('Erro ao carregar benefício para edição:', erro);
+
+                alert(
+                    erro.message ||
+                    'Não foi possível carregar os dados do benefício.'
+                );
+
+            }
+
+        }
+
+        carregarBeneficioEdicao();
+
+    }, [beneficio, modoEdicao]);
+
+
+    //----------------- ITENS DISPONÍVEIS ---------------------//
 
     const itensDisponiveis = disponibilidade === 'SETOR'
         ? setores
@@ -139,7 +219,6 @@ function CadastroBeneficio({ voltar }) {
             return;
         }
 
-        // Procura o registro selecionado na lista da API.
         const itemEncontrado = itensDisponiveis.find(
             (item) => Number(item.id) === Number(idSelecionado)
         );
@@ -148,7 +227,6 @@ function CadastroBeneficio({ voltar }) {
             return;
         }
 
-        // Verifica se o item já foi selecionado.
         const jaExiste = itensSelecionados.some(
             (item) => Number(item.id) === Number(itemEncontrado.id)
         );
@@ -157,7 +235,6 @@ function CadastroBeneficio({ voltar }) {
             return;
         }
 
-        // Armazena o ID e o nome do registro.
         setItensSelecionados((itensAtuais) => [
             ...itensAtuais,
             {
@@ -209,17 +286,12 @@ function CadastroBeneficio({ voltar }) {
 
     //----------------- SALVAR BENEFÍCIO ----------------------//
 
-
-
-
     async function salvarBeneficio() {
 
-        // Evita dois cadastros simultâneos.
         if (salvando) {
             return;
         }
 
-        // Verifica os campos antes de enviar.
         if (!validarFormulario()) {
             return;
         }
@@ -238,6 +310,30 @@ function CadastroBeneficio({ voltar }) {
             };
 
 
+            //----------------- EDITAR BENEFÍCIO ------------------//
+
+            if (modoEdicao) {
+
+                const idBeneficio = beneficio?.id_beneficio ?? beneficio?.id;
+
+                if (!idBeneficio) {
+                    throw new Error('Não foi possível identificar o benefício para edição.');
+                }
+
+                await editarBeneficioApi(idBeneficio, {
+                    ...dadosBeneficio,
+                    itensSelecionados
+                });
+
+                alert('Benefício atualizado com sucesso!');
+
+                voltar();
+
+                return;
+
+            }
+
+
             //----------------- CADASTRAR BENEFÍCIO ---------------//
 
             const respostaBeneficio = await cadastrarBeneficio(
@@ -247,7 +343,6 @@ function CadastroBeneficio({ voltar }) {
 
             //----------------- RECUPERAR ID DO BENEFÍCIO ----------//
 
-            // Aceita os formatos mais comuns de retorno da API.
             const idBeneficio =
                 respostaBeneficio?.id_beneficio ??
                 respostaBeneficio?.id ??
@@ -302,11 +397,16 @@ function CadastroBeneficio({ voltar }) {
 
         } catch (erro) {
 
-            console.error('Erro ao cadastrar benefício:', erro);
+            console.error(
+                modoEdicao
+                    ? 'Erro ao editar benefício:'
+                    : 'Erro ao cadastrar benefício:',
+                erro
+            );
 
             alert(
                 erro.message ||
-                'Não foi possível cadastrar o benefício.'
+                'Não foi possível salvar o benefício.'
             );
 
         } finally {
@@ -318,13 +418,15 @@ function CadastroBeneficio({ voltar }) {
     }
 
 
-
     //----------------- TÍTULOS -------------------------------//
 
-    const tituloPagina = 'Novo Benefício';
+    const tituloPagina = modoEdicao
+        ? 'Editar Benefício'
+        : 'Novo Benefício';
 
-    const descricaoPagina =
-        'Defina os benefícios para organizar os colaboradores.';
+    const descricaoPagina = modoEdicao
+        ? 'Atualize as informações e as regras de disponibilidade do benefício.'
+        : 'Defina os benefícios para organizar os colaboradores.';
 
 
     //----------------- TELA ----------------------------------//
@@ -488,8 +590,7 @@ function CadastroBeneficio({ voltar }) {
                         {/* STATUS ATIVO */}
 
                         <label
-                            className={`opcao-status-beneficio ${Number(status) === 1 ? 'status-selecionado' : ''
-                                }`}
+                            className={`opcao-status-beneficio ${Number(status) === 1 ? 'status-selecionado' : ''}`}
                         >
 
                             <input
@@ -532,8 +633,7 @@ function CadastroBeneficio({ voltar }) {
                         {/* STATUS INATIVO */}
 
                         <label
-                            className={`opcao-status-beneficio ${Number(status) === 0 ? 'status-selecionado' : ''
-                                }`}
+                            className={`opcao-status-beneficio ${Number(status) === 0 ? 'status-selecionado' : ''}`}
                         >
 
                             <input
@@ -615,8 +715,7 @@ function CadastroBeneficio({ voltar }) {
                     {/* TODOS OS COLABORADORES */}
 
                     <label
-                        className={`opcao-disponibilidade-beneficio ${disponibilidade === 'TODOS' ? 'disponibilidade-selecionada' : ''
-                            }`}
+                        className={`opcao-disponibilidade-beneficio ${disponibilidade === 'TODOS' ? 'disponibilidade-selecionada' : ''}`}
                     >
 
                         <input
@@ -650,8 +749,7 @@ function CadastroBeneficio({ voltar }) {
                     {/* SETORES ESPECÍFICOS */}
 
                     <label
-                        className={`opcao-disponibilidade-beneficio ${disponibilidade === 'SETOR' ? 'disponibilidade-selecionada' : ''
-                            }`}
+                        className={`opcao-disponibilidade-beneficio ${disponibilidade === 'SETOR' ? 'disponibilidade-selecionada' : ''}`}
                     >
 
                         <input
@@ -677,8 +775,7 @@ function CadastroBeneficio({ voltar }) {
                     {/* CARGOS ESPECÍFICOS */}
 
                     <label
-                        className={`opcao-disponibilidade-beneficio ${disponibilidade === 'CARGO' ? 'disponibilidade-selecionada' : ''
-                            }`}
+                        className={`opcao-disponibilidade-beneficio ${disponibilidade === 'CARGO' ? 'disponibilidade-selecionada' : ''}`}
                     >
 
                         <input
@@ -751,8 +848,6 @@ function CadastroBeneficio({ voltar }) {
                                     key={item.id}
                                 >
 
-
-
                                     {item.nome}
 
                                     <button
@@ -792,7 +887,6 @@ function CadastroBeneficio({ voltar }) {
                                     {itensDisponiveis
                                         .filter((item) => {
 
-                                            // Não exibe opções que já foram selecionadas.
                                             return !itensSelecionados.some(
                                                 (selecionado) =>
                                                     Number(selecionado.id) === Number(item.id)
@@ -828,6 +922,7 @@ function CadastroBeneficio({ voltar }) {
 
                         )}
 
+
                         {/* ERRO DOS ITENS */}
 
                         {erros.itensSelecionados && (
@@ -837,6 +932,7 @@ function CadastroBeneficio({ voltar }) {
                             </small>
 
                         )}
+
 
                         {/* AVISO QUANDO NÃO EXISTEM REGISTROS */}
 
@@ -863,7 +959,7 @@ function CadastroBeneficio({ voltar }) {
                     onCancelar={voltar}
                     onSalvar={salvarBeneficio}
                     salvando={salvando}
-                    textoBotao="Salvar benefício"
+                    textoBotao={modoEdicao ? 'Salvar alterações' : 'Salvar benefício'}
                 />
 
             </div>

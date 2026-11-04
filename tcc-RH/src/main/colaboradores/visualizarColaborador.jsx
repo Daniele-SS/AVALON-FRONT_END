@@ -1,10 +1,17 @@
 
+import { useEffect, useState } from 'react';
+
 import VisualizarInfo from '../../componentes/visualizarInformacao/visualizarInfo.jsx';
+
+import {
+    buscarBeneficiosColaborador
+} from './servicos/beneficioColaboradorApi.js';
 
 
 //----------------- FORMATAR CPF ----------------------------//
 
 function formatarCPF(cpf) {
+
     if (!cpf) {
         return 'Não informado';
     }
@@ -25,6 +32,7 @@ function formatarCPF(cpf) {
 //----------------- FORMATAR TELEFONE -----------------------//
 
 function formatarTelefone(telefone) {
+
     if (!telefone) {
         return 'Não informado';
     }
@@ -52,6 +60,7 @@ function formatarTelefone(telefone) {
 //----------------- FORMATAR DATA ---------------------------//
 
 function formatarData(data) {
+
     if (!data) {
         return 'Não informado';
     }
@@ -77,6 +86,7 @@ function formatarData(data) {
 //----------------- CALCULAR IDADE --------------------------//
 
 function calcularIdade(dataNascimento) {
+
     if (!dataNascimento) {
         return null;
     }
@@ -89,6 +99,7 @@ function calcularIdade(dataNascimento) {
 
     // Data no formato DD/MM/AAAA.
     if (/^\d{2}\/\d{2}\/\d{4}$/.test(data)) {
+
         const partes = data.split('/');
 
         dia = Number(partes[0]);
@@ -96,6 +107,7 @@ function calcularIdade(dataNascimento) {
         ano = Number(partes[2]);
 
     } else {
+
         // Data no formato AAAA-MM-DD.
         const resultado = data.match(/^(\d{4})-(\d{2})-(\d{2})/);
 
@@ -144,6 +156,7 @@ function calcularIdade(dataNascimento) {
 //----------------- DATA DE NASCIMENTO E IDADE --------------//
 
 function formatarDataNascimento(dataNascimento) {
+
     if (!dataNascimento) {
         return 'Não informado';
     }
@@ -159,7 +172,7 @@ function formatarDataNascimento(dataNascimento) {
 }
 
 
-//----------------- TELA DE VISUALIZAÇÃO --------------------//
+//----------------- COMPONENTE ------------------------------//
 
 function VisualizarColaborador({
     colaborador,
@@ -167,7 +180,129 @@ function VisualizarColaborador({
     onEditar
 }) {
 
+    //----------------- ESTADOS -----------------------------//
+
+    const [beneficiosVinculados, setBeneficiosVinculados] = useState([]);
+
+    const [carregandoBeneficios, setCarregandoBeneficios] = useState(true);
+
+    const [erroBeneficios, setErroBeneficios] = useState('');
+
+
+    //----------------- CARREGAR BENEFÍCIOS -----------------//
+
+    useEffect(() => {
+
+        if (!colaborador) {
+            setCarregandoBeneficios(false);
+            return;
+        }
+
+        let componenteAtivo = true;
+
+        async function carregarBeneficios() {
+
+            setCarregandoBeneficios(true);
+            setErroBeneficios('');
+
+            try {
+
+                const lista = await buscarBeneficiosColaborador();
+
+                const idColaborador =
+                    colaborador.id_colaborador ??
+                    colaborador.id ??
+                    colaborador.idColaborador;
+
+                // Filtrar somente os vínculos deste colaborador.
+                const vinculosDoColaborador = lista.filter((vinculo) => {
+
+                    const colaboradoresVinculados = Array.isArray(
+                        vinculo.colaborador
+                    )
+                        ? vinculo.colaborador
+                        : [vinculo.colaborador];
+
+                    return colaboradoresVinculados.some((item) => {
+
+                        const idRelacionado =
+                            item?.id_colaborador ??
+                            item?.id;
+
+                        return String(idRelacionado) === String(idColaborador);
+
+                    });
+
+                });
+
+                // Considerar somente os vínculos ativos.
+                const vinculosAtivos = vinculosDoColaborador.filter((vinculo) => {
+
+                    return (
+                        vinculo.ativo === true ||
+                        vinculo.ativo === 1 ||
+                        vinculo.ativo === '1'
+                    );
+
+                });
+
+                // Extrair os benefícios de cada vínculo.
+                const beneficios = vinculosAtivos.flatMap((vinculo) => {
+
+                    return vinculo.beneficio?.beneficios || [];
+
+                });
+
+                // Evitar exibir benefícios repetidos.
+                const beneficiosUnicos = [
+                    ...new Map(
+                        beneficios.map((beneficio) => [
+                            beneficio.id,
+                            beneficio
+                        ])
+                    ).values()
+                ];
+
+                if (componenteAtivo) {
+                    setBeneficiosVinculados(beneficiosUnicos);
+                }
+
+            } catch (erro) {
+
+                console.error(
+                    'Erro ao carregar benefícios do colaborador:',
+                    erro
+                );
+
+                if (componenteAtivo) {
+                    setErroBeneficios(
+                        'Não foi possível carregar os benefícios vinculados.'
+                    );
+                }
+
+            } finally {
+
+                if (componenteAtivo) {
+                    setCarregandoBeneficios(false);
+                }
+
+            }
+
+        }
+
+        carregarBeneficios();
+
+        return () => {
+            componenteAtivo = false;
+        };
+
+    }, [colaborador]);
+
+
+    //----------------- VERIFICAR COLABORADOR ----------------//
+
     if (!colaborador) {
+
         return (
             <div>
                 <button
@@ -180,14 +315,46 @@ function VisualizarColaborador({
                 <p>Colaborador não encontrado.</p>
             </div>
         );
+
     }
+
+
+    //----------------- INFORMAÇÕES DOS BENEFÍCIOS ------------//
+
+    const informacoesBeneficios = carregandoBeneficios
+        ? [
+            {
+                nome: 'Benefícios',
+                valor: 'Carregando benefícios...'
+            }
+        ]
+        : erroBeneficios
+            ? [
+                {
+                    nome: 'Benefícios',
+                    valor: erroBeneficios
+                }
+            ]
+            : beneficiosVinculados.length > 0
+                ? beneficiosVinculados.map((beneficio, indice) => ({
+                    nome: `Benefício ${indice + 1}`,
+                    valor: beneficio.nome || 'Nome não informado'
+                }))
+                : [
+                    {
+                        nome: 'Benefícios',
+                        valor: 'Nenhum benefício vinculado.'
+                    }
+                ];
 
 
     //----------------- CARDS DE DETALHES -------------------//
 
     const cardsDetalhes = [
+
         {
             titulo: 'Dados pessoais',
+
             informacoes: [
                 {
                     nome: 'Nome completo',
@@ -213,8 +380,10 @@ function VisualizarColaborador({
                 }
             ]
         },
+
         {
             titulo: 'Dados profissionais',
+
             informacoes: [
                 {
                     nome: 'Matrícula',
@@ -234,31 +403,30 @@ function VisualizarColaborador({
                 }
             ]
         },
+
         {
             titulo: 'Benefícios vinculados',
             ocuparLinhaToda: true,
-            informacoes: [
-                {
-                    nome: 'Benefício 1',
-                    valor: 'Plano de saúde'
-                },
-                {
-                    nome: 'Benefício 2',
-                    valor: 'Gympass'
-                }
-            ]
+            informacoes: informacoesBeneficios
         }
+
     ];
 
 
     //----------------- RETORNO JSX -------------------------//
 
     return (
+
         <div className="visualizar-colaborador-pagina">
+
             <VisualizarInfo
+
                 nome={colaborador.nome}
+
                 foto={colaborador.foto}
+
                 mostrarFoto={true}
+
                 informacoes={[
                     {
                         nome: 'Cargo',
@@ -273,14 +441,26 @@ function VisualizarColaborador({
                         valor: colaborador.status
                     }
                 ]}
+
                 cardsDetalhes={cardsDetalhes}
+
                 textoBotaoDesativar="Desativar colaborador"
+
                 textoBotaoEditar="Editar dados"
+
                 onVoltar={voltar}
+
                 onEditar={onEditar}
+
             />
+
         </div>
+
     );
+
 }
+
+
+//----------------- EXPORTAÇÃO ------------------------------//
 
 export default VisualizarColaborador;

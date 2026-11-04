@@ -34,24 +34,36 @@ function montarInformacoesColaboradores(colaboradores, usuarios = []) {
     }
 
 
-    //----------------- OBTER NOME DO CARGO -----------------//
+//----------------- OBTER NOME DO CARGO -----------------//
 
-    function obterNomeCargo(colaborador) {
+function obterNomeCargo(colaborador) {
 
-        const classificacoes =
-            colaborador.cargo?.classificacao || [];
+    // O cargo pode vir como objeto ou como lista.
+    let cargoColaborador = Array.isArray(colaborador.cargo)
+        ? colaborador.cargo[0]
+        : colaborador.cargo;
 
-        const nomesCargos = classificacoes
-            .map(cargo => cargo.nome)
-            .filter(Boolean);
+    // Verificar se existem classificações dentro do cargo.
+    const classificacoes = Array.isArray(
+        cargoColaborador?.classificacao
+    )
+        ? cargoColaborador.classificacao
+        : [];
 
-        return (
-            colaborador.nome_cargo ??
-            (nomesCargos.length > 0
-                ? nomesCargos.join(', ')
-                : 'Não definido')
-        );
-    }
+    // Obter os nomes das classificações.
+    const nomesCargos = classificacoes
+        .map((cargo) => cargo.nome)
+        .filter(Boolean);
+
+    // Retornar o nome encontrado.
+    return (
+        colaborador.nome_cargo ||
+        cargoColaborador?.nome ||
+        (nomesCargos.length > 0
+            ? nomesCargos.join(', ')
+            : 'Não definido')
+    );
+}
 
 
     //----------------- LOCALIZAR USUÁRIO -------------------//

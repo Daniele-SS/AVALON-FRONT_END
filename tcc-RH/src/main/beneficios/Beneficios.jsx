@@ -6,7 +6,9 @@ import { useEffect, useState } from 'react';
 import BotaoCadastro from '../../componentes/cardNomePag/nomePag.jsx';
 import Minicards from '../../componentes/minicard/minicard.jsx';
 import Filtro from '../../componentes/cardFiltros/filtros.jsx';
+
 import CadastroBeneficio from './CadastroBeneficio.jsx';
+import EditarBeneficio from './EditarBeneficio.jsx';
 
 import CardBeneficio from './componentes/CardBeneficio.jsx';
 
@@ -57,12 +59,14 @@ function Beneficios() {
 
     const [tela, setTela] = useState('lista');
 
+    // Guarda o benefício selecionado para edição.
+    const [beneficioSelecionado, setBeneficioSelecionado] = useState(null);
+
     const [carregando, setCarregando] = useState(true);
     const [erro, setErro] = useState('');
 
 
     //----------------- CARREGAR COLABORADORES ----------------//
-
 
     async function buscarColaboradores() {
 
@@ -94,10 +98,8 @@ function Beneficios() {
             );
         }
 
-        // A API retorna a lista na propriedade "colaborador".
         return dados.response?.colaborador || [];
     }
-
 
 
     //----------------- CARREGAR DADOS -----------------------//
@@ -109,7 +111,6 @@ function Beneficios() {
 
         try {
 
-            // Consultar os benefícios, os vínculos e os colaboradores.
             const [
                 dadosBeneficios,
                 dadosVinculos,
@@ -120,7 +121,6 @@ function Beneficios() {
                 buscarColaboradores()
             ]);
 
-            // Guardar os dados recebidos da API.
             setBeneficios(dadosBeneficios);
             setVinculos(dadosVinculos);
             setColaboradores(dadosColaboradores);
@@ -150,14 +150,35 @@ function Beneficios() {
 
     //----------------- NAVEGAÇÃO ----------------------------//
 
+    // Abre a tela de cadastro.
     function abrirCadastro() {
+
+        setBeneficioSelecionado(null);
+
         setTela('cadastro');
+
     }
 
 
-    function voltarParaLista() {
+    // Abre a tela de edição com o benefício selecionado.
+    function abrirEdicao(beneficio) {
+
+        setBeneficioSelecionado(beneficio);
+
+        setTela('edicao');
+
+    }
+
+
+    // Retorna para a listagem.
+    async function voltarParaLista() {
+
         setTela('lista');
-        carregarDados();
+
+        setBeneficioSelecionado(null);
+
+        await carregarDados();
+
     }
 
 
@@ -176,12 +197,9 @@ function Beneficios() {
         colaboradores
     );
 
-
-    // Benefícios com quantidade de colaboradores e percentual.
     const beneficiosComInformacoes =
         informacoesBeneficios.beneficios || [];
 
-    // Aplicar a pesquisa e os filtros.
     const beneficiosFiltrados = filtrarBeneficios(
         beneficiosComInformacoes,
         filtros
@@ -194,17 +212,16 @@ function Beneficios() {
         beneficios
     );
 
-    // Quantidade de colaboradores distintos beneficiados.
     const totalColaboradoresBeneficiados =
         informacoesBeneficios.totalColaboradoresBeneficiados || 0;
 
 
     //----------------- TELA DE CADASTRO ---------------------//
 
-    //----------------- TELA DE CADASTRO ---------------------//
-
     if (tela === 'cadastro') {
+
         return (
+
             <div className="pagina-beneficios">
 
                 <CadastroBeneficio
@@ -212,7 +229,29 @@ function Beneficios() {
                 />
 
             </div>
+
         );
+
+    }
+
+
+    //----------------- TELA DE EDIÇÃO -----------------------//
+
+    if (tela === 'edicao' && beneficioSelecionado) {
+
+        return (
+
+            <div className="pagina-beneficios">
+
+                <EditarBeneficio
+                    beneficio={beneficioSelecionado}
+                    voltar={voltarParaLista}
+                />
+
+            </div>
+
+        );
+
     }
 
 
@@ -222,7 +261,7 @@ function Beneficios() {
 
         <div className="pagina-beneficios">
 
-            {/* Cabeçalho da página */}
+            {/* CABEÇALHO DA PÁGINA */}
 
             <BotaoCadastro
                 titulo="Benefícios"
@@ -232,7 +271,7 @@ function Beneficios() {
             />
 
 
-            {/* Minicards */}
+            {/* MINICARDS */}
 
             <div className="container-minicards">
 
@@ -260,7 +299,7 @@ function Beneficios() {
             </div>
 
 
-            {/* Filtros */}
+            {/* FILTROS */}
 
             <Filtro
                 titulo="Pesquisar Benefício"
@@ -284,7 +323,7 @@ function Beneficios() {
             />
 
 
-            {/* Mensagem de erro */}
+            {/* MENSAGEM DE ERRO */}
 
             {erro && (
 
@@ -295,7 +334,7 @@ function Beneficios() {
             )}
 
 
-            {/* Lista de benefícios */}
+            {/* LISTA DE BENEFÍCIOS */}
 
             {carregando ? (
 
@@ -316,6 +355,7 @@ function Beneficios() {
                                 <CardBeneficio
                                     key={beneficio.id}
                                     beneficio={beneficio}
+                                    onVerDetalhes={abrirEdicao}
                                 />
 
                             ))}

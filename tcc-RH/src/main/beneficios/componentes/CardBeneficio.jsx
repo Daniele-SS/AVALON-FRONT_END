@@ -6,7 +6,7 @@ import './cardBeneficio.css';
 
 //----------------- COMPONENTE ------------------------------//
 
-function CardBeneficio({ beneficio }) {
+function CardBeneficio({ beneficio, onVerDetalhes }) {
 
     // Verifica se o benefício está ativo.
     const beneficioAtivo = Number(beneficio.status) === 1;
@@ -135,8 +135,6 @@ function CardBeneficio({ beneficio }) {
             </div>
 
 
-
-
             {/* Disponibilidade e botão Ver detalhes */}
 
             <div className="rodape-card-beneficio">
@@ -156,6 +154,7 @@ function CardBeneficio({ beneficio }) {
                 <button
                     type="button"
                     className="botao-ver-detalhes-beneficio"
+                    onClick={() => onVerDetalhes(beneficio)}
                 >
                     Ver detalhes
                 </button>

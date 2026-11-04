@@ -1,3 +1,4 @@
+
 //----------------- INFORMAÇÕES DOS SETORES -----------------//
 
 function montarInformacoesSetores(setores, colaboradores, usuarios) {
@@ -25,22 +26,37 @@ function montarInformacoesSetores(setores, colaboradores, usuarios) {
 
         colaboradoresSetor.forEach(colaborador => {
 
-            const classificacoes = colaborador.cargo?.classificacao || [];
+            // O cargo pode vir como objeto ou como array.
+            const cargoColaborador = Array.isArray(colaborador.cargo)
+                ? colaborador.cargo[0]
+                : colaborador.cargo;
+
+            // Verifica o ID do cargo diretamente no colaborador.
+            const idCargo = colaborador.id_cargo ?? cargoColaborador?.id;
+
+            if (
+                idCargo &&
+                !cargos.includes(Number(idCargo))
+            ) {
+                cargos.push(Number(idCargo));
+            }
+
+            // Mantém também a verificação das classificações,
+            // caso a API retorne essa estrutura.
+            const classificacoes = Array.isArray(cargoColaborador?.classificacao)
+                ? cargoColaborador.classificacao
+                : [];
 
             classificacoes.forEach(cargo => {
 
-                if (!cargos.includes(cargo.id)) {
-                    cargos.push(cargo.id);
+                if (
+                    cargo.id &&
+                    !cargos.includes(Number(cargo.id))
+                ) {
+                    cargos.push(Number(cargo.id));
                 }
 
             });
-
-            if (
-                colaborador.id_cargo &&
-                !cargos.includes(colaborador.id_cargo)
-            ) {
-                cargos.push(colaborador.id_cargo);
-            }
 
         });
 
