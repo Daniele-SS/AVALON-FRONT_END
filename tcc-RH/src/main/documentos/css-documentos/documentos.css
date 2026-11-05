@@ -1,0 +1,107 @@
+/*----------------- PÁGINA PRINCIPAL -----------------------------*/
+
+.pagina-documentos {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+
+/*----------------- INDICADORES -----------------------------*/
+
+.indicadores-documentos {
+    width: 100%;
+    height: 127px;
+
+    margin-top: 78px;
+
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+
+    gap: 20px;
+}
+
+
+/*----------------- FILTROS -----------------------------*/
+
+.filtros-documentos {
+    width: 100%;
+}
+
+
+/*----------------- CONTEÚDO -----------------------------*/
+
+.conteudo-documentos {
+    width: 100%;
+}
+
+
+/*----------------- CARREGAMENTO -----------------------------*/
+
+.mensagem-documentos {
+    width: 100%;
+    padding: 35px 20px;
+    
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #737B8C;
+    font-size: 14px;
+}
+
+
+/*----------------- ERRO -----------------------------*/
+
+.erro-documentos {
+    width: 100%;
+    padding: 25px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+
+    background-color: #FFF1F1;
+    border: 1px solid #F2CCCC;
+    border-radius: 10px;
+
+    box-sizing: border-box;
+}
+
+.erro-documentos p {
+    margin: 0;
+
+    color: #B42318;
+    font-size: 13px;
+}
+
+.erro-documentos button {
+    padding: 9px 15px;
+
+    background-color: #001F3F;
+    border: none;
+    border-radius: 7px;
+
+    color: #FFFFFF;
+    font-size: 12px;
+
+    cursor: pointer;
+}
+
+/*----------------- CORES DOS ÍCONES -----------------------------*/
+
+/* Termos - Verde */
+.indicadores-documentos .item-minicard:nth-child(2) .icone-minicard img {
+    filter: brightness(0) saturate(100%)
+            invert(36%) sepia(48%) saturate(1100%)
+            hue-rotate(105deg) brightness(92%) contrast(90%);
+}
+
+/* Avaliações - Laranja */
+.indicadores-documentos .item-minicard:nth-child(4) .icone-minicard img {
+    filter: brightness(0) saturate(100%)
+            invert(48%) sepia(75%) saturate(600%)
+            hue-rotate(5deg) brightness(95%) contrast(90%);
+}

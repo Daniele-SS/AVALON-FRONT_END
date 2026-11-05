@@ -1,0 +1,285 @@
+/*----------------- CARD PRINCIPAL -----------------------------*/
+
+.card-documento {
+    width: 100%;
+    min-width: 0;
+    min-height: 94px;
+
+    padding: 15px 16px;
+
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    background-color: #F4F6FF;
+    border: 1px solid #E9EDFA;
+    border-left: 4px solid #DCE5FF;
+    border-radius: 10px;
+
+    box-sizing: border-box;
+    transition: 0.2s;
+}
+
+.card-documento:hover {
+    background-color: #EEF2FF;
+    border-color: #D6DFF5;
+    border-left-color: #0057D9;
+    box-shadow: 0px 2px 8px rgba(0, 31, 63, 0.05);
+}
+
+
+/*----------------- DOCUMENTO ARQUIVADO -----------------------------*/
+
+.card-documento.documento-arquivado {
+    opacity: 0.75;
+    background-color: #F7F8FC;
+}
+
+
+/*----------------- ÍCONE -----------------------------*/
+
+.card-documento-icone {
+    width: 60px;
+    height: 60px;
+    min-width: 60px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 12px;
+}
+
+.card-documento-icone span {
+    font-size: 13px;
+    font-weight: 700;
+}
+
+
+/*----------------- CORES DOS TIPOS DE DOCUMENTO -----------------------------*/
+
+/* Contrato e Termo */
+
+.card-documento-icone.contrato,
+.card-documento-icone.termo {
+    background-color: #EADFFF;
+    color: #7628E8;
+}
+
+/* Recibo */
+
+.card-documento-icone.recibo {
+    background-color: #D9E8FF;
+    color: #42658C;
+}
+
+/* Avaliação */
+
+.card-documento-icone.avaliacao {
+    background-color: #DCE7FF;
+    color: #0057D9;
+}
+
+/* Outros */
+
+.card-documento-icone.outros {
+    background-color: #E8ECF8;
+    color: #64748B;
+}
+
+
+/*----------------- CORES DOS FORMATOS DE ARQUIVO -----------------------------*/
+
+/* PDF - Vermelho */
+
+.card-documento-icone.arquivo-pdf {
+    background-color: #FDE5E5;
+    color: #D93025;
+}
+
+/* Word - Azul */
+
+.card-documento-icone.arquivo-word {
+    background-color: #DCEBFA;
+    color: #185ABD;
+}
+
+/* Excel - Verde */
+
+.card-documento-icone.arquivo-excel {
+    background-color: #DDF3E5;
+    color: #217346;
+}
+
+/* PowerPoint - Laranja */
+
+.card-documento-icone.arquivo-powerpoint {
+    background-color: #FCE8DF;
+    color: #D24726;
+}
+
+/* Imagens - Roxo */
+
+.card-documento-icone.arquivo-imagem {
+    background-color: #EFE5FF;
+    color: #7952B3;
+}
+
+
+/*----------------- CONTEÚDO -----------------------------*/
+
+.card-documento-conteudo {
+    flex: 1;
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+
+/*----------------- CABEÇALHO -----------------------------*/
+
+.card-documento-cabecalho {
+    min-width: 0;
+
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.card-documento-cabecalho h3 {
+    max-width: 280px;
+    margin: 0;
+
+    color: #172337;
+    font-size: 16px;
+    font-weight: 600;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+/*----------------- TIPO DO DOCUMENTO -----------------------------*/
+
+.tipo-documento {
+    max-width: 125px;
+    padding: 7px 11px;
+
+    border-radius: 8px;
+
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.tipo-documento.contrato,
+.tipo-documento.termo {
+    background-color: #EADFFF;
+    color: #7628E8;
+}
+
+.tipo-documento.recibo {
+    background-color: #D9E8FF;
+    color: #42658C;
+}
+
+.tipo-documento.avaliacao {
+    background-color: #DCE7FF;
+    color: #0057D9;
+}
+
+.tipo-documento.outros {
+    background-color: #E8ECF8;
+    color: #64748B;
+}
+
+
+/*----------------- INFORMAÇÕES DO COLABORADOR -----------------------------*/
+
+.card-documento-informacoes {
+    min-width: 0;
+
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 9px;
+
+    color: #51596A;
+    font-size: 13px;
+}
+
+.card-documento-informacoes span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.card-documento-informacoes .nome-colaborador {
+    color: #172337;
+    font-weight: 500;
+}
+
+.separador-documento {
+    color: #454D5D;
+    font-weight: 700;
+}
+
+
+/*----------------- RODAPÉ -----------------------------*/
+
+.card-documento-rodape {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+
+/*----------------- STATUS -----------------------------*/
+
+.status-documento {
+    padding: 7px 13px;
+    border-radius: 20px;
+
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.status-documento.ativo {
+    color: #00865A;
+    background-color: #E6FAF2;
+}
+
+.status-documento.arquivado {
+    color: #737B8C;
+    background-color: #E8ECF8;
+}
+
+
+/*----------------- BOTÃO VISUALIZAR -----------------------------*/
+
+.botao-visualizar-documento {
+    padding: 8px 12px;
+
+    background-color: transparent;
+    border: none;
+
+    color: #0057D9;
+    font-size: 12px;
+    font-weight: 600;
+
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.botao-visualizar-documento:hover {
+    text-decoration: underline;
+}

@@ -1,0 +1,227 @@
+
+/*----------------- CARD PRINCIPAL -----------------------------*/
+
+.card-lista-documentos {
+    width: 100%;
+    min-height: 500px;
+    margin-top: 50px;
+
+    display: flex;
+    flex-direction: column;
+
+    background-color: #FFFFFF;
+    border: 1px solid #EEF0F5;
+    border-radius: 16px;
+
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+
+/*----------------- CABEÇALHO -----------------------------*/
+
+.cabecalho-lista-documentos {
+    width: 100%;
+    min-height: 85px;
+
+    padding: 20px 32px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+
+    box-sizing: border-box;
+}
+
+.cabecalho-lista-documentos h2 {
+    margin: 0;
+
+    color: #001F3F;
+    font-size: 22px;
+    font-weight: 600;
+}
+
+
+/*----------------- TOTAL DE DOCUMENTOS -----------------------------*/
+
+.total-documentos {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.total-documentos span {
+    color: #454D5D;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+
+/*----------------- BOTÃO DE MENU -----------------------------*/
+
+.botao-menu-documentos {
+    width: 32px;
+    height: 32px;
+    padding: 5px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+
+    background: transparent;
+    border: none;
+
+    cursor: pointer;
+}
+
+.botao-menu-documentos span {
+    width: 22px;
+    height: 2px;
+
+    background-color: #454D5D;
+    border-radius: 2px;
+}
+
+
+/*----------------- ÁREA DA LISTAGEM -----------------------------*/
+
+.area-lista-documentos {
+    width: 100%;
+    flex: 1;
+
+    padding: 22px 32px 35px;
+
+    box-sizing: border-box;
+}
+
+
+/*----------------- LISTA DE DOCUMENTOS -----------------------------*/
+
+.lista-documentos {
+    width: 100%;
+
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    column-gap: 35px;
+    row-gap: 18px;
+
+    box-sizing: border-box;
+}
+
+
+/*----------------- LISTA VAZIA -----------------------------*/
+
+.lista-documentos-vazia {
+    width: 100%;
+    min-height: 250px;
+    padding: 45px 20px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    background-color: #FFFFFF;
+    border: 1px solid #E5E7EB;
+    border-radius: 12px;
+
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.lista-documentos-vazia h3 {
+    margin: 0;
+
+    color: #001F3F;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.lista-documentos-vazia p {
+    margin: 0;
+
+    color: #858B98;
+    font-size: 13px;
+}
+
+
+/*----------------- RODAPÉ -----------------------------*/
+
+.rodape-lista-documentos {
+    width: 100%;
+    min-height: 75px;
+
+    padding: 15px 32px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+
+    background-color: #F8FAFF;
+
+    box-sizing: border-box;
+}
+
+
+/*----------------- TEXTO DA PAGINAÇÃO -----------------------------*/
+
+.texto-paginacao-documentos {
+    color: #51596A;
+    font-size: 13px;
+}
+
+
+/*----------------- PAGINAÇÃO -----------------------------*/
+
+.paginacao-documentos {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.botao-pagina-documentos {
+    width: 38px;
+    height: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background-color: transparent;
+    border: none;
+    border-radius: 10px;
+
+    color: #454D5D;
+    font-size: 14px;
+    font-weight: 500;
+
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.botao-pagina-documentos:hover:not(:disabled) {
+    background-color: #E9EEFF;
+}
+
+.botao-pagina-documentos:disabled {
+    color: #A0A6B2;
+    cursor: not-allowed;
+}
+
+.botao-pagina-documentos.pagina-documento-ativa {
+    background-color: #0866F5;
+    color: #FFFFFF;
+    font-weight: 600;
+}
+
+.botao-pagina-documentos.pagina-documento-ativa:hover {
+    background-color: #0055D4;
+}
+
+
+
