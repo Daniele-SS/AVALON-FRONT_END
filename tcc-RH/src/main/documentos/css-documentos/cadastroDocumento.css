@@ -1,0 +1,674 @@
+
+/*----------------- PÁGINA PRINCIPAL -------------------------*/
+
+.pagina-cadastro-documento {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding-bottom: 100px;
+    box-sizing: border-box;
+}
+
+
+/*----------------- CABEÇALHO NOVO DOCUMENTO ----------------*/
+
+.cabecalho-novo-documento {
+    width: 100%;
+    min-height: 129px;
+}
+
+.cabecalho-novo-documento .card-tiulo {
+    width: 100%;
+    height: 129px;
+    min-height: 129px;
+}
+
+
+/*----------------- CAMINHO DE NAVEGAÇÃO --------------------*/
+
+.caminho-cadastro-documento {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    font-size: 13px;
+}
+
+.caminho-cadastro-documento button {
+    width: auto;
+    height: auto;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: #434655;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.caminho-cadastro-documento button:hover {
+    text-decoration: underline;
+    color: #0866FF;
+}
+
+.caminho-cadastro-documento .seta {
+    display: flex;
+    gap: 8px;
+    color: #9AA3B2;
+}
+
+.caminho-cadastro-documento .pagina-atual-documento {
+    color: #131B2E;
+    font-weight: 500;
+}
+
+
+/*----------------- CARTÕES -------------------------------*/
+
+.cartao-informacoes-documento,
+.cartao-arquivo-documento,
+.cartao-governanca-documento {
+    width: 100%;
+    padding: 25px;
+    box-sizing: border-box;
+    background: #FFFFFF;
+    border: 1px solid #E5E7EB;
+    border-radius: 8px;
+}
+
+
+/*----------------- CABEÇALHO DOS CARTÕES ------------------*/
+
+.cabecalho-cartao-documento {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.cabecalho-cartao-documento h2,
+.cabecalho-governanca-documento h2 {
+    margin: 0;
+    color: #14213D;
+    font-size: 17px;
+    font-weight: 600;
+}
+
+.cabecalho-cartao-documento p,
+.cabecalho-governanca-documento p {
+    margin: 7px 0 0;
+    color: #64748B;
+    font-size: 13px;
+}
+
+
+/*----------------- ETIQUETA OBRIGATÓRIO --------------------*/
+
+.etiqueta-obrigatorio-documento {
+    flex-shrink: 0;
+    padding: 5px 9px;
+    border-radius: 20px;
+    background: #FEE2E2;
+    color: #B91C1C;
+    font-size: 9px;
+    font-weight: 700;
+}
+
+
+/*----------------- GRADE DOS CAMPOS -----------------------*/
+
+.grade-campos-documento {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 25px;
+    row-gap: 20px;
+}
+
+.campo-documento {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    min-width: 0;
+}
+
+/* O colaborador ocupa toda a linha */
+
+.campo-documento-completo {
+    grid-column: 1 / -1;
+    position: relative;
+}
+
+
+/*----------------- LABELS DOS CAMPOS ----------------------*/
+
+.campo-documento label {
+    color: #14213D;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.campo-documento label span {
+    margin-left: 4px;
+    color: #E53935;
+}
+
+
+/*----------------- INPUTS E SELECTS -----------------------*/
+
+.campo-documento input,
+.campo-documento select {
+    width: 100%;
+    height: 42px;
+    padding: 0 13px;
+    box-sizing: border-box;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    outline: none;
+    background: #F0F2FF;
+    color: #14213D;
+    font-size: 13px;
+    font-family: inherit;
+}
+
+.campo-documento input::placeholder {
+    color: #94A3B8;
+}
+
+.campo-documento input:focus,
+.campo-documento select:focus {
+    border-color: #1746B0;
+    background: #FFFFFF;
+}
+
+.campo-documento input:disabled,
+.campo-documento select:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+
+/*----------------- CAMPO DE PESQUISA DO COLABORADOR --------*/
+
+.campo-pesquisa-colaborador-documento {
+    width: 100%;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 13px;
+    box-sizing: border-box;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    background: #F0F2FF;
+    transition: 0.2s;
+}
+
+.campo-pesquisa-colaborador-documento:focus-within,
+.campo-pesquisa-documento-foco {
+    border-color: #1746B0;
+    background: #FFFFFF;
+}
+
+/* Ícone de pesquisa */
+
+.icone-pesquisa-colaborador-documento {
+    flex-shrink: 0;
+    color: #8793A8;
+    font-size: 23px;
+    line-height: 1;
+}
+
+/* Input da pesquisa */
+
+.campo-pesquisa-colaborador-documento input {
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    padding: 0;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: #14213D;
+    font-size: 13px;
+    font-family: inherit;
+}
+
+.campo-pesquisa-colaborador-documento input:focus {
+    border: none;
+    background: transparent;
+}
+
+.campo-pesquisa-colaborador-documento input::placeholder {
+    color: #94A3B8;
+}
+
+.campo-pesquisa-colaborador-documento input:disabled {
+    cursor: not-allowed;
+}
+
+
+/*----------------- STATUS DO COLABORADOR ------------------*/
+
+.status-colaborador-documento {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex-shrink: 0;
+    padding: 5px 8px;
+    border-radius: 20px;
+    background: #E8F8EF;
+    color: #16834A;
+    font-size: 10px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.ponto-status-documento {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #22A45D;
+}
+
+
+/*----------------- SETA DO DROPDOWN -----------------------*/
+
+.seta-dropdown-colaborador-documento {
+    flex-shrink: 0;
+    color: #7B879A;
+    font-size: 18px;
+    line-height: 1;
+}
+
+
+/*----------------- DROPDOWN DE COLABORADORES ---------------*/
+
+.dropdown-colaboradores-documento {
+    position: absolute;
+    top: calc(100% + 5px);
+    left: 0;
+    z-index: 100;
+    width: 100%;
+    max-height: 240px;
+    overflow-y: auto;
+    box-sizing: border-box;
+    background: #FFFFFF;
+    border: 1px solid #E0E4F0;
+    border-radius: 7px;
+    box-shadow: 0 5px 15px rgba(20, 33, 61, 0.10);
+}
+
+
+/*----------------- OPÇÕES DO DROPDOWN ---------------------*/
+
+.opcao-colaborador-documento {
+    width: 100%;
+    min-height: 56px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 13px;
+    box-sizing: border-box;
+    border: none;
+    border-bottom: 1px solid #F0F2FF;
+    border-radius: 0;
+    background: #FFFFFF;
+    color: #14213D;
+    text-align: left;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.opcao-colaborador-documento:last-child {
+    border-bottom: none;
+}
+
+.opcao-colaborador-documento:hover {
+    background: #F5F7FF;
+}
+
+
+/*----------------- AVATAR COM INICIAIS ---------------------*/
+
+.icone-opcao-colaborador-documento {
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #E5EBFF;
+    color: #1746B0;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+
+/*----------------- DADOS DO COLABORADOR -------------------*/
+
+.dados-opcao-colaborador-documento {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.dados-opcao-colaborador-documento strong {
+    overflow: hidden;
+    color: #14213D;
+    font-size: 12px;
+    font-weight: 600;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.dados-opcao-colaborador-documento span {
+    color: #8793A8;
+    font-size: 11px;
+}
+
+
+/*----------------- COLABORADOR SELECIONADO ----------------*/
+
+.opcao-colaborador-selecionada {
+    background: #F0F2FF;
+}
+
+.opcao-colaborador-selecionada .dados-opcao-colaborador-documento strong {
+    color: #1746B0;
+}
+
+.check-colaborador-documento {
+    flex-shrink: 0;
+    color: #1746B0;
+    font-size: 17px;
+    font-weight: 700;
+}
+
+
+/*----------------- NENHUM COLABORADOR ----------------------*/
+
+.nenhum-colaborador-documento {
+    min-height: 55px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 13px;
+    box-sizing: border-box;
+    color: #94A3B8;
+    font-size: 12px;
+    text-align: center;
+}
+
+
+/*----------------- BARRA DE ROLAGEM DO DROPDOWN ------------*/
+
+.dropdown-colaboradores-documento::-webkit-scrollbar {
+    width: 6px;
+}
+
+.dropdown-colaboradores-documento::-webkit-scrollbar-track {
+    background: #F8F9FF;
+    border-radius: 6px;
+}
+
+.dropdown-colaboradores-documento::-webkit-scrollbar-thumb {
+    background: #C9D2E8;
+    border-radius: 6px;
+}
+
+.dropdown-colaboradores-documento::-webkit-scrollbar-thumb:hover {
+    background: #94A3B8;
+}
+
+
+/*----------------- ARQUIVO -------------------------------*/
+
+.input-arquivo-documento {
+    display: none;
+}
+
+.area-selecionar-arquivo {
+    width: 100%;
+    min-height: 190px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 25px;
+    box-sizing: border-box;
+    border: 2px dashed #C9D2E8;
+    border-radius: 8px;
+    background: #F8F9FF;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.area-selecionar-arquivo:hover {
+    border-color: #1746B0;
+    background: #F0F2FF;
+}
+
+.icone-selecao-arquivo {
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #E5EBFF;
+    color: #1746B0;
+    font-size: 25px;
+    font-weight: 600;
+}
+
+.area-selecionar-arquivo strong {
+    color: #14213D;
+    font-size: 14px;
+}
+
+.area-selecionar-arquivo p {
+    margin: 0;
+    color: #64748B;
+    font-size: 13px;
+}
+
+.area-selecionar-arquivo > span {
+    color: #94A3B8;
+    font-size: 12px;
+}
+
+
+/*----------------- ARQUIVO SELECIONADO ---------------------*/
+
+.arquivo-selecionado-documento {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 18px;
+    border: 1px solid #DCE4F5;
+    border-radius: 8px;
+    background: #F8F9FF;
+}
+
+.informacoes-arquivo-documento {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    min-width: 0;
+}
+
+.icone-arquivo-documento {
+    width: 45px;
+    height: 45px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 7px;
+    background: #E5EBFF;
+    color: #1746B0;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.dados-arquivo-documento {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+
+.dados-arquivo-documento strong {
+    overflow: hidden;
+    color: #14213D;
+    font-size: 13px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.dados-arquivo-documento span {
+    color: #64748B;
+    font-size: 12px;
+}
+
+.acoes-arquivo-documento {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-shrink: 0;
+}
+
+.botao-substituir-arquivo,
+.botao-remover-arquivo {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.botao-substituir-arquivo {
+    color: #1746B0;
+}
+
+.botao-remover-arquivo {
+    color: #DC2626;
+}
+
+.observacoes-arquivo-documento {
+    margin: 13px 0 0;
+    color: #94A3B8;
+    font-size: 12px;
+}
+
+.erro-arquivo-documento {
+    margin: 12px 0 0;
+    color: #DC2626;
+    font-size: 12px;
+}
+
+
+/*----------------- GOVERNANÇA -----------------------------*/
+
+.cabecalho-governanca-documento {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.numero-governanca-documento {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border-radius: 6px;
+    background: #E5EBFF;
+    color: #1746B0;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.opcao-disponibilizacao-documento {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 18px;
+    border: 1px solid #E5E7EB;
+    border-radius: 7px;
+}
+
+.texto-disponibilizacao-documento strong {
+    color: #14213D;
+    font-size: 13px;
+}
+
+.texto-disponibilizacao-documento p {
+    margin: 6px 0 0;
+    color: #64748B;
+    font-size: 12px;
+}
+
+
+/*----------------- INTERRUPTOR ----------------------------*/
+
+.interruptor-documento {
+    width: 44px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    padding: 3px;
+    border: none;
+    border-radius: 20px;
+    background: #CBD5E1;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.interruptor-documento span {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #FFFFFF;
+    transition: 0.2s;
+}
+
+.interruptor-ativo {
+    justify-content: flex-end;
+    background: #1746B0;
+}
+
+
+/*----------------- ERRO GERAL -----------------------------*/
+
+.erro-cadastro-documento {
+    padding: 13px 16px;
+    border: 1px solid #FECACA;
+    border-radius: 6px;
+    background: #FEF2F2;
+    color: #B91C1C;
+    font-size: 13px;
+}
+
+
+/*----------------- BOTÕES -------------------------------*/
+
+.botoes-cadastro-documento {
+    width: 100%;
+}
+
+
+

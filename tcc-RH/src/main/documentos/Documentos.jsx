@@ -9,6 +9,7 @@ import Filtro from '../../componentes/cardFiltros/filtros.jsx';
 import buscarDocumentos from './servicos/documentosApi.js';
 
 import ListaDocumentos from './componentes/ListaDocumento.jsx';
+import CadastroDocumento from './cadastroDocumento.jsx';
 
 import calcularIndicadoresDocumentos from './funcoes/documento/calcularIndicadoresDocumentos.js';
 import montarInformacoesDocumentos from './funcoes/documento/montarInformacoesDocumentos.js';
@@ -32,8 +33,10 @@ function Documentos() {
     });
 
     const [carregando, setCarregando] = useState(true);
-
     const [erro, setErro] = useState('');
+
+    // Controla qual tela será exibida.
+    const [telaAtual, setTelaAtual] = useState('lista');
 
 
     //----------------- TIPOS DE DOCUMENTOS ----------------//
@@ -83,7 +86,7 @@ function Documentos() {
     }
 
 
-    //----------------- CARREGAR AO ABRIR A PÁGINA ----------//
+    //----------------- CARREGAMENTO INICIAL ----------------//
 
     useEffect(() => {
 
@@ -111,16 +114,37 @@ function Documentos() {
 
     function atualizarFiltros(novosFiltros) {
 
-        setFiltros(novosFiltros);
+        setFiltros({
+            pesquisa: novosFiltros.pesquisa || '',
+            status: novosFiltros.status || 'Todos',
+            opcao: novosFiltros.opcao || ''
+        });
 
     }
 
 
-    //----------------- NOVO DOCUMENTO ----------------------//
+    //----------------- ABRIR CADASTRO -----------------------//
 
     function novoDocumento() {
 
-        console.log('Botão Novo Documento clicado!');
+        setTelaAtual('cadastro');
+
+    }
+
+
+    //----------------- VOLTAR PARA LISTAGEM -----------------//
+
+    async function voltarParaLista() {
+
+        setTelaAtual('lista');
+
+        setFiltros({
+            pesquisa: '',
+            status: 'Todos',
+            opcao: ''
+        });
+
+        await carregarDados();
 
     }
 
@@ -146,7 +170,22 @@ function Documentos() {
     }
 
 
-    //----------------- TELA PRINCIPAL ----------------------//
+    //----------------- TELA DE CADASTRO ---------------------//
+
+    if (telaAtual === 'cadastro') {
+
+        return (
+
+            <CadastroDocumento
+                voltar={voltarParaLista}
+            />
+
+        );
+
+    }
+
+
+    //----------------- TELA PRINCIPAL -----------------------//
 
     return (
 
