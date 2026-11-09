@@ -1,0 +1,269 @@
+/*----------------- CARD DE AVALIAÇÃO PSICOSSOCIAL -----------------*/
+
+.card-avaliacao-psicossocial {
+    width: 100%;
+    min-height: 245px;
+    padding: 20px;
+
+    box-sizing: border-box;
+
+    display: flex;
+    flex-direction: column;
+
+    background-color: #FFFFFF;
+    border: 2px solid #A5C3FF;
+    border-radius: 9px;
+
+    box-shadow: 0 1px 3px rgba(0, 31, 63, 0.06);
+
+    transition: box-shadow 0.2s ease;
+}
+
+
+/* Efeito ao passar o mouse */
+
+.card-avaliacao-psicossocial:hover {
+    box-shadow: 0 3px 10px rgba(0, 80, 203, 0.10);
+}
+
+
+/*----------------- CABEÇALHO -------------------------------*/
+
+.cabecalho-card-avaliacao {
+    display: flex;
+    align-items: center;
+
+    min-width: 0;
+}
+
+.informacoes-superiores-avaliacao {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+
+    gap: 9px;
+
+    min-width: 0;
+}
+
+
+/*----------------- STATUS ----------------------------------*/
+
+.status-card-avaliacao {
+    min-height: 23px;
+    padding: 3px 9px;
+
+    box-sizing: border-box;
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid #BBD4FF;
+    border-radius: 20px;
+
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.status-card-avaliacao.agendada {
+    color: #0050CB;
+    background-color: #EDF4FF;
+}
+
+.status-card-avaliacao.em-andamento {
+    color: #0050CB;
+    background-color: #EDF4FF;
+}
+
+.status-card-avaliacao.encerrada {
+    color: #626B78;
+    background-color: #EAEDFF;
+    border-color: #D8DCE8;
+}
+
+
+/*----------------- PÚBLICO DA AVALIAÇÃO --------------------*/
+
+.publico-card-avaliacao {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+
+    min-width: 0;
+
+    color: #526987;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.icone-publico-avaliacao {
+    flex-shrink: 0;
+
+    color: #526987;
+    font-size: 14px;
+}
+
+
+/*----------------- TÍTULO ----------------------------------*/
+
+.titulo-card-avaliacao {
+    margin: 10px 0 17px;
+
+    color: #252F43;
+    font-size: 16px;
+    font-weight: 650;
+    line-height: 1.4;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+/*----------------- INFORMAÇÕES -----------------------------*/
+
+.informacoes-card-avaliacao {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+
+    column-gap: 20px;
+
+    padding-top: 12px;
+
+    border-top: 1px solid #EDF0F5;
+}
+
+.item-informacao-avaliacao {
+    display: flex;
+    flex-direction: column;
+
+    gap: 3px;
+
+    min-width: 0;
+}
+
+.titulo-informacao-avaliacao {
+    color: #71809A;
+    font-size: 12px;
+    font-weight: 400;
+}
+
+.valor-informacao-avaliacao {
+    color: #252F43;
+    font-size: 12px;
+    font-weight: 600;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+/*----------------- PARTICIPAÇÃO ----------------------------*/
+
+.participacao-card-avaliacao {
+    display: flex;
+    flex-direction: column;
+
+    gap: 7px;
+
+    margin-top: 17px;
+}
+
+.cabecalho-participacao-avaliacao {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 10px;
+
+    color: #526987;
+    font-size: 12px;
+}
+
+.cabecalho-participacao-avaliacao strong {
+    flex-shrink: 0;
+
+    color: #0050CB;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+
+/*----------------- BARRA DE PROGRESSO ----------------------*/
+
+.barra-participacao-avaliacao {
+    width: 100%;
+    height: 8px;
+
+    overflow: hidden;
+
+    background-color: #E4EAF3;
+    border-radius: 10px;
+}
+
+.progresso-participacao-avaliacao {
+    height: 100%;
+
+    background-color: #0050CB;
+    border-radius: 10px;
+
+    transition: width 0.3s ease;
+}
+
+
+/*----------------- RODAPÉ ----------------------------------*/
+
+.rodape-card-avaliacao {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    margin-top: 20px;
+    padding-top: 15px;
+
+    border-top: 1px solid #EDF0F5;
+}
+
+
+/*----------------- BOTÃO VER ACOMPANHAMENTO ----------------*/
+
+.detalhes-card-avaliacao {
+    min-height: 29px;
+    padding: 6px 12px;
+
+    box-sizing: border-box;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 7px;
+
+    background-color: #0050CB;
+    border-radius: 4px;
+
+    color: #FFFFFF;
+    font-size: 12px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: background-color 0.2s ease;
+}
+
+
+/* Efeito ao passar o mouse somente no botão */
+
+.detalhes-card-avaliacao:hover {
+    background-color: #0043AC;
+}
+
+
+.seta-detalhes-avaliacao {
+    font-size: 16px;
+    line-height: 12px;
+}
+

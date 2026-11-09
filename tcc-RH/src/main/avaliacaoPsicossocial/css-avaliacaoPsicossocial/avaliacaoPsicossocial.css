@@ -1,0 +1,114 @@
+
+/* --------------------------------------------------------- */
+/* PÁGINA PRINCIPAL                                           */
+/* --------------------------------------------------------- */
+
+.pagina-avaliacao-psicossocial {
+    width: 100%;
+}
+
+
+/* --------------------------------------------------------- */
+/* MINICARDS                                                  */
+/* --------------------------------------------------------- */
+
+.pagina-avaliacao-psicossocial .container-minicards {
+    display: flex;
+    gap: 30px;
+
+    width: 100%;
+    height: 112px;
+
+    margin-top: 35px;
+    margin-bottom: 35px;
+
+    padding-left: 78px;
+    padding-right: 78px;
+}
+
+
+/* --------------------------------------------------------- */
+/* FILTROS                                                    */
+/* --------------------------------------------------------- */
+
+.filtros-avaliacoes-psicossociais {
+    width: 100%;
+    margin-bottom: 30px;
+}
+
+
+/* --------------------------------------------------------- */
+/* SEÇÃO DE AVALIAÇÕES                                        */
+/* --------------------------------------------------------- */
+
+.secao-avaliacoes-andamento {
+    width: 100%;
+    padding: 0 25px 30px;
+}
+
+
+.titulo-secao-avaliacoes {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    margin: 0 0 18px;
+
+    color: #344054;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+
+.titulo-secao-avaliacoes span {
+    color: #0057D9;
+    font-size: 18px;
+}
+
+
+/* --------------------------------------------------------- */
+/* GRADE DE AVALIAÇÕES                                        */
+/* --------------------------------------------------------- */
+
+.grade-avaliacoes-psicossociais {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+
+    width: 100%;
+}
+
+
+/* --------------------------------------------------------- */
+/* MENSAGENS                                                  */
+/* --------------------------------------------------------- */
+
+.mensagem-avaliacoes-psicossociais {
+    padding: 20px;
+
+    color: #667085;
+    font-size: 14px;
+}
+
+
+.erro-avaliacoes-psicossociais {
+    color: #D92D20;
+}
+
+
+/* --------------------------------------------------------- */
+/* BOTÃO VOLTAR                                               */
+/* --------------------------------------------------------- */
+
+.botao-voltar-avaliacao {
+    margin: 20px 0;
+    padding: 10px 16px;
+
+    color: #FFFFFF;
+    background-color: #0057D9;
+
+    border: none;
+    border-radius: 6px;
+
+    cursor: pointer;
+}
