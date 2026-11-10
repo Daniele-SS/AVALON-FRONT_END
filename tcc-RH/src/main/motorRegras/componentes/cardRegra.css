@@ -1,0 +1,202 @@
+
+/*----------------- CARD DA REGRA ---------------------------*/
+
+.card-regra {
+    width: 100%;
+    min-width: 0;
+
+    padding: 18px 15px;
+
+    box-sizing: border-box;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 12px;
+
+    background-color: #FFFFFF;
+
+    border: 1px solid #EAEDFF;
+    border-radius: 10px;
+}
+
+
+/*----------------- CABEÇALHO -------------------------------*/
+
+.cabecalho-regra {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.titulo-regra {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    min-width: 0;
+}
+
+.titulo-regra h3 {
+    margin: 0;
+
+    color: #152238;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    overflow-wrap: anywhere;
+}
+
+.indicador-regra {
+    width: 10px;
+    height: 10px;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+    background-color: #C71919;
+}
+
+
+/*----------------- INFORMAÇÕES RESUMIDAS -------------------*/
+
+.informacoes-resumo-regra {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.categoria-regra,
+.status-regra {
+    padding: 3px 10px;
+
+    border-radius: 20px;
+
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.categoria-regra {
+    color: #414B61;
+    background-color: #E8ECFF;
+}
+
+.status-regra.ativa {
+    color: #092D69;
+    background-color: #DCE5FF;
+}
+
+.status-regra.inativa {
+    color: #646B79;
+    background-color: #E9E9E9;
+}
+
+
+/*----------------- DETALHES DA REGRA -----------------------*/
+
+.detalhes-regra {
+    width: 100%;
+
+    padding: 10px;
+
+    box-sizing: border-box;
+
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+
+    gap: 6px;
+
+    background-color: #F0F3FF;
+
+    border-radius: 9px;
+}
+
+.item-detalhe-regra {
+    min-width: 0;
+    min-height: 61px;
+
+    padding: 8px;
+
+    box-sizing: border-box;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    gap: 3px;
+
+    background-color: #FFFFFF;
+
+    border-radius: 5px;
+}
+
+.item-detalhe-regra > span {
+    color: #414B61;
+
+    font-size: 10px;
+    font-weight: 500;
+}
+
+.item-detalhe-regra strong {
+    color: #152238;
+
+    font-size: 11px;
+    font-weight: 600;
+
+    overflow-wrap: anywhere;
+}
+
+
+/*----------------- RESULTADO -------------------------------*/
+
+.resultado-regra.atencao {
+    background-color: #FFF0D6;
+}
+
+.resultado-regra.prioridade {
+    background-color: #FFDAD7;
+}
+
+.resultado-regra.normal {
+    background-color: #D9F6E9;
+}
+
+.resultado-regra.atencao strong {
+    color: #A65B00;
+}
+
+.resultado-regra.prioridade strong {
+    color: #BD1717;
+}
+
+.resultado-regra.normal strong {
+    color: #087A49;
+}
+
+.resultado-regra strong {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+
+/*----------------- PONTO DO RESULTADO ----------------------*/
+
+.ponto-resultado {
+    width: 8px;
+    height: 8px;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    background-color: currentColor;
+}
+
+
+/*----------------- AÇÃO AUTOMÁTICA -------------------------*/
+
+.acao-regra strong {
+    line-height: 1.4;
+}
