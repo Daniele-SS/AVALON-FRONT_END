@@ -348,60 +348,64 @@ function CadastroDocumento({ voltar }) {
 
     //----------------- SALVAR DOCUMENTO --------------------//
 
-    async function salvarDocumento() {
 
-        if (!formularioValido) {
+//----------------- SALVAR DOCUMENTO --------------------//
 
-            setErro('Preencha todos os campos obrigatórios e selecione um arquivo válido.');
+async function salvarDocumento() {
 
-            return;
+    if (!formularioValido) {
 
-        }
+        setErro('Preencha todos os campos obrigatórios e selecione um arquivo válido.');
 
-        try {
-
-            setSalvando(true);
-
-            setErro('');
-
-            const dadosDocumento = {
-
-                id_colaborador: Number(idColaborador),
-
-                nome: nome.trim(),
-
-                tipo_documento: tipoDocumento,
-
-                // A API atual recebe o caminho como texto.
-                // O envio físico do arquivo depende de uma rota de upload.
-
-                caminho_arquivo: arquivo.name,
-
-                ativo: ativo ? 1 : 0
-
-            };
-
-            await cadastrarDocumento(dadosDocumento);
-
-            alert('Documento cadastrado com sucesso!');
-
-            voltar();
-
-        } catch (error) {
-
-            console.error('Erro ao cadastrar documento:', error);
-
-            setErro(
-                error.message || 'Não foi possível cadastrar o documento.'
-            );
-
-        } finally {
-
-            setSalvando(false);
-
-        }
+        return;
 
     }
+
+    try {
+
+        setSalvando(true);
+
+        setErro('');
+
+        // Cria o formulário para enviar os dados e o arquivo físico.
+        const dadosDocumento = new FormData();
+
+        // Adiciona os dados do documento.
+        dadosDocumento.append('id_colaborador', Number(idColaborador));
+
+        dadosDocumento.append('nome', nome.trim());
+
+        dadosDocumento.append('tipo_documento', tipoDocumento);
+
+        dadosDocumento.append('ativo', ativo ? 1 : 0);
+
+        // Adiciona o arquivo físico selecionado pelo usuário.
+        // O nome do campo precisa ser igual ao uploadDocumento.single('arquivo').
+        dadosDocumento.append('arquivo', arquivo);
+
+        // Envia os dados para a API.
+        await cadastrarDocumento(dadosDocumento);
+
+        alert('Documento cadastrado com sucesso!');
+
+        voltar();
+
+    } catch (error) {
+
+        console.error('Erro ao cadastrar documento:', error);
+
+        setErro(
+            error.message || 'Não foi possível cadastrar o documento.'
+        );
+
+    } finally {
+
+        setSalvando(false);
+
+    }
+
+}
+
 
 
     //----------------- CANCELAR CADASTRO -------------------//

@@ -1,11 +1,12 @@
 
- //----------------- IMPORTAÇÕES -----------------------------//
+//----------------- IMPORTAÇÕES -----------------------------//
 
 import { useEffect, useState } from 'react';
 
 import CardDocumento from './CardDocumento.jsx';
 
-import './listaDocumentos.css';
+import './css-componentes/listaDocumentos.css'
+
 
 
 //----------------- COMPONENTE ------------------------------//
@@ -55,6 +56,25 @@ function ListaDocumentos({
             setPaginaAtual(pagina);
 
         }
+
+    }
+
+
+    //----------------- VISUALIZAR DOCUMENTO ----------------//
+
+    function visualizar(documento) {
+
+        console.log('Documento selecionado:', documento);
+
+        if (typeof onVisualizar !== 'function') {
+
+            console.error('A função onVisualizar não foi recebida.');
+
+            return;
+
+        }
+
+        onVisualizar(documento);
 
     }
 
@@ -119,9 +139,9 @@ function ListaDocumentos({
                         {documentosPagina.map((documento) => (
 
                             <CardDocumento
-                                key={documento.id}
+                                key={documento.id_documento || documento.id}
                                 documento={documento}
-                                onVisualizar={onVisualizar}
+                                onVisualizar={() => visualizar(documento)}
                             />
 
                         ))}
@@ -162,8 +182,6 @@ function ListaDocumentos({
 
                     <div className="paginacao-documentos">
 
-                        {/* VOLTAR */}
-
                         <button
                             type="button"
                             className="botao-pagina-documentos"
@@ -173,8 +191,6 @@ function ListaDocumentos({
                             ‹
                         </button>
 
-
-                        {/* NÚMEROS DAS PÁGINAS */}
 
                         {Array.from(
                             { length: totalPaginas },
@@ -194,8 +210,6 @@ function ListaDocumentos({
 
                         ))}
 
-
-                        {/* AVANÇAR */}
 
                         <button
                             type="button"

@@ -1,0 +1,324 @@
+
+/*----------------- FUNDO E DESFOQUE -----------------------*/
+
+.fundo-visualizacao-documento {
+    position: fixed;
+    inset: 0;
+
+    z-index: 99999;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    background: rgba(15, 23, 42, 0.35);
+
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+
+    box-sizing: border-box;
+}
+
+
+/*----------------- CARD PRINCIPAL -------------------------*/
+
+.card-visualizacao-documento {
+    width: 100%;
+    max-width: 1000px;
+
+    height: 90vh;
+    max-height: 850px;
+
+    padding: 27px;
+
+    display: flex;
+    flex-direction: column;
+
+    background: #ffffff;
+
+    border-radius: 9px;
+
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.18);
+
+    box-sizing: border-box;
+}
+
+
+/*----------------- CABEÇALHO ------------------------------*/
+
+.cabecalho-visualizacao-documento {
+    display: flex;
+    align-items: center;
+
+    gap: 11px;
+
+    width: 100%;
+
+    padding-bottom: 18px;
+
+    border-bottom: 1px solid #e5e7eb;
+}
+
+
+/*----------------- ÍCONE DO ARQUIVO -----------------------*/
+
+.icone-visualizacao-documento {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 41px;
+    height: 41px;
+
+    flex-shrink: 0;
+
+    border-radius: 8px;
+
+    font-size: 11px;
+    font-weight: 700;
+}
+
+
+/*----------------- PDF - VERMELHO -------------------------*/
+
+.icone-arquivo-pdf {
+    background: #FDE8E8;
+
+    color: #C51D1D;
+}
+
+
+/*----------------- WORD - AZUL ----------------------------*/
+
+.icone-arquivo-word {
+    background: #E3EDFF;
+
+    color: #2563EB;
+}
+
+
+/*----------------- EXCEL - VERDE --------------------------*/
+
+.icone-arquivo-excel {
+    background: #DDF5E6;
+
+    color: #168348;
+}
+
+
+/*----------------- POWERPOINT - LARANJA -------------------*/
+
+.icone-arquivo-powerpoint {
+    background: #FFE9D8;
+
+    color: #D65A18;
+}
+
+
+/*----------------- IMAGENS - ROXO -------------------------*/
+
+.icone-arquivo-imagem {
+    background: #EEE5FF;
+
+    color: #7C3AED;
+}
+
+
+/*----------------- OUTROS - CINZA -------------------------*/
+
+.icone-arquivo-outros {
+    background: #E9ECF2;
+
+    color: #626B7A;
+}
+
+
+/*----------------- TÍTULO ------------------------------*/
+
+.titulo-visualizacao-documento {
+    flex: 1;
+    min-width: 0;
+}
+
+.categoria-visualizacao-documento {
+    display: block;
+
+    margin-bottom: 3px;
+
+    color: #d97706;
+
+    font-size: 10px;
+    font-weight: bold;
+}
+
+.titulo-visualizacao-documento h2 {
+    margin: 0;
+
+    color: #172033;
+
+    font-size: 20px;
+    font-weight: bold;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+/*----------------- BOTÃO FECHAR ---------------------------*/
+
+.fechar-visualizacao-documento {
+    width: 25px;
+    height: 30px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: transparent;
+    border: none;
+
+    color: #7b8190;
+
+    font-size: 25px;
+
+    cursor: pointer;
+}
+
+.fechar-visualizacao-documento:hover {
+    color: #172033;
+}
+
+
+/*----------------- ÁREA DE VISUALIZAÇÃO -------------------*/
+
+.area-visualizacao-documento {
+    flex: 1;
+
+    min-height: 0;
+    width: 100%;
+
+    margin-top: 18px;
+    margin-bottom: 18px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #f1f2ff;
+
+    border-radius: 8px;
+
+    overflow: hidden;
+}
+
+
+/*----------------- PDF ------------------------------------*/
+
+.iframe-visualizacao-documento {
+    width: 100%;
+    height: 100%;
+
+    border: none;
+
+    background: #ffffff;
+}
+
+
+/*----------------- IMAGENS --------------------------------*/
+
+.imagem-visualizacao-documento {
+    max-width: 100%;
+    max-height: 100%;
+
+    object-fit: contain;
+}
+
+
+/*----------------- MENSAGENS ------------------------------*/
+
+.mensagem-visualizacao-documento,
+.mensagem-erro-visualizacao,
+.documento-sem-visualizacao {
+    padding: 20px;
+
+    color: #50576a;
+
+    font-size: 13px;
+    line-height: 1.6;
+
+    text-align: center;
+}
+
+.mensagem-erro-visualizacao {
+    color: #c51d1d;
+}
+
+
+/*----------------- BOTÕES ---------------------------------*/
+
+.botoes-visualizacao-documento {
+    display: flex;
+    justify-content: flex-end;
+
+    gap: 10px;
+
+    padding-top: 18px;
+
+    border-top: 1px solid #e5e7eb;
+}
+
+.botao-cancelar-visualizacao,
+.botao-confirmar-visualizacao {
+    min-height: 38px;
+
+    padding: 0 18px;
+
+    border-radius: 7px;
+
+    font-size: 12px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+
+/*----------------- BOTÃO FECHAR ---------------------------*/
+
+.botao-cancelar-visualizacao {
+    background: #c51d1d;
+
+    color: #fefefe;
+
+    border: none;
+}
+
+.botao-cancelar-visualizacao:hover {
+    background: #ac1818;
+}
+
+
+/*----------------- BOTÃO BAIXAR ---------------------------*/
+
+.botao-confirmar-visualizacao {
+    background: #1747E8;
+
+    color: #ffffff;
+
+    border: none;
+
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
+}
+
+.botao-confirmar-visualizacao:hover {
+    background: #1238BC;
+}
+
+.botao-confirmar-visualizacao:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+

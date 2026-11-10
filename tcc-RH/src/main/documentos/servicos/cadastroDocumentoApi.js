@@ -1,3 +1,4 @@
+
 //----------------- CONFIGURAÇÃO DA API ---------------------//
 
 const API = 'http://localhost:8080/v1/senai/avalon';
@@ -18,8 +19,7 @@ function obterConfiguracao() {
     }
 
     return {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
+        'Authorization': `Bearer ${token}`
     };
 
 }
@@ -35,19 +35,10 @@ export async function cadastrarDocumento(dadosDocumento) {
 
         headers: obterConfiguracao(),
 
-        body: JSON.stringify({
+        // Envia os dados e o arquivo físico.
+        // O navegador configura automaticamente o multipart/form-data.
 
-            id_colaborador: Number(dadosDocumento.id_colaborador),
-
-            nome: dadosDocumento.nome,
-
-            tipo_documento: dadosDocumento.tipo_documento,
-
-            caminho_arquivo: dadosDocumento.caminho_arquivo,
-
-            ativo: Number(dadosDocumento.ativo)
-
-        })
+        body: dadosDocumento
 
     });
 
