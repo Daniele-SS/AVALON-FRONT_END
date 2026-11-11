@@ -22,21 +22,9 @@ function obterConfiguracao() {
 }
 
 
-//----------------- BUSCAR REGRAS ---------------------------//
+//----------------- VERIFICAR RESPOSTA ----------------------//
 
-async function buscarDadosMotorRegras() {
-
-    const configuracao = obterConfiguracao();
-
-    const resposta = await fetch(
-        `${API}/motor_regras`,
-        {
-            headers: configuracao
-        }
-    );
-
-
-    //----------------- VERIFICAR AUTENTICAÇÃO ---------------//
+async function verificarResposta(resposta, mensagemErro) {
 
     if (resposta.status === 401) {
 
@@ -48,39 +36,106 @@ async function buscarDadosMotorRegras() {
 
     }
 
+    const dados = await resposta.json();
 
-    //----------------- VERIFICAR RESPOSTA -------------------//
-
-    if (!resposta.ok) {
+    if (!resposta.ok || dados.status === false) {
 
         throw new Error(
-            'Não foi possível carregar as regras do motor.'
+            dados.message || mensagemErro
         );
 
     }
 
+    return dados;
 
-    //----------------- CONVERTER RESPOSTA -------------------//
-
-    const dados = await resposta.json();
+}
 
 
-    //----------------- ORGANIZAR REGRAS ---------------------//
+//----------------- BUSCAR REGRAS ---------------------------//
+
+async function buscarDadosMotorRegras() {
+
+    const resposta = await fetch(
+        `${API}/motor_regras`,
+        {
+            headers: obterConfiguracao()
+        }
+    );
+
+    const dados = await verificarResposta(
+        resposta,
+        'Não foi possível carregar as regras do motor.'
+    );
 
     const regras =
         dados.response?.motorRegras ??
         dados.motorRegras ??
         [];
 
-
-    //----------------- CONFERIR DADOS -----------------------//
-
     console.log('Regras carregadas:', regras);
 
-
-    //----------------- RETORNAR DADOS -----------------------//
-
     return regras;
+
+}
+
+
+//----------------- ALTERAR STATUS DA REGRA -----------------//
+
+export async function alterarStatusRegra(id, ativo, regra) {
+
+    const corpoRequisicao = {
+
+        id_psicossocial_fator:
+            regra.fator_psicossocial?.psicossocialFator?.id,
+
+        operador: regra.operador,
+
+        valor_referencial: regra.valor_referencial,
+
+        classificacao: regra.classificacao,
+
+        acao: regra.acao,
+
+        ativo: ativo ? 1 : 0
+
+    };
+
+    const resposta = await fetch(
+        `${API}/motor_regras/${id}`,
+        {
+            method: 'PUT',
+
+            headers: obterConfiguracao(),
+
+            body: JSON.stringify(corpoRequisicao)
+        }
+    );
+
+    return await verificarResposta(
+        resposta,
+        'Não foi possível alterar o status da regra.'
+    );
+
+}
+
+
+//----------------- EXCLUIR REGRA ---------------------------//
+
+export async function excluirRegra(id) {
+
+    const resposta = await fetch(
+        `${API}/motor_regras/${id}`,
+        {
+            method: 'DELETE',
+
+            headers: obterConfiguracao()
+        }
+    );
+
+    return await verificarResposta(
+        resposta,
+        'Não foi possível excluir a regra.'
+    );
 
 }
 

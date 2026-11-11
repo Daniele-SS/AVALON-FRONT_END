@@ -200,3 +200,86 @@
 .acao-regra strong {
     line-height: 1.4;
 }
+
+/*----------------- BOTÃO EXCLUIR REGRA ---------------------*/
+
+.botao-excluir-regra {
+    padding: 3px 0;
+
+    background: transparent;
+    border: none;
+
+    color: #C71919;
+
+
+    font-size: 10px;
+    font-weight: 500;
+    width: auto;
+
+    cursor: pointer;
+}
+
+.botao-excluir-regra:hover {
+    text-decoration: underline;
+}
+
+
+/*----------------- INTERRUPTOR DA REGRA --------------------*/
+
+.interruptor-regra {
+    width: 25px;
+    height: 14px;
+
+    padding: 2px;
+
+    display: flex;
+    align-items: center;
+
+    border: none;
+    border-radius: 20px;
+
+    cursor: pointer;
+
+    transition: background-color 0.2s;
+}
+
+
+/*----------------- REGRA ATIVA -----------------------------*/
+
+.interruptor-regra.ligado {
+    justify-content: flex-end;
+
+    background-color: #0056D6;
+}
+
+
+/*----------------- REGRA INATIVA ---------------------------*/
+
+.interruptor-regra.desligado {
+    justify-content: flex-start;
+
+    background-color: #A5AAB4;
+}
+
+
+/*----------------- BOLINHA DO INTERRUPTOR ------------------*/
+
+.interruptor-regra-bolinha {
+    width: 10px;
+    height: 10px;
+
+    border-radius: 50%;
+
+    background-color: #FFFFFF;
+}
+
+
+/*----------------- INDICADOR ATIVO E INATIVO ---------------*/
+
+.indicador-regra.ativo {
+    background-color: #C71919;
+}
+
+.indicador-regra.inativo {
+    background-color: #A0A6B2;
+}
