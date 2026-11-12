@@ -1,7 +1,7 @@
 
  //----------------- IMPORTAÇÕES ----------------------------//
 
- import './cardRegra.css';
+ import './css-componentes/cardRegra.css';
 
 
  //----------------- COMPONENTE ------------------------------//

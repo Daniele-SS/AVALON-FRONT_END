@@ -1,0 +1,341 @@
+
+/*----------------- CARTÃO DA CONDIÇÃO ----------------------*/
+
+.cartao-condicao-regra {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+
+/*----------------- CABEÇALHO DA CONDIÇÃO -------------------*/
+
+.cabecalho-condicao-regra {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.cabecalho-condicao-regra h2 {
+    margin: 0;
+    color: #10233B;
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.cabecalho-condicao-regra p {
+    margin: 0;
+    color: #64748B;
+    font-size: 17px;
+    line-height: 1.5;
+}
+
+
+/*----------------- ÁREA DO GATILHO -------------------------*/
+
+.area-gatilho-regra {
+    width: 100%;
+    padding: 34px;
+    box-sizing: border-box;
+
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+
+    background-color: #EEF3FF;
+    border-radius: 10px;
+}
+
+
+/*----------------- CABEÇALHO DO GATILHO --------------------*/
+
+.cabecalho-gatilho-regra {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.identificacao-gatilho-regra {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.etiqueta-se-regra {
+    min-width: 48px;
+    height: 33px;
+    padding: 0 10px;
+    box-sizing: border-box;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background-color: #E9D5FF;
+    border-radius: 6px;
+
+    color: #45158B;
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.titulo-gatilho-regra {
+    color: #475569;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+}
+
+.execucao-continua-regra {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    color: #52627A;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.execucao-continua-regra span {
+    font-size: 19px;
+}
+
+
+/*----------------- CAMPOS DA CONDIÇÃO ----------------------*/
+
+.campos-condicao-regra {
+    width: 100%;
+
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.campo-condicao-regra {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.campo-condicao-regra label {
+    color: #52627A;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+}
+
+.campo-condicao-regra select {
+    width: 100%;
+    height: 43px;
+    padding: 0 12px;
+
+    box-sizing: border-box;
+
+    background-color: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 5px;
+
+    color: #24364D;
+    font-size: 14px;
+
+    outline: none;
+    cursor: pointer;
+}
+
+.campo-condicao-regra select:focus,
+.input-valor-regra:focus-within {
+    border-color: #2563EB;
+}
+
+
+/*----------------- VALOR DE REFERÊNCIA ---------------------*/
+
+.label-valor-regra {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.label-valor-regra span {
+    color: #64748B;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.input-valor-regra {
+    width: 100%;
+    height: 43px;
+    padding: 0 12px;
+
+    box-sizing: border-box;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    background-color: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 5px;
+}
+
+.input-valor-regra input {
+    width: 100%;
+    height: 100%;
+
+    background: transparent;
+    border: none;
+    outline: none;
+
+    color: #24364D;
+    font-size: 14px;
+}
+
+.input-valor-regra span {
+    color: #64748B;
+    font-size: 12px;
+}
+
+.input-valor-erro {
+    border-color: #DC2626;
+}
+
+.mensagem-erro-regra {
+    color: #DC2626;
+    font-size: 11px;
+}
+
+
+/*----------------- CONDIÇÕES ADICIONAIS --------------------*/
+
+.condicao-adicional-regra {
+    width: 100%;
+    min-height: 42px;
+    padding: 8px;
+    box-sizing: border-box;
+
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 35px;
+    align-items: center;
+    gap: 10px;
+
+    background-color: #E6EEFF;
+    border-radius: 6px;
+}
+
+.condicao-adicional-regra select,
+.condicao-adicional-regra input {
+    width: 100%;
+    height: 36px;
+    padding: 0 10px;
+    box-sizing: border-box;
+
+    background-color: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 5px;
+
+    color: #334155;
+    font-size: 13px;
+    outline: none;
+}
+
+.botao-remover-condicao-regra {
+    width: 32px;
+    height: 32px;
+
+    background-color: transparent;
+    border: none;
+
+    color: #64748B;
+    font-size: 22px;
+
+    cursor: pointer;
+}
+
+.botao-remover-condicao-regra:hover {
+    color: #DC2626;
+}
+
+
+/*----------------- COMBINAÇÃO E / OU -----------------------*/
+
+.linha-combinacao-regra {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.seletor-combinacao-regra {
+    padding: 4px;
+
+    display: flex;
+    align-items: center;
+    gap: 3px;
+
+    background-color: #E0EAFE;
+    border-radius: 6px;
+}
+
+.seletor-combinacao-regra button {
+    min-width: 35px;
+    height: 25px;
+
+    background-color: transparent;
+    border: none;
+    border-radius: 4px;
+
+    color: #52627A;
+    font-size: 12px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.seletor-combinacao-regra button.combinacao-ativa {
+    background-color: #FFFFFF;
+    color: #172B4D;
+    box-shadow: 0 1px 3px #00000012;
+}
+
+
+/*----------------- ADICIONAR CONDIÇÃO ----------------------*/
+
+.descricao-combinacao-regra {
+    color: #64748B;
+    font-size: 12px;
+}
+
+.botao-adicionar-condicao-regra {
+    width: fit-content;
+    min-height: 36px;
+    padding: 0 14px;
+
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    background-color: #E1EBFF;
+    border: none;
+    border-radius: 5px;
+
+    color: #18304D;
+    font-size: 12px;
+    font-weight: 600;
+
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.botao-adicionar-condicao-regra:hover {
+    background-color: #D2E1FF;
+}
+
+.botao-adicionar-condicao-regra span {
+    font-size: 19px;
+    font-weight: 600;
+}
