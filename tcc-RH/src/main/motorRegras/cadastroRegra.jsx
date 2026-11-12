@@ -117,7 +117,9 @@ function CadastroRegra({ voltar, continuar }) {
 
         // Aceita somente números e uma casa decimal.
         if (!/^\d*\.?\d*$/.test(valor)) {
+
             return;
+
         }
 
         setValorReferencia(valor);
@@ -178,17 +180,7 @@ function CadastroRegra({ voltar, continuar }) {
 
             continuar(dadosCondicao);
 
-            return;
-
         }
-
-
-        // Retorno temporário enquanto a próxima etapa não estiver integrada.
-        console.log('Condição configurada:', dadosCondicao);
-
-        alert(
-            'Condição configurada! A próxima etapa será a definição da ação.'
-        );
 
     }
 
@@ -217,7 +209,9 @@ function CadastroRegra({ voltar, continuar }) {
                             type="button"
                             onClick={voltar}
                         >
+
                             Motor de Regras
+
                         </button>
 
                         <span className="seta">&gt;</span>

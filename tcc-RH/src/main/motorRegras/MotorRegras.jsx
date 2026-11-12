@@ -8,6 +8,8 @@ import Minicards from '../../componentes/minicard/minicard.jsx';
 import Filtro from '../../componentes/cardFiltros/filtros.jsx';
 
 import CadastroRegra from './cadastroRegra.jsx';
+import AcaoRegra from './acaoRegras.jsx';
+
 import CardRegra from './componentes/CardRegra.jsx';
 
 import buscarDadosMotorRegras, {
@@ -36,8 +38,11 @@ function MotorRegras() {
 
     const [carregando, setCarregando] = useState(true);
 
-    // Controla a exibição da tela de cadastro.
-    const [mostrarCadastro, setMostrarCadastro] = useState(false);
+    // Controla qual tela do Motor de Regras está aberta.
+    const [telaAtual, setTelaAtual] = useState('lista');
+
+    // Guarda os dados da condição para utilizar na segunda etapa.
+    const [dadosCondicao, setDadosCondicao] = useState(null);
 
     const [erro, setErro] = useState('');
 
@@ -267,12 +272,27 @@ function MotorRegras() {
     }
 
 
-    //----------------- NOVA REGRA ---------------------------//
+    //----------------- INICIAR CADASTRO ---------------------//
 
     function novaRegra() {
 
-        // Abre a tela de cadastro.
-        setMostrarCadastro(true);
+        // Abre a primeira etapa do cadastro.
+        setDadosCondicao(null);
+
+        setTelaAtual('condicao');
+
+    }
+
+
+    //----------------- RECEBER CONDIÇÃO ---------------------//
+
+    function receberCondicao(dados) {
+
+        // Guarda os dados preenchidos na primeira etapa.
+        setDadosCondicao(dados);
+
+        // Abre a segunda etapa do cadastro.
+        setTelaAtual('acao');
 
     }
 
@@ -281,21 +301,63 @@ function MotorRegras() {
 
     function voltarCadastro() {
 
-        // Fecha o cadastro e retorna ao Motor de Regras.
-        setMostrarCadastro(false);
+        // Limpa os dados temporários do cadastro.
+        setDadosCondicao(null);
+
+        // Retorna ao Motor de Regras.
+        setTelaAtual('lista');
 
     }
 
 
-    //----------------- EXIBIR CADASTRO ----------------------//
+    //----------------- FINALIZAR CADASTRO -------------------//
 
-    if (mostrarCadastro) {
+    async function finalizarCadastro() {
+
+        // Limpa os dados temporários.
+        setDadosCondicao(null);
+
+        // Retorna para a listagem.
+        setTelaAtual('lista');
+
+        // Busca novamente as regras cadastradas.
+        await carregarDados();
+
+    }
+
+
+    //----------------- EXIBIR PRIMEIRA ETAPA ----------------//
+
+    if (telaAtual === 'condicao') {
 
         return (
 
             <CadastroRegra
 
                 voltar={voltarCadastro}
+
+                continuar={receberCondicao}
+
+            />
+
+        );
+
+    }
+
+
+    //----------------- EXIBIR SEGUNDA ETAPA -----------------//
+
+    if (telaAtual === 'acao') {
+
+        return (
+
+            <AcaoRegra
+
+                voltar={voltarCadastro}
+
+                concluir={finalizarCadastro}
+
+                condicao={dadosCondicao}
 
             />
 
@@ -435,6 +497,10 @@ function MotorRegras() {
 
                         <option value="Todos">
                             Todas
+                        </option>
+
+                        <option value="NORMAL">
+                            Normal
                         </option>
 
                         <option value="ATENÇÃO">

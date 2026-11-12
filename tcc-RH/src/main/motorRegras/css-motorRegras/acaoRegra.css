@@ -1,0 +1,240 @@
+
+/*----------------- CABEÇALHO -------------------------------*/
+
+.cabecalho-cadastro-regra {
+    width: 100%;
+}
+
+.caminho-cadastro-regra {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 8px;
+    font-size: 13px;
+}
+
+.caminho-cadastro-regra button {
+    padding: 0;
+    background: transparent;
+    border: none;
+    color: #64748B;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.caminho-cadastro-regra button:hover {
+    color: #034AC5;
+}
+
+.caminho-cadastro-regra .seta {
+    color: #94A3B8;
+}
+
+.pagina-atual-regra {
+    color: #034AC5;
+    font-weight: 600;
+}
+
+
+/*----------------- CONTEÚDO PRINCIPAL ----------------------*/
+
+.conteudo-cadastro-regra {
+    width: 100%;
+    margin-top: 25px;
+    margin-bottom: 30px;
+    padding: 40px;
+    box-sizing: border-box;
+
+    background-color: #FFFFFF;
+    border: 1px solid #F1F3F7;
+    border-radius: 12px;
+}
+
+
+/*----------------- CARTÃO DA CONDIÇÃO ----------------------*/
+
+.cartao-condicao-regra {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+
+/*----------------- CABEÇALHO DA CONDIÇÃO -------------------*/
+
+.cabecalho-condicao-regra {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.cabecalho-condicao-regra h2 {
+    margin: 0;
+    color: #10233B;
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.cabecalho-condicao-regra p {
+    margin: 0;
+    color: #64748B;
+    font-size: 17px;
+    line-height: 1.5;
+}
+
+
+/*----------------- RESUMO DA CONDIÇÃO ----------------------*/
+
+.resumo-condicao-regra {
+    width: 100%;
+    padding: 22px;
+    box-sizing: border-box;
+
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+
+    background-color: #EEF3FF;
+    border-radius: 10px;
+}
+
+.resumo-condicao-regra h3 {
+    margin: 0;
+    color: #0754CF;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.resumo-condicao-regra p {
+    margin: 0;
+    color: #475569;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.resumo-condicao-regra strong {
+    color: #24364D;
+    font-weight: 600;
+}
+
+
+/*----------------- ÁREA DA AÇÃO ----------------------------*/
+
+.campo-acao-regra {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+}
+
+.campo-acao-regra label {
+    color: #52627A;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.campo-acao-regra select {
+    width: 100%;
+    height: 45px;
+    padding: 0 12px;
+    box-sizing: border-box;
+
+    background-color: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 5px;
+
+    color: #24364D;
+    font-size: 14px;
+
+    outline: none;
+    cursor: pointer;
+}
+
+.campo-acao-regra select:focus,
+.campo-acao-regra textarea:focus {
+    border-color: #2563EB;
+}
+
+.campo-acao-regra textarea {
+    width: 100%;
+    min-height: 140px;
+    padding: 13px;
+    box-sizing: border-box;
+
+    resize: vertical;
+
+    background-color: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 5px;
+
+    color: #24364D;
+    font-family: inherit;
+    font-size: 14px;
+    line-height: 1.5;
+
+    outline: none;
+}
+
+.campo-acao-regra textarea::placeholder {
+    color: #94A3B8;
+}
+
+.campo-acao-regra small {
+    color: #64748B;
+    font-size: 11px;
+    text-align: right;
+}
+
+
+/*----------------- MENSAGEM DE ERRO ------------------------*/
+
+.mensagem-erro-regra {
+    color: #DC2626;
+    font-size: 12px;
+}
+
+
+/*----------------- AVISO INFORMATIVO -----------------------*/
+
+.aviso-motor-regras {
+    width: 100%;
+    padding: 16px;
+    box-sizing: border-box;
+
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+
+    background-color: #EEF3FF;
+    border-radius: 9px;
+}
+
+.icone-aviso-regra {
+    color: #0754CF;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.aviso-motor-regras p {
+    margin: 0;
+
+    color: #52627A;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+
+/*----------------- BOTÕES -------------------------------*/
+
+.acoes-cadastro-setor {
+    width: 100%;
+    margin-top: 35px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+

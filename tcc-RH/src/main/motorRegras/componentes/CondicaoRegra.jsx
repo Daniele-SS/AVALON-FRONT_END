@@ -7,12 +7,19 @@ import './css-componentes/condicaoRegra.css';
 //----------------- OPÇÕES DOS OPERADORES --------------------//
 
 const opcoesOperadores = [
+
     { valor: '<', nome: 'Menor que (<)' },
+
     { valor: '<=', nome: 'Menor ou igual (<=)' },
+
     { valor: '>', nome: 'Maior que (>)' },
+
     { valor: '>=', nome: 'Maior ou igual (>=)' },
-    { valor: '==', nome: 'Igual a (=)' },
-    { valor: '!=', nome: 'Diferente de (!=)' }
+
+    { valor: '=', nome: 'Igual a (=)' },
+
+    { valor: '<>', nome: 'Diferente de (<>)' }
+
 ];
 
 
