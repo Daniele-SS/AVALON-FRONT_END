@@ -1,0 +1,336 @@
+.notificacao-wrapper {
+    background-color: #f4f7fb;
+    min-height: 100vh;
+    width: 100%;
+    padding-bottom: 48px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    box-sizing: border-box;
+  }
+  
+  .notificacao-conteudo {
+    width: 100%;
+    padding: 28px 40px;
+    box-sizing: border-box;
+  }
+  
+  .notif-card-principal {
+    background-color: #ffffff;
+    border-radius: 14px;
+    border: 1px solid #e6ecf5;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.03);
+    overflow: hidden;
+    width: 100%;
+  }
+  
+/* Topo da seção */
+.notif-topo-secao {
+    padding: 24px 32px 16px 32px;
+  }
+  
+  .notif-topo-secao h3 {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #111827;
+  }
+  
+  /* Abas (Todas / Não lidas) com pílula azul claro */
+  .notif-abas {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 32px 16px 32px;
+    border-bottom: 1px solid #eef2f6;
+    background-color: #ffffff;
+  }
+  
+  .notif-aba-btn {
+    width: auto !important;
+    min-width: auto !important;
+    background: transparent;
+    border: none !important;
+    border-radius: 8px !important;
+    padding: 8px 16px !important;
+    font-size: 0.875rem !important;
+    font-weight: 600 !important;
+    color: #64748b;
+    cursor: pointer;
+    white-space: nowrap !important;
+    transition: background-color 0.15s ease, color 0.15s ease;
+  }
+  
+  .notif-aba-btn:hover:not(.ativa) {
+    background-color: #f1f5f9;
+    color: #1e293b;
+  }
+  
+  .notif-aba-btn.ativa {
+    background-color: #dbeafe !important;
+    color: #1d63dc !important;
+  }
+  
+  /* Lista de itens */
+  .notif-lista {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .notif-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 22px 32px 22px 18px;
+    border-bottom: 1px solid #f1f5f9;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+  }
+  
+  .notif-item.nao-lida {
+    background-color: #f4f7fe;
+  }
+  
+  .notif-item.nao-lida:hover {
+    background-color: #ebf1fd;
+  }
+  
+  .notif-item.lida {
+    background-color: #ffffff;
+  }
+  
+  .notif-item.lida:hover {
+    background-color: #f8fafc;
+  }
+  
+  /* Bolinha azul na esquerda */
+  .notif-indicador-coluna {
+    width: 14px;
+    display: flex;
+    justify-content: center;
+    padding-top: 14px;
+    flex-shrink: 0;
+  }
+  
+  .notif-ponto-azul {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #1d63dc;
+  }
+  
+  /* Caixa do ícone */
+  .notif-icone-box {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  
+  .icone-azul {
+    background-color: #dbeafe;
+    color: #1d63dc;
+  }
+  
+  .icone-cinza {
+    background-color: #f1f5f9;
+    color: #64748b;
+  }
+  
+  /* Corpo da notificação */
+  .notif-corpo {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+  }
+  
+  .notif-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: 0.8rem;
+  }
+  
+  .notif-badge-modulo {
+    font-weight: 600;
+    padding: 2px 10px;
+    border-radius: 6px;
+    font-size: 0.76rem;
+  }
+  
+  .mod-azul {
+    background-color: #dbeafe;
+    color: #1d63dc;
+  }
+  
+  .mod-cinza {
+    background-color: #f1f5f9;
+    color: #475569;
+  }
+  
+  .notif-separador,
+  .notif-data {
+    color: #64748b;
+    font-weight: 500;
+  }
+  
+  .notif-badge-status {
+    font-weight: 600;
+    padding: 2px 9px;
+    border-radius: 999px;
+    font-size: 0.74rem;
+  }
+  
+  .st-nao-lida {
+    background-color: #dbeafe;
+    color: #1d63dc;
+  }
+  
+  .st-lida {
+    background-color: #e2e8f0;
+    color: #475569;
+  }
+  
+  .notif-titulo {
+    margin: 2px 0 0 0;
+    font-size: 0.98rem;
+    font-weight: 700;
+    color: #111827;
+  }
+  
+  .notif-descricao {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #4b5563;
+    line-height: 1.5;
+  }
+  
+  .notif-link-inline {
+    color: #1d63dc;
+    font-weight: 600;
+    text-decoration: none;
+  }
+  
+  .notif-link-inline:hover {
+    text-decoration: underline;
+  }
+  
+  .notif-destaque-vermelho {
+    color: #dc2626;
+    font-weight: 600;
+  }
+  
+/* Rodapé e Paginação */
+.notif-rodape {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    padding: 20px 32px;
+    background-color: #ffffff;
+    border-top: 1px solid #eef2f6;
+  }
+  
+  .notif-contagem {
+    font-size: 0.875rem;
+    font-weight: 400;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  
+  .notif-contagem strong {
+    font-weight: 600;
+    color: #1e293b;
+  }
+  
+  .notif-rodape-sep {
+    margin: 0 8px;
+    color: #64748b;
+  }
+  
+  .notif-paginacao {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  
+  .pag-btn {
+    border: none !important;
+    outline: none !important;
+    background: transparent;
+    font-family: inherit;
+    font-size: 0.875rem !important;
+    font-weight: 500 !important;
+    color: #475569;
+    cursor: pointer;
+    white-space: nowrap !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: background-color 0.15s ease, color 0.15s ease;
+  }
+  
+  .pag-texto {
+    width: auto !important;
+    min-width: auto !important;
+    height: 36px !important;
+    padding: 0 12px !important;
+    border-radius: 8px !important;
+    gap: 6px;
+  }
+  
+  .pag-texto:hover:not(:disabled) {
+    background-color: #f1f5f9;
+    color: #0f172a;
+  }
+  
+  .pag-texto:disabled {
+    color: #94a3b8;
+    cursor: not-allowed;
+  }
+  
+  .pag-num {
+    width: 36px !important;
+    min-width: 36px !important;
+    max-width: 36px !important;
+    height: 36px !important;
+    padding: 0 !important;
+    border-radius: 8px !important;
+    box-sizing: border-box !important;
+    flex-shrink: 0 !important;
+  }
+  
+  .pag-num:hover:not(.ativa) {
+    background-color: #f1f5f9;
+    color: #0f172a;
+  }
+  
+  .pag-num.ativa {
+    background-color: #2563eb !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+  }
+  
+  /* Responsividade */
+  @media (max-width: 768px) {
+    .notificacao-conteudo {
+      padding: 16px;
+    }
+  
+    .notif-item {
+      padding: 18px 16px;
+    }
+  
+    .notif-rodape {
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 16px;
+    }
+  }

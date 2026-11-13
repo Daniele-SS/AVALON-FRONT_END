@@ -1,0 +1,434 @@
+.dashboard-wrapper {
+    background-color: #f4f7fb;
+    min-height: 100vh;
+    width: 100%;
+    padding-bottom: 48px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    box-sizing: border-box;
+  }
+  
+  .dashboard-conteudo {
+    width: 100%;
+    padding: 32px 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    box-sizing: border-box;
+  }
+  
+  /* Base dos Cards */
+  .dash-card {
+    background: #ffffff;
+    border-radius: 16px;
+    border: 1px solid #e6ecf5;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
+    padding: 28px 32px;
+    box-sizing: border-box;
+  }
+  
+  .card-titulo-secao {
+    margin: 0 0 24px 0;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #111827;
+  }
+  
+  .dash-link {
+    display: inline-block;
+    color: #0b63e5;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+  }
+  
+  .dash-link:hover {
+    text-decoration: underline;
+  }
+  
+  /* ===========================
+     1. GRID DOS 4 CARDS KPI
+  =========================== */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 28px;
+    width: 100%;
+  }
+  
+  .kpi-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 26px 28px;
+    min-height: 185px;
+  }
+  
+  .kpi-topo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+  }
+  
+  .kpi-titulo {
+    font-size: 0.96rem;
+    font-weight: 500;
+    color: #4b5563;
+  }
+  
+  .kpi-icone-box {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .kpi-icone-box svg {
+    width: 22px;
+    height: 22px;
+  }
+  
+  .kpi-numero {
+    font-size: 2.35rem;
+    font-weight: 700;
+    color: #111827;
+    line-height: 1.15;
+    margin-bottom: 14px;
+  }
+  
+  .kpi-substatus {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    margin-bottom: 18px;
+  }
+  
+  .kpi-substatus svg {
+    width: 16px;
+    height: 16px;
+  }
+  
+  .status-verde { color: #16a34a; }
+  .status-amarelo { color: #d97706; }
+  .status-azul { color: #0b63e5; }
+  
+  /* ===========================
+     2. GRID DO MEIO (INDICADORES + PESQUISAS)
+  =========================== */
+  .meio-grid {
+    display: grid;
+    grid-template-columns: 0.88fr 1.12fr;
+    gap: 28px;
+    align-items: stretch;
+    width: 100%;
+  }
+  
+  .card-indicadores,
+  .card-pesquisas {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  
+  /* Indicadores */
+  .indicadores-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  
+  .indicador-linha-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 9px;
+  }
+  
+  .indicador-nome {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #1f2937;
+  }
+  
+  .indicador-direita {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .indicador-nota {
+    font-size: 0.92rem;
+    font-weight: 700;
+  }
+  
+  .nota-normal { color: #1f2937; }
+  .nota-atencao { color: #d97706; }
+  .nota-prioridade { color: #dc2626; }
+  
+  .badge-indicador {
+    font-size: 0.76rem;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 6px;
+  }
+  
+  .badge-normal {
+    background-color: #dcfce7;
+    color: #15803d;
+  }
+  
+  .badge-atencao {
+    background-color: #fef3c7;
+    color: #b45309;
+  }
+  
+  .badge-prioridade {
+    background-color: #fee2e2;
+    color: #b91c1c;
+  }
+  
+  .indicador-barra-bg {
+    width: 100%;
+    height: 9px;
+    background-color: #edf2f7;
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  
+  .indicador-barra-fill {
+    height: 100%;
+    border-radius: 999px;
+  }
+  
+  .fill-normal { background-color: #066e38; }
+  .fill-atencao { background-color: #e69500; }
+  .fill-prioridade { background-color: #b91c1c; }
+  
+  .card-rodape-link {
+    margin-top: 26px;
+  }
+  
+  /* Tabelas (Pesquisas e Planos) */
+  .tabela-responsiva {
+    width: 100%;
+    overflow-x: auto;
+  }
+  
+  .dash-tabela {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+  }
+  
+  .dash-tabela thead th {
+    background-color: #f8fafc;
+    color: #64748b;
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    padding: 13px 16px;
+    border-bottom: 1px solid #eef2f6;
+  }
+  
+  .dash-tabela tbody td {
+    padding: 20px 16px;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 0.92rem;
+    color: #1e293b;
+    vertical-align: middle;
+  }
+  
+  .dash-tabela tbody tr:last-child td {
+    border-bottom: none;
+  }
+  
+  .celula-pesquisa-nome {
+    font-weight: 600;
+    color: #111827;
+    max-width: 185px;
+    line-height: 1.4;
+  }
+  
+  .celula-setor {
+    color: #334155;
+  }
+  
+  .celula-participacao {
+    min-width: 130px;
+  }
+  
+  .part-topo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.85rem;
+    margin-bottom: 7px;
+  }
+  
+  .part-meta {
+    color: #64748b;
+    font-size: 0.78rem;
+  }
+  
+  .part-barra-bg {
+    width: 100%;
+    height: 7px;
+    background-color: #e2e8f0;
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  
+  .part-barra-fill {
+    height: 100%;
+    border-radius: 999px;
+  }
+  
+  .pill-status {
+    display: inline-block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 5px 13px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+  
+  .pill-azul,
+  .pill-andamento {
+    background-color: #e0ecff;
+    color: #0b63e5;
+  }
+  
+  .pill-nao-iniciada {
+    background-color: #f1f5f9;
+    color: #475569;
+  }
+  
+  .pill-atrasada {
+    background-color: #fee2e2;
+    color: #dc2626;
+  }
+  
+  .btn-ver {
+    background-color: #e8f1ff;
+    color: #0b63e5;
+    border: none;
+    border-radius: 8px;
+    padding: 7px 16px;
+    font-size: 0.84rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+  }
+  
+  .btn-ver:hover {
+    background-color: #d5e6ff;
+  }
+  
+  /* ===========================
+     3. PLANOS DE AÇÃO (INFERIOR)
+  =========================== */
+  .planos-wrapper {
+    width: 100%;
+  }
+  
+  .card-planos {
+    width: 100%;
+  }
+  
+  .celula-plano-nome {
+    font-weight: 600;
+    color: #111827;
+  }
+  
+  .tag-origem {
+    display: inline-block;
+    background-color: #f1f5f9;
+    color: #475569;
+    font-size: 0.82rem;
+    font-weight: 500;
+    padding: 5px 12px;
+    border-radius: 7px;
+  }
+  
+  .celula-responsavel,
+  .celula-prazo {
+    color: #334155;
+  }
+  
+  .celula-detalhes {
+    text-align: right;
+  }
+  
+  .link-detalhes {
+    color: #0b63e5;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none;
+  }
+  
+  .link-detalhes:hover {
+    text-decoration: underline;
+  }
+  
+  /* Destaque da linha atrasada */
+  .linha-atrasada {
+    background-color: #fdf2f2;
+  }
+  
+  .linha-atrasada .celula-plano-nome {
+    color: #b91c1c;
+  }
+  
+  .ponto-vermelho {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background-color: #b91c1c;
+    border-radius: 50%;
+    margin-right: 10px;
+    vertical-align: middle;
+  }
+  
+  .celula-prazo-atrasado {
+    color: #b91c1c;
+    font-weight: 600;
+  }
+  
+  .link-detalhes-vermelho {
+    color: #b91c1c;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none;
+  }
+  
+  .link-detalhes-vermelho:hover {
+    text-decoration: underline;
+  }
+  
+  /* ===========================
+     RESPONSIVIDADE
+  =========================== */
+  @media (max-width: 1200px) {
+    .kpi-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  
+    .meio-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  @media (max-width: 680px) {
+    .kpi-grid {
+      grid-template-columns: 1fr;
+    }
+  
+    .dashboard-conteudo {
+      padding: 20px;
+      gap: 20px;
+    }
+  }
