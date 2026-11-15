@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import BotaoCadastro from '../../componentes/cardNomePag/nomePag.jsx';
 import Minicards from '../../componentes/minicard/minicard.jsx';
 import Filtro from '../../componentes/cardFiltros/filtros.jsx';
+import Alerta from '../../componentes/alerta/Alerta.jsx';
 
 import CadastroBeneficio from './CadastroBeneficio.jsx';
 import EditarBeneficio from './EditarBeneficio.jsx';
@@ -64,6 +65,12 @@ function Beneficios() {
 
     const [carregando, setCarregando] = useState(true);
     const [erro, setErro] = useState('');
+
+    // Controla as notificações da tela.
+    const [alerta, setAlerta] = useState({
+        tipo: '',
+        mensagem: ''
+    });
 
 
     //----------------- CARREGAR COLABORADORES ----------------//
@@ -148,10 +155,46 @@ function Beneficios() {
     }, []);
 
 
+    //----------------- CONTROLE DO ALERTA -------------------//
+
+    function fecharAlerta() {
+        setAlerta({
+            tipo: '',
+            mensagem: ''
+        });
+    }
+
+
+    //----------------- CONCLUIR CADASTRO OU EDIÇÃO -----------//
+
+    async function concluirCadastro(mensagem) {
+
+        setTela('lista');
+
+        setBeneficioSelecionado(null);
+
+        setFiltros({
+            pesquisa: '',
+            status: 'Todos',
+            opcao: ''
+        });
+
+        setAlerta({
+            tipo: 'sucesso',
+            mensagem
+        });
+
+        await carregarDados();
+
+    }
+
+
     //----------------- NAVEGAÇÃO ----------------------------//
 
     // Abre a tela de cadastro.
     function abrirCadastro() {
+
+        fecharAlerta();
 
         setBeneficioSelecionado(null);
 
@@ -162,6 +205,8 @@ function Beneficios() {
 
     // Abre a tela de edição com o benefício selecionado.
     function abrirEdicao(beneficio) {
+
+        fecharAlerta();
 
         setBeneficioSelecionado(beneficio);
 
@@ -226,6 +271,7 @@ function Beneficios() {
 
                 <CadastroBeneficio
                     voltar={voltarParaLista}
+                    onSucesso={concluirCadastro}
                 />
 
             </div>
@@ -246,6 +292,7 @@ function Beneficios() {
                 <EditarBeneficio
                     beneficio={beneficioSelecionado}
                     voltar={voltarParaLista}
+                    onSucesso={concluirCadastro}
                 />
 
             </div>
@@ -260,6 +307,15 @@ function Beneficios() {
     return (
 
         <div className="pagina-beneficios">
+
+            {/* ALERTA DE CONFIRMAÇÃO */}
+
+            <Alerta
+                tipo={alerta.tipo}
+                mensagem={alerta.mensagem}
+                onFechar={fecharAlerta}
+            />
+
 
             {/* CABEÇALHO DA PÁGINA */}
 

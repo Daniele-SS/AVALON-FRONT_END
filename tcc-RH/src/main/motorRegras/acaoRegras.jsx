@@ -101,12 +101,10 @@ function AcaoRegra({
             // Envia os dados para o backend.
             await cadastrarRegra(dadosRegra);
 
-            alert('Regra cadastrada com sucesso!');
-
-            // Retorna à listagem e atualiza os dados.
+            // Retorna à listagem e exibe a notificação.
             if (concluir) {
 
-                await concluir();
+                await concluir('Regra cadastrada com sucesso!');
 
             }
 

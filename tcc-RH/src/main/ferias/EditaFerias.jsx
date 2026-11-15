@@ -1,13 +1,10 @@
-//----------------- IMPORTAÇÕES -----------------------------//
 
 import CadastroFerias from './CadastroFerias.jsx';
 
-
-//----------------- COMPONENTE ------------------------------//
-
 function EditarFerias({
     ferias,
-    voltar
+    voltar,
+    onSucesso
 }) {
 
     return (
@@ -15,14 +12,12 @@ function EditarFerias({
         <CadastroFerias
             ferias={ferias}
             voltar={voltar}
+            onSucesso={onSucesso}
             modoEdicao={true}
         />
 
     );
 
 }
-
-
-//----------------- EXPORTAÇÃO ------------------------------//
 
 export default EditarFerias;

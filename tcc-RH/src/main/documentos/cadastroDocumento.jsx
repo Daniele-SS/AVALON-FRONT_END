@@ -14,7 +14,7 @@ import './css-documentos/cadastroDocumento.css';
 
 //----------------- COMPONENTE PRINCIPAL --------------------//
 
-function CadastroDocumento({ voltar }) {
+function CadastroDocumento({ voltar, onSucesso }) {
 
     //----------------- ESTADOS ----------------------------//
 
@@ -144,8 +144,6 @@ function CadastroDocumento({ voltar }) {
 
         return colaboradores.filter((colaborador) => {
 
-            // Considera somente colaboradores ativos.
-
             const status = String(colaborador?.status ?? '').toLowerCase();
 
             const colaboradorAtivo =
@@ -156,13 +154,9 @@ function CadastroDocumento({ voltar }) {
                 return false;
             }
 
-            // Pesquisa pelo nome.
-
             const nomeColaborador = normalizarTexto(
                 colaborador.nome
             );
-
-            // Pesquisa pela matrícula.
 
             const matriculaColaborador = normalizarTexto(
                 colaborador.matricula ??
@@ -348,64 +342,58 @@ function CadastroDocumento({ voltar }) {
 
     //----------------- SALVAR DOCUMENTO --------------------//
 
+    async function salvarDocumento() {
 
-//----------------- SALVAR DOCUMENTO --------------------//
+        if (!formularioValido) {
 
-async function salvarDocumento() {
+            setErro('Preencha todos os campos obrigatórios e selecione um arquivo válido.');
 
-    if (!formularioValido) {
+            return;
 
-        setErro('Preencha todos os campos obrigatórios e selecione um arquivo válido.');
+        }
 
-        return;
+        try {
 
-    }
+            setSalvando(true);
 
-    try {
+            setErro('');
 
-        setSalvando(true);
+            const dadosDocumento = new FormData();
 
-        setErro('');
+            dadosDocumento.append('id_colaborador', Number(idColaborador));
+            dadosDocumento.append('nome', nome.trim());
+            dadosDocumento.append('tipo_documento', tipoDocumento);
+            dadosDocumento.append('ativo', ativo ? 1 : 0);
+            dadosDocumento.append('arquivo', arquivo);
 
-        // Cria o formulário para enviar os dados e o arquivo físico.
-        const dadosDocumento = new FormData();
+            await cadastrarDocumento(dadosDocumento);
 
-        // Adiciona os dados do documento.
-        dadosDocumento.append('id_colaborador', Number(idColaborador));
+            // Retorna para a listagem e exibe a notificação de sucesso.
+            if (onSucesso) {
 
-        dadosDocumento.append('nome', nome.trim());
+                onSucesso('Documento cadastrado com sucesso!');
 
-        dadosDocumento.append('tipo_documento', tipoDocumento);
+            } else {
 
-        dadosDocumento.append('ativo', ativo ? 1 : 0);
+                voltar();
 
-        // Adiciona o arquivo físico selecionado pelo usuário.
-        // O nome do campo precisa ser igual ao uploadDocumento.single('arquivo').
-        dadosDocumento.append('arquivo', arquivo);
+            }
 
-        // Envia os dados para a API.
-        await cadastrarDocumento(dadosDocumento);
+        } catch (error) {
 
-        alert('Documento cadastrado com sucesso!');
+            console.error('Erro ao cadastrar documento:', error);
 
-        voltar();
+            setErro(
+                error.message || 'Não foi possível cadastrar o documento.'
+            );
 
-    } catch (error) {
+        } finally {
 
-        console.error('Erro ao cadastrar documento:', error);
+            setSalvando(false);
 
-        setErro(
-            error.message || 'Não foi possível cadastrar o documento.'
-        );
-
-    } finally {
-
-        setSalvando(false);
+        }
 
     }
-
-}
-
 
 
     //----------------- CANCELAR CADASTRO -------------------//
@@ -461,9 +449,7 @@ async function salvarDocumento() {
             {erro && (
 
                 <div className="erro-cadastro-documento">
-
                     {erro}
-
                 </div>
 
             )}
@@ -476,9 +462,7 @@ async function salvarDocumento() {
                 <div className="cabecalho-cartao-documento">
 
                     <div>
-
                         <h2>Informações do documento</h2>
-
                     </div>
 
                     <span className="etiqueta-obrigatorio-documento">
@@ -636,9 +620,7 @@ async function salvarDocumento() {
                                             >
 
                                                 <span className="icone-opcao-colaborador-documento">
-
                                                     {gerarIniciais(colaborador.nome)}
-
                                                 </span>
 
                                                 <span className="dados-opcao-colaborador-documento">
@@ -673,9 +655,7 @@ async function salvarDocumento() {
                                 ) : (
 
                                     <div className="nenhum-colaborador-documento">
-
                                         Nenhum colaborador encontrado.
-
                                     </div>
 
                                 )}
@@ -726,11 +706,9 @@ async function salvarDocumento() {
                         <div className="informacoes-arquivo-documento">
 
                             <div className="icone-arquivo-documento">
-
                                 <span>
                                     {arquivo.name.split('.').pop().toUpperCase()}
                                 </span>
-
                             </div>
 
                             <div className="dados-arquivo-documento">

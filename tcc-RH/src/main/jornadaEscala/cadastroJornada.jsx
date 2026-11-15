@@ -5,8 +5,8 @@ import { useEffect, useState } from 'react';
 
 import BotaoCadastro from '../../componentes/cardNomePag/nomePag.jsx';
 import Informacoes from '../../componentes/cardInformacoes/informacoes.jsx';
-import Revisao from '../../componentes/cardRevisao/revisao.jsx';
 import BotaoSalvarCancelar from '../../componentes/botoes/botaoSalvarCancelar.jsx';
+import Alerta from '../../componentes/alerta/Alerta.jsx';
 
 import { cadastrarJornadaEscala } from './servicos/cadastroJornada.js';
 import editarJornadaApi from './servicos/editarJornadaApi.js';
@@ -83,6 +83,7 @@ function formatarHorario(valor) {
 
 function CadastroJornada({
     voltar,
+    onSucesso,
     jornada = null,
     diasSemana: diasRecebidos = [],
     modoEdicao = false
@@ -103,8 +104,10 @@ function CadastroJornada({
 
     //----------------- ESTADOS DAS MENSAGENS ----------------//
 
-    const [erro, setErro] = useState('');
-    const [sucesso, setSucesso] = useState('');
+    const [alerta, setAlerta] = useState({
+        tipo: '',
+        mensagem: ''
+    });
 
     //----------------- ESTADOS DOS ERROS --------------------//
 
@@ -114,6 +117,23 @@ function CadastroJornada({
     const [erroDiasAtivos, setErroDiasAtivos] = useState('');
 
     const [salvando, setSalvando] = useState(false);
+
+
+    //----------------- CONTROLE DO ALERTA -------------------//
+
+    function exibirErro(mensagem) {
+        setAlerta({
+            tipo: 'erro',
+            mensagem
+        });
+    }
+
+    function fecharAlerta() {
+        setAlerta({
+            tipo: '',
+            mensagem: ''
+        });
+    }
 
 
     //----------------- PREENCHER EDIÇÃO ----------------------//
@@ -171,8 +191,7 @@ function CadastroJornada({
             setErroNome('');
         }
 
-        setErro('');
-        setSucesso('');
+        fecharAlerta();
     }
 
 
@@ -192,8 +211,7 @@ function CadastroJornada({
                 setErroDiasAtivos('');
             }
 
-            setSucesso('');
-            setErro('');
+            fecharAlerta();
 
             return novosDias;
         });
@@ -215,8 +233,7 @@ function CadastroJornada({
             setErroHorarioTermino('');
         }
 
-        setErro('');
-        setSucesso('');
+        fecharAlerta();
     }
 
     function alterarHorarioTermino(evento) {
@@ -228,8 +245,7 @@ function CadastroJornada({
             setErroHorarioTermino('');
         }
 
-        setErro('');
-        setSucesso('');
+        fecharAlerta();
     }
 
 
@@ -270,8 +286,6 @@ function CadastroJornada({
         setErroHorarioInicio('');
         setErroHorarioTermino('');
         setErroDiasAtivos('');
-
-        setErro('');
     }
 
 
@@ -286,15 +300,17 @@ function CadastroJornada({
             return;
         }
 
-        setErro('');
-        setSucesso('');
+        fecharAlerta();
 
         if (!validarFormulario()) {
             return;
         }
 
         if (modoEdicao && (!jornada || jornada.id == null)) {
-            setErro('Não foi possível identificar a jornada que será editada.');
+            exibirErro(
+                'Não foi possível identificar a jornada que será editada.'
+            );
+
             return;
         }
 
@@ -329,7 +345,7 @@ function CadastroJornada({
                 diasExistentes.length === 0 ||
                 diasExistentes.some((dia) => dia.id == null)
             ) {
-                setErro(
+                exibirErro(
                     'Não foi possível identificar os dias cadastrados desta jornada.'
                 );
 
@@ -353,7 +369,7 @@ function CadastroJornada({
                     diasExistentes
                 );
 
-                setSucesso('Jornada atualizada com sucesso!');
+                onSucesso?.('Jornada atualizada com sucesso!');
 
                 return;
             }
@@ -363,11 +379,7 @@ function CadastroJornada({
 
             await cadastrarJornadaEscala(dadosJornada);
 
-            // Limpa os campos após o cadastro.
-            limparFormulario();
-
-            // Exibe a confirmação na tela.
-            setSucesso('Jornada cadastrada com sucesso!');
+            onSucesso?.('Jornada cadastrada com sucesso!');
 
         } catch (erroApi) {
 
@@ -379,14 +391,14 @@ function CadastroJornada({
             );
 
             if (!modoEdicao && erroApi.jornadaCriada) {
-                setErro(
+                exibirErro(
                     `A jornada foi criada, mas ocorreu um erro ao cadastrar os dias da semana. ID da jornada: ${erroApi.idJornada}. ${erroApi.message}`
                 );
 
                 return;
             }
 
-            setErro(
+            exibirErro(
                 erroApi.message ||
                 (
                     modoEdicao
@@ -416,6 +428,12 @@ function CadastroJornada({
 
     return (
         <>
+            <Alerta
+                tipo={alerta.tipo}
+                mensagem={alerta.mensagem}
+                onFechar={fecharAlerta}
+            />
+
             {/* CABEÇALHO */}
 
             <div className="cabecalho-nova-jornada">
@@ -461,14 +479,12 @@ function CadastroJornada({
                     descricao={descricao}
                     setDescricao={(valor) => {
                         setDescricao(valor);
-                        setErro('');
-                        setSucesso('');
+                        fecharAlerta();
                     }}
                     status={status}
                     setStatus={(valor) => {
                         setStatus(Number(valor));
-                        setErro('');
-                        setSucesso('');
+                        fecharAlerta();
                     }}
                     campos={['nome', 'descricao', 'status']}
                 />
@@ -640,30 +656,6 @@ function CadastroJornada({
                     )}
 
                 </section>
-
-
-                {/* REVISÃO E MENSAGEM DE CONFIRMAÇÃO */}
-
-                <Revisao
-                    nome={nome}
-                    descricao={
-                        `Horário: ${horarioInicio || 'Não informado'} às ${
-                            horarioTermino || 'Não informado'
-                        }. Dias de trabalho: ${
-                            opcoesDiasSemana
-                                .filter((dia) => diasAtivos.includes(dia.sigla))
-                                .map((dia) => dia.nome)
-                                .join(', ') || 'Nenhum dia selecionado'
-                        }.`
-                    }
-                    status={status}
-                    tituloNome="Nome da jornada"
-                    mostrarCodigo={false}
-                    mostrarResponsavel={false}
-                    mostrarDescricao={true}
-                    erro={erro}
-                    sucesso={sucesso}
-                />
 
 
                 {/* BOTÕES */}

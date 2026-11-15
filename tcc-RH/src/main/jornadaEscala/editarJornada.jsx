@@ -6,7 +6,12 @@ import CadastroJornada from './cadastroJornada.jsx';
 
 //----------------- COMPONENTE ------------------------------//
 
-function EditarJornada({ jornada, diasSemana, voltar }) {
+function EditarJornada({
+    jornada,
+    diasSemana,
+    voltar,
+    onSucesso
+}) {
 
     return (
 
@@ -14,6 +19,7 @@ function EditarJornada({ jornada, diasSemana, voltar }) {
             jornada={jornada}
             diasSemana={diasSemana}
             voltar={voltar}
+            onSucesso={onSucesso}
             modoEdicao={true}
         />
 

@@ -1,0 +1,164 @@
+
+/* ALERTA */
+
+.alerta {
+    position: fixed;
+    top: 22px;
+    right: 24px;
+    z-index: 9999;
+
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    width: min(390px, calc(100% - 32px));
+    padding: 14px 15px;
+
+    border-radius: 8px;
+
+    font-family: inherit;
+
+    box-shadow: 0 4px 16px rgba(23, 32, 51, 0.12);
+
+    animation: aparecer-alerta 0.25s ease;
+}
+
+
+/* ÍCONE */
+
+.alerta-icone {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    width: 23px;
+    height: 23px;
+
+    border-radius: 50%;
+
+    font-size: 13px;
+    font-weight: 700;
+}
+
+
+/* MENSAGEM */
+
+.alerta-mensagem {
+    flex: 1;
+
+    margin: 0;
+
+    font-size: 12px;
+    line-height: 18px;
+
+    overflow-wrap: anywhere;
+}
+
+
+/* BOTÃO FECHAR */
+
+.alerta-fechar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    width: 25px;
+    height: 25px;
+
+    padding: 0;
+    border: none;
+    border-radius: 5px;
+
+    background: transparent;
+
+    font-size: 20px;
+    line-height: 1;
+
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.alerta-fechar:hover {
+    background-color: rgba(0, 0, 0, 0.06);
+}
+
+
+/* SUCESSO */
+
+.alerta-sucesso {
+    background-color: #E5FBF1;
+    color: #08744D;
+
+    border-left: 4px solid #08744D;
+}
+
+.alerta-sucesso .alerta-icone {
+    background-color: #9BF3D4;
+    color: #075C47;
+}
+
+
+/* ERRO */
+
+.alerta-erro {
+    background-color: #FFF0F0;
+    color: #B42318;
+
+    border-left: 4px solid #B42318;
+}
+
+.alerta-erro .alerta-icone {
+    background-color: #FFDADA;
+    color: #B42318;
+}
+
+
+/* ATENÇÃO */
+
+.alerta-atencao {
+    background-color: #FFF7E6;
+    color: #946200;
+
+    border-left: 4px solid #D99A16;
+}
+
+.alerta-atencao .alerta-icone {
+    background-color: #FFE6A8;
+    color: #946200;
+}
+
+
+/* INFORMAÇÃO */
+
+.alerta-informacao {
+    background-color: #F0F1FF;
+    color: #172033;
+
+    border-left: 4px solid #4656A5;
+}
+
+.alerta-informacao .alerta-icone {
+    background-color: #DDE1FF;
+    color: #35458F;
+}
+
+
+/* ANIMAÇÃO */
+
+@keyframes aparecer-alerta {
+
+    from {
+        opacity: 0;
+        transform: translateX(15px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+}

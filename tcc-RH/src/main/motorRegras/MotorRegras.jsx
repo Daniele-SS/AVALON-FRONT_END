@@ -1,11 +1,12 @@
 
-//----------------- IMPORTAÇÕES -----------------------------//
+ //----------------- IMPORTAÇÕES -----------------------------//
 
 import { useEffect, useState } from 'react';
 
 import BotaoCadastro from '../../componentes/cardNomePag/nomePag.jsx';
 import Minicards from '../../componentes/minicard/minicard.jsx';
 import Filtro from '../../componentes/cardFiltros/filtros.jsx';
+import AlertaNotificacao from '../../componentes/alerta/Alerta.jsx';
 
 import CadastroRegra from './cadastroRegra.jsx';
 import AcaoRegra from './acaoRegras.jsx';
@@ -38,13 +39,14 @@ function MotorRegras() {
 
     const [carregando, setCarregando] = useState(true);
 
-    // Controla qual tela do Motor de Regras está aberta.
     const [telaAtual, setTelaAtual] = useState('lista');
 
-    // Guarda os dados da condição para utilizar na segunda etapa.
     const [dadosCondicao, setDadosCondicao] = useState(null);
 
     const [erro, setErro] = useState('');
+
+    // Controla as notificações.
+    const [alertaNotificacao, setAlertaNotificacao] = useState(null);
 
     const [filtros, setFiltros] = useState({
         pesquisa: '',
@@ -52,6 +54,24 @@ function MotorRegras() {
         opcao: '',
         classificacao: 'Todos'
     });
+
+
+    //----------------- NOTIFICAÇÕES -------------------------//
+
+    function exibirNotificacao(tipo, mensagem) {
+
+        setAlertaNotificacao({
+            tipo,
+            mensagem
+        });
+
+    }
+
+    function fecharNotificacao() {
+
+        setAlertaNotificacao(null);
+
+    }
 
 
     //----------------- BUSCAR DADOS -------------------------//
@@ -98,79 +118,74 @@ function MotorRegras() {
     }, []);
 
 
-    //----------------- ATIVAR / DESATIVAR REGRA --------------//
+//----------------- ATIVAR / DESATIVAR REGRA --------------//
 
-    async function atualizarStatusRegra(id, ativo) {
+async function atualizarStatusRegra(id, ativo) {
 
-        try {
+    try {
 
-            // Localiza a regra selecionada.
-            const regra = regras.find(
-                (item) => String(item.id) === String(id)
-            );
+        const regra = regras.find(
+            (item) => String(item.id) === String(id)
+        );
 
-            if (!regra) {
-                throw new Error('Regra não encontrada.');
-            }
-
-            // Atualiza o status no banco de dados.
-            await alterarStatusRegra(
-                id,
-                ativo,
-                regra
-            );
-
-            // Atualiza somente o status no estado local.
-            setRegras((regrasAtuais) =>
-
-                regrasAtuais.map((item) =>
-
-                    String(item.id) === String(id)
-
-                        ? { ...item, ativo: ativo ? 1 : 0 }
-
-                        : item
-
-                )
-
-            );
-
-        } catch (erroApi) {
-
-            console.error(
-                'Erro ao alterar status da regra:',
-                erroApi
-            );
-
-            alert(erroApi.message);
-
+        if (!regra) {
+            throw new Error('Regra não encontrada.');
         }
 
+        await alterarStatusRegra(
+            id,
+            ativo,
+            regra
+        );
+
+        setRegras((regrasAtuais) =>
+
+            regrasAtuais.map((item) =>
+
+                String(item.id) === String(id)
+
+                    ? { ...item, ativo: ativo ? 1 : 0 }
+
+                    : item
+
+            )
+
+        );
+
+    } catch (erroApi) {
+
+        console.error(
+            'Erro ao alterar status da regra:',
+            erroApi
+        );
+
     }
+
+}
 
 
     //----------------- EXCLUIR REGRA -------------------------//
 
     async function removerRegra(id) {
 
-        // Solicita confirmação antes de excluir.
         const confirmar = window.confirm(
             'Tem certeza que deseja excluir esta regra?'
         );
 
         if (!confirmar) {
-
             return;
-
         }
 
         try {
 
-            // Envia a exclusão para a API.
             await excluirRegra(id);
 
-            // Atualiza a listagem após excluir.
             await carregarDados();
+
+            exibirNotificacao(
+                'sucesso',
+                'Regra excluída com sucesso!'
+            );
 
         } catch (erroApi) {
 
@@ -179,7 +194,11 @@ function MotorRegras() {
                 erroApi
             );
 
-            alert(erroApi.message);
+            exibirNotificacao(
+                'erro',
+                erroApi.message ||
+                'Não foi possível excluir a regra.'
+            );
 
         }
 
@@ -276,7 +295,6 @@ function MotorRegras() {
 
     function novaRegra() {
 
-        // Abre a primeira etapa do cadastro.
         setDadosCondicao(null);
 
         setTelaAtual('condicao');
@@ -288,10 +306,8 @@ function MotorRegras() {
 
     function receberCondicao(dados) {
 
-        // Guarda os dados preenchidos na primeira etapa.
         setDadosCondicao(dados);
 
-        // Abre a segunda etapa do cadastro.
         setTelaAtual('acao');
 
     }
@@ -301,8 +317,6 @@ function MotorRegras() {
 
     function voltarParaCondicao() {
 
-        // Retorna para a primeira etapa do cadastro.
-        // Mantém os dados da condição preenchidos anteriormente.
         setTelaAtual('condicao');
 
     }
@@ -312,10 +326,8 @@ function MotorRegras() {
 
     function voltarCadastro() {
 
-        // Limpa os dados temporários do cadastro.
         setDadosCondicao(null);
 
-        // Retorna ao Motor de Regras.
         setTelaAtual('lista');
 
     }
@@ -323,16 +335,18 @@ function MotorRegras() {
 
     //----------------- FINALIZAR CADASTRO -------------------//
 
-    async function finalizarCadastro() {
+    async function finalizarCadastro(mensagem) {
 
-        // Limpa os dados temporários.
         setDadosCondicao(null);
 
-        // Retorna para a listagem.
         setTelaAtual('lista');
 
-        // Busca novamente as regras cadastradas.
         await carregarDados();
+
+        exibirNotificacao(
+            'sucesso',
+            mensagem || 'Regra cadastrada com sucesso!'
+        );
 
     }
 
@@ -384,6 +398,23 @@ function MotorRegras() {
     return (
 
         <>
+
+            {/* NOTIFICAÇÃO */}
+
+            {alertaNotificacao && (
+
+                <AlertaNotificacao
+
+                    tipo={alertaNotificacao.tipo}
+
+                    mensagem={alertaNotificacao.mensagem}
+
+                    onFechar={fecharNotificacao}
+
+                />
+
+            )}
+
 
             {/* CABEÇALHO */}
 

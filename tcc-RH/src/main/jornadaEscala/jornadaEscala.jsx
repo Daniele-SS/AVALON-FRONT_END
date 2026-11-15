@@ -1,9 +1,11 @@
-//----------------- IMPORTAÇÕES -----------------------------//
+
+ //----------------- IMPORTAÇÕES -----------------------------//
 
 import { useEffect, useState } from 'react';
 
 import BotaoCadastro from '../../componentes/cardNomePag/nomePag.jsx';
 import Filtro from '../../componentes/cardFiltros/filtros.jsx';
+import Alerta from '../../componentes/alerta/Alerta.jsx';
 
 import CardJornada from './componente/cardJornada.jsx';
 import CadastroJornada from './cadastroJornada.jsx';
@@ -21,6 +23,8 @@ import RelogioIcone from './img/relogio-icon.svg';
 
 function JornadaEscala() {
 
+    //----------------- ESTADOS ------------------------------//
+
     const [jornadas, setJornadas] = useState([]);
     const [colaboradores, setColaboradores] = useState([]);
     const [diasSemana, setDiasSemana] = useState([]);
@@ -37,6 +41,12 @@ function JornadaEscala() {
         pesquisa: '',
         status: 'Todos',
         opcao: ''
+    });
+
+    // Controla o aviso de sucesso na listagem.
+    const [alerta, setAlerta] = useState({
+        tipo: '',
+        mensagem: ''
     });
 
 
@@ -114,6 +124,11 @@ function JornadaEscala() {
     function abrirCadastro() {
 
         setJornadaSelecionada(null);
+        setAlerta({
+            tipo: '',
+            mensagem: ''
+        });
+
         setTelaAtual('cadastro');
     }
 
@@ -123,6 +138,12 @@ function JornadaEscala() {
     function abrirEdicao(jornada) {
 
         setJornadaSelecionada(jornada);
+
+        setAlerta({
+            tipo: '',
+            mensagem: ''
+        });
+
         setTelaAtual('edicao');
     }
 
@@ -144,6 +165,44 @@ function JornadaEscala() {
     }
 
 
+    //----------------- CADASTRO/EDIÇÃO CONCLUÍDOS -----------//
+
+    async function concluirCadastro(mensagem) {
+
+        // Volta para a listagem.
+        setTelaAtual('lista');
+        setJornadaSelecionada(null);
+
+        // Limpa os filtros da listagem.
+        setFiltros({
+            pesquisa: '',
+            status: 'Todos',
+            opcao: ''
+        });
+
+        // Exibe o aviso de sucesso.
+        setAlerta({
+            tipo: 'sucesso',
+            mensagem
+        });
+
+        // Atualiza os dados para mostrar a jornada cadastrada.
+        await carregarDados();
+    }
+
+
+    //----------------- FECHAR ALERTA ------------------------//
+
+    function fecharAlerta() {
+
+        setAlerta({
+            tipo: '',
+            mensagem: ''
+        });
+
+    }
+
+
     //----------------- TELA DE CADASTRO ---------------------//
 
     if (telaAtual === 'cadastro') {
@@ -151,6 +210,7 @@ function JornadaEscala() {
         return (
             <CadastroJornada
                 voltar={voltarParaLista}
+                onSucesso={concluirCadastro}
             />
         );
     }
@@ -165,6 +225,7 @@ function JornadaEscala() {
                 jornada={jornadaSelecionada}
                 diasSemana={diasSemana}
                 voltar={voltarParaLista}
+                onSucesso={concluirCadastro}
             />
         );
     }
@@ -174,6 +235,15 @@ function JornadaEscala() {
 
     return (
         <>
+
+            {/* AVISO DE SUCESSO */}
+
+            <Alerta
+                tipo={alerta.tipo}
+                mensagem={alerta.mensagem}
+                onFechar={fecharAlerta}
+            />
+
 
             {/* CABEÇALHO */}
 

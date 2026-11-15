@@ -1,10 +1,14 @@
+
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 import BotaoCadastro from '../../componentes/cardNomePag/nomePag.jsx';
 import BotaoSalvarCancelar from '../../componentes/botoes/botaoSalvarCancelar.jsx';
+import Alerta from '../../componentes/alerta/Alerta.jsx';
+
 import SelecaoColaborador from './componentes/cadastro/SelecaoColaborador.jsx';
 import ObservacoesFerias from './componentes/cadastro/ObservacoesFerias.jsx';
 import PeriodoFerias from './componentes/cadastro/PeriodoFerias.jsx';
+
 import {
     buscarColaboradoresFerias,
     buscarUsuariosGestores
@@ -19,7 +23,6 @@ import {
     normalizarUsuarios
 } from './funcoes/cadastroFerias/auxiliaresFerias.js';
 
-
 import { cadastrarFerias } from './servicos/cadastroFerias.js';
 import editarFeriasApi from './servicos/editarFerias.js';
 
@@ -27,16 +30,13 @@ import validarFerias from './funcoes/cadastroFerias/validarFerias.js';
 import calcularDiasFerias from './funcoes/cadastroFerias/calcularDiasFerias.js';
 import buscarGestorColaborador from './funcoes/cadastroFerias/buscarGestorColaborador.js';
 
-
-
 import './css-ferias/cadastroFerias.css';
 
 const LIMITE_ANUAL_FERIAS = 30;
 
-
-
 function CadastroFerias({
     voltar,
+    onSucesso,
     ferias = null,
     modoEdicao = false
 }) {
@@ -44,62 +44,42 @@ function CadastroFerias({
     const [colaboradores, setColaboradores] = useState([]);
     const [usuarios, setUsuarios] = useState([]);
 
-    const [
-        colaboradorSelecionado,
-        setColaboradorSelecionado
-    ] = useState(null);
+    const [colaboradorSelecionado, setColaboradorSelecionado] = useState(null);
+    const [pesquisaColaborador, setPesquisaColaborador] = useState('');
+    const [dropdownAberto, setDropdownAberto] = useState(false);
 
-    const [
-        pesquisaColaborador,
-        setPesquisaColaborador
-    ] = useState('');
+    const [dataInicio, setDataInicio] = useState('');
+    const [dataFim, setDataFim] = useState('');
+    const [observacao, setObservacao] = useState('');
 
-    const [
-        dropdownAberto,
-        setDropdownAberto
-    ] = useState(false);
+    const [salvando, setSalvando] = useState(false);
+    const [carregandoColaboradores, setCarregandoColaboradores] = useState(true);
+    const [erroCarregamento, setErroCarregamento] = useState('');
 
-    const [
-        dataInicio,
-        setDataInicio
-    ] = useState('');
+    const [erros, setErros] = useState({});
+    const [idFerias, setIdFerias] = useState(null);
 
-    const [
-        dataFim,
-        setDataFim
-    ] = useState('');
-
-    const [
-        observacao,
-        setObservacao
-    ] = useState('');
-
-    const [
-        salvando,
-        setSalvando
-    ] = useState(false);
-
-    const [
-        carregandoColaboradores,
-        setCarregandoColaboradores
-    ] = useState(true);
-
-    const [
-        erroCarregamento,
-        setErroCarregamento
-    ] = useState('');
-
-    const [
-        erros,
-        setErros
-    ] = useState({});
-
-    const [
-        idFerias,
-        setIdFerias
-    ] = useState(null);
+    // Controla os avisos de erro nesta tela.
+    const [alerta, setAlerta] = useState({
+        tipo: '',
+        mensagem: ''
+    });
 
     const dropdownRef = useRef(null);
+
+    function exibirErro(mensagem) {
+        setAlerta({
+            tipo: 'erro',
+            mensagem
+        });
+    }
+
+    function fecharAlerta() {
+        setAlerta({
+            tipo: '',
+            mensagem: ''
+        });
+    }
 
     useEffect(() => {
 
@@ -119,39 +99,26 @@ function CadastroFerias({
                 ]);
 
                 const listaColaboradores =
-                    normalizarColaboradores(
-                        dadosColaboradores
-                    );
+                    normalizarColaboradores(dadosColaboradores);
 
                 const listaUsuarios =
-                    normalizarUsuarios(
-                        dadosUsuarios
-                    );
+                    normalizarUsuarios(dadosUsuarios);
 
                 const colaboradoresAtivos =
-                    listaColaboradores.filter(
-                        colaborador => {
+                    listaColaboradores.filter(colaborador => {
 
-                            const status =
-                                String(
-                                    colaborador?.status ?? ''
-                                ).toLowerCase();
+                        const status =
+                            String(colaborador?.status ?? '').toLowerCase();
 
-                            return (
-                                status === 'ativo' ||
-                                status === '1' ||
-                                colaborador?.status === 1
-                            );
-                        }
-                    );
+                        return (
+                            status === 'ativo' ||
+                            status === '1' ||
+                            colaborador?.status === 1
+                        );
+                    });
 
-                setColaboradores(
-                    colaboradoresAtivos
-                );
-
-                setUsuarios(
-                    listaUsuarios
-                );
+                setColaboradores(colaboradoresAtivos);
+                setUsuarios(listaUsuarios);
 
             } catch (erro) {
 
@@ -178,10 +145,7 @@ function CadastroFerias({
 
     useEffect(() => {
 
-        if (
-            !modoEdicao ||
-            !ferias
-        ) {
+        if (!modoEdicao || !ferias) {
             return;
         }
 
@@ -192,27 +156,17 @@ function CadastroFerias({
         );
 
         setDataInicio(
-            String(
-                ferias.data_inicio || ''
-            ).substring(0, 10)
+            String(ferias.data_inicio || '').substring(0, 10)
         );
 
         setDataFim(
-            String(
-                ferias.data_fim || ''
-            ).substring(0, 10)
+            String(ferias.data_fim || '').substring(0, 10)
         );
 
-        setObservacao(
-            ferias.observacao || ''
-        );
-
+        setObservacao(ferias.observacao || '');
         setErros({});
 
-    }, [
-        modoEdicao,
-        ferias
-    ]);
+    }, [modoEdicao, ferias]);
 
     useEffect(() => {
 
@@ -233,36 +187,24 @@ function CadastroFerias({
             ferias.id_colaborador ??
             colaboradorFerias?.id;
 
-        if (
-            idColaborador == null
-        ) {
+        if (idColaborador == null) {
             return;
         }
 
         const colaboradorEncontrado =
             colaboradores.find(
                 colaborador =>
-                    Number(colaborador.id) ===
-                    Number(idColaborador)
+                    Number(colaborador.id) === Number(idColaborador)
             );
 
         if (!colaboradorEncontrado) {
             return;
         }
 
-        setColaboradorSelecionado(
-            colaboradorEncontrado
-        );
+        setColaboradorSelecionado(colaboradorEncontrado);
+        setPesquisaColaborador(colaboradorEncontrado.nome || '');
 
-        setPesquisaColaborador(
-            colaboradorEncontrado.nome || ''
-        );
-
-    }, [
-        modoEdicao,
-        ferias,
-        colaboradores
-    ]);
+    }, [modoEdicao, ferias, colaboradores]);
 
     useEffect(() => {
 
@@ -270,314 +212,200 @@ function CadastroFerias({
 
             if (
                 dropdownRef.current &&
-                !dropdownRef.current.contains(
-                    evento.target
-                )
+                !dropdownRef.current.contains(evento.target)
             ) {
                 setDropdownAberto(false);
             }
         }
 
-        document.addEventListener(
-            'mousedown',
-            fecharDropdown
-        );
+        document.addEventListener('mousedown', fecharDropdown);
 
         return () => {
-
-            document.removeEventListener(
-                'mousedown',
-                fecharDropdown
-            );
-
+            document.removeEventListener('mousedown', fecharDropdown);
         };
 
     }, []);
 
+    const colaboradoresFiltrados = useMemo(() => {
 
+        const pesquisa =
+            pesquisaColaborador.trim().toLowerCase();
 
-    const colaboradoresFiltrados =
-        useMemo(() => {
+        if (!pesquisa) {
+            return colaboradores;
+        }
 
-            const pesquisa =
-                pesquisaColaborador
-                    .trim()
-                    .toLowerCase();
+        return colaboradores.filter(colaborador => {
 
-            if (!pesquisa) {
-                return colaboradores;
-            }
+            const nome =
+                String(colaborador?.nome || '').toLowerCase();
 
-            return colaboradores.filter(
-                colaborador => {
+            const matricula =
+                String(colaborador?.matricula || '').toLowerCase();
 
-                    const nome =
-                        String(
-                            colaborador?.nome || ''
-                        ).toLowerCase();
-
-                    const matricula =
-                        String(
-                            colaborador?.matricula || ''
-                        ).toLowerCase();
-
-                    return (
-                        nome.includes(pesquisa) ||
-                        matricula.includes(pesquisa)
-                    );
-                }
+            return (
+                nome.includes(pesquisa) ||
+                matricula.includes(pesquisa)
             );
+        });
 
-        }, [
-            colaboradores,
-            pesquisaColaborador
-        ]);
+    }, [colaboradores, pesquisaColaborador]);
 
     const gestorSelecionado = useMemo(
-        () =>
-            buscarGestorColaborador(
-                colaboradorSelecionado,
-                usuarios
-            ),
-        [
+        () => buscarGestorColaborador(
             colaboradorSelecionado,
             usuarios
-        ]
+        ),
+        [colaboradorSelecionado, usuarios]
     );
 
-    const quantidadeDias =
-        useMemo(
-            () =>
-                calcularDiasFerias(
-                    dataInicio,
-                    dataFim
-                ),
-            [
-                dataInicio,
-                dataFim
-            ]
-        );
+    const quantidadeDias = useMemo(
+        () => calcularDiasFerias(dataInicio, dataFim),
+        [dataInicio, dataFim]
+    );
 
-    const saldoDisponivel =
-        Math.max(
-            0,
-            LIMITE_ANUAL_FERIAS -
-            quantidadeDias
-        );
+    const saldoDisponivel = Math.max(
+        0,
+        LIMITE_ANUAL_FERIAS - quantidadeDias
+    );
 
-    const dataMinima =
-        useMemo(() => {
+    const dataMinima = useMemo(() => {
 
-            if (
-                modoEdicao &&
-                dataInicio
-            ) {
-                return dataInicio;
-            }
+        if (modoEdicao && dataInicio) {
+            return dataInicio;
+        }
 
-            const hoje = new Date();
+        const hoje = new Date();
 
-            const ano =
-                hoje.getFullYear();
+        const ano = hoje.getFullYear();
 
-            const mes =
-                String(
-                    hoje.getMonth() + 1
-                ).padStart(2, '0');
+        const mes = String(
+            hoje.getMonth() + 1
+        ).padStart(2, '0');
 
-            const dia =
-                String(
-                    hoje.getDate()
-                ).padStart(2, '0');
+        const dia = String(
+            hoje.getDate()
+        ).padStart(2, '0');
 
-            return `${ano}-${mes}-${dia}`;
+        return `${ano}-${mes}-${dia}`;
 
-        }, [
-            modoEdicao,
-            dataInicio
-        ]);
+    }, [modoEdicao, dataInicio]);
 
     const nomeColaborador =
         colaboradorSelecionado?.nome || '';
 
     const matriculaColaborador =
-        colaboradorSelecionado?.matricula ||
-        'Não informado';
+        colaboradorSelecionado?.matricula || 'Não informado';
 
-    const cargoColaborador =
-        colaboradorSelecionado
-            ? obterCargo(
-                colaboradorSelecionado
-            )
-            : 'Não informado';
+    const cargoColaborador = colaboradorSelecionado
+        ? obterCargo(colaboradorSelecionado)
+        : 'Não informado';
 
-    const setorColaborador =
-        colaboradorSelecionado
-            ? obterSetor(
-                colaboradorSelecionado
-            )
-            : 'Não informado';
+    const setorColaborador = colaboradorSelecionado
+        ? obterSetor(colaboradorSelecionado)
+        : 'Não informado';
 
-    function selecionarColaborador(
-        colaborador
-    ) {
+    function selecionarColaborador(colaborador) {
 
-        setColaboradorSelecionado(
-            colaborador
-        );
-
-        setPesquisaColaborador(
-            colaborador?.nome || ''
-        );
-
+        setColaboradorSelecionado(colaborador);
+        setPesquisaColaborador(colaborador?.nome || '');
         setDropdownAberto(false);
 
-        setErros(
-            errosAtuais => ({
-                ...errosAtuais,
-                colaborador: ''
-            })
-        );
+        setErros(errosAtuais => ({
+            ...errosAtuais,
+            colaborador: ''
+        }));
 
     }
 
-    function alterarPesquisaColaborador(
-        evento
-    ) {
+    function alterarPesquisaColaborador(evento) {
 
-        const valor =
-            evento.target.value;
+        const valor = evento.target.value;
 
-        setPesquisaColaborador(
-            valor
-        );
-
+        setPesquisaColaborador(valor);
         setDropdownAberto(true);
 
         if (
             colaboradorSelecionado &&
-            valor !==
-            colaboradorSelecionado.nome
+            valor !== colaboradorSelecionado.nome
         ) {
-
-            setColaboradorSelecionado(
-                null
-            );
-
+            setColaboradorSelecionado(null);
         }
 
         if (erros.colaborador) {
 
-            setErros(
-                errosAtuais => ({
-                    ...errosAtuais,
-                    colaborador: ''
-                })
-            );
+            setErros(errosAtuais => ({
+                ...errosAtuais,
+                colaborador: ''
+            }));
 
         }
 
     }
 
-    function alterarDataInicio(
-        evento
-    ) {
+    function alterarDataInicio(evento) {
 
-        setDataInicio(
-            evento.target.value
-        );
+        setDataInicio(evento.target.value);
 
-        setErros(
-            errosAtuais => ({
-                ...errosAtuais,
-                dataInicio: '',
-                dataFim: '',
-                periodo: ''
-            })
-        );
+        setErros(errosAtuais => ({
+            ...errosAtuais,
+            dataInicio: '',
+            dataFim: '',
+            periodo: ''
+        }));
 
     }
 
-    function alterarDataFim(
-        evento
-    ) {
+    function alterarDataFim(evento) {
 
-        setDataFim(
-            evento.target.value
-        );
+        setDataFim(evento.target.value);
 
-        setErros(
-            errosAtuais => ({
-                ...errosAtuais,
-                dataFim: '',
-                periodo: ''
-            })
-        );
+        setErros(errosAtuais => ({
+            ...errosAtuais,
+            dataFim: '',
+            periodo: ''
+        }));
 
     }
 
-    function alterarObservacao(
-        evento
-    ) {
+    function alterarObservacao(evento) {
 
-        const valor =
-            evento.target.value;
+        const valor = evento.target.value;
 
-        if (
-            valor.length <= 300
-        ) {
-
-            setObservacao(
-                valor
-            );
-
+        if (valor.length <= 300) {
+            setObservacao(valor);
         }
 
     }
 
     function validarFormulario() {
 
-        const resultado =
-            validarFerias({
-                colaborador:
-                    colaboradorSelecionado,
+        const resultado = validarFerias({
 
-                dataInicio,
+            colaborador: colaboradorSelecionado,
+            dataInicio,
+            dataFim,
+            quantidadeDias,
+            saldoDisponivel,
+            observacao,
+            limiteAnual: LIMITE_ANUAL_FERIAS
 
-                dataFim,
+        });
 
-                quantidadeDias,
-
-                saldoDisponivel,
-
-                observacao,
-
-                limiteAnual:
-                    LIMITE_ANUAL_FERIAS
-            });
-
-        setErros(
-            resultado.erros
-        );
+        setErros(resultado.erros);
 
         return resultado.valido;
     }
 
     async function salvarFerias() {
 
-        if (
-            salvando ||
-            !validarFormulario()
-        ) {
+        if (salvando || !validarFormulario()) {
             return;
         }
 
-        if (
-            modoEdicao &&
-            idFerias == null
-        ) {
+        if (modoEdicao && idFerias == null) {
 
-            alert(
+            exibirErro(
                 'Não foi possível identificar as férias que serão editadas.'
             );
 
@@ -585,29 +413,24 @@ function CadastroFerias({
         }
 
         setSalvando(true);
+        fecharAlerta();
 
         try {
 
             const dadosFerias = {
 
-                id_colaborador:
-                    Number(
-                        colaboradorSelecionado.id
-                    ),
+                id_colaborador: Number(
+                    colaboradorSelecionado.id
+                ),
 
-                data_inicio:
-                    dataInicio,
+                data_inicio: dataInicio,
+                data_fim: dataFim,
 
-                data_fim:
-                    dataFim,
+                quantidade_dias: Number(
+                    quantidadeDias
+                ),
 
-                quantidade_dias:
-                    Number(
-                        quantidadeDias
-                    ),
-
-                observacao:
-                    observacao.trim()
+                observacao: observacao.trim()
 
             };
 
@@ -618,11 +441,8 @@ function CadastroFerias({
                     dadosFerias
                 );
 
-                alert(
-                    'Férias atualizadas com sucesso!'
-                );
-
-                await voltar();
+                // Volta para a listagem e exibe o aviso de sucesso.
+                onSucesso?.('Férias atualizadas com sucesso!');
 
                 return;
             }
@@ -631,22 +451,14 @@ function CadastroFerias({
 
                 ...dadosFerias,
 
-                origem:
-                    'RH',
-
-                status_aprovacao:
-                    'APROVADA',
-
-                status:
-                    'PENDENTE'
+                origem: 'RH',
+                status_aprovacao: 'APROVADA',
+                status: 'PENDENTE'
 
             });
 
-            alert(
-                'Férias cadastradas com sucesso!'
-            );
-
-            await voltar();
+            // Volta para a listagem e exibe o aviso de sucesso.
+            onSucesso?.('Férias cadastradas com sucesso!');
 
         } catch (erro) {
 
@@ -657,7 +469,7 @@ function CadastroFerias({
                 erro
             );
 
-            alert(
+            exibirErro(
                 erro.message ||
                 (
                     modoEdicao
@@ -677,6 +489,12 @@ function CadastroFerias({
     return (
 
         <div className="cadastro-ferias">
+
+            <Alerta
+                tipo={alerta.tipo}
+                mensagem={alerta.mensagem}
+                onFechar={fecharAlerta}
+            />
 
             <div className="cabecalho-nova-ferias">
 
@@ -710,12 +528,10 @@ function CadastroFerias({
                         </span>
 
                         <span className="pagina-atual-ferias">
-
                             {modoEdicao
                                 ? 'Editar Férias'
                                 : 'Nova Férias'
                             }
-
                         </span>
 
                     </nav>
@@ -738,15 +554,9 @@ function CadastroFerias({
                 cargoColaborador={cargoColaborador}
                 setorColaborador={setorColaborador}
                 gestorSelecionado={gestorSelecionado}
-                alterarPesquisaColaborador={
-                    alterarPesquisaColaborador
-                }
-                selecionarColaborador={
-                    selecionarColaborador
-                }
-                setDropdownAberto={
-                    setDropdownAberto
-                }
+                alterarPesquisaColaborador={alterarPesquisaColaborador}
+                selecionarColaborador={selecionarColaborador}
+                setDropdownAberto={setDropdownAberto}
                 obterCargo={obterCargo}
             />
 
@@ -770,15 +580,9 @@ function CadastroFerias({
             <div className="botoes-cadastro-ferias">
 
                 <BotaoSalvarCancelar
-                    onCancelar={
-                        voltar
-                    }
-                    onSalvar={
-                        salvarFerias
-                    }
-                    salvando={
-                        salvando
-                    }
+                    onCancelar={voltar}
+                    onSalvar={salvarFerias}
+                    salvando={salvando}
                     textoBotao={
                         modoEdicao
                             ? 'Salvar alterações'

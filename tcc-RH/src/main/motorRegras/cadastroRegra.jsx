@@ -28,10 +28,11 @@ function CadastroRegra({ voltar, continuar }) {
 
     const [erroFatores, setErroFatores] = useState('');
 
+    const [erroSelecaoFator, setErroSelecaoFator] = useState('');
+
 
     //----------------- ESTADOS DA CONDIÇÃO -------------------//
 
-    // O fator guarda o ID retornado pela API.
     const [fator, setFator] = useState('');
 
     const [operador, setOperador] = useState('<');
@@ -60,7 +61,6 @@ function CadastroRegra({ voltar, continuar }) {
 
                 setFatores(fatoresEncontrados);
 
-                // Seleciona automaticamente o primeiro fator disponível.
                 if (fatoresEncontrados.length > 0) {
 
                     setFator(String(fatoresEncontrados[0].id));
@@ -94,17 +94,26 @@ function CadastroRegra({ voltar, continuar }) {
 
     //----------------- FATOR SELECIONADO --------------------//
 
-    // Recupera o nome do fator usando o ID selecionado.
     const fatorSelecionado = fatores.find(
         (item) => String(item.id) === String(fator)
     );
+
+
+    //----------------- ALTERAR FATOR -------------------------//
+
+    function alterarFator(novoFator) {
+
+        setFator(novoFator);
+
+        setErroSelecaoFator('');
+
+    }
 
 
     //----------------- ALTERAR VALOR DE REFERÊNCIA -----------//
 
     function alterarValorReferencia(valor) {
 
-        // Permite apagar o campo enquanto o usuário digita.
         if (valor === '') {
 
             setValorReferencia('');
@@ -136,11 +145,15 @@ function CadastroRegra({ voltar, continuar }) {
         // Verifica se existe um fator selecionado.
         if (!fatorSelecionado) {
 
-            alert('Selecione um fator psicossocial.');
+            setErroSelecaoFator(
+                'Selecione um fator psicossocial.'
+            );
 
             return;
 
         }
+
+        setErroSelecaoFator('');
 
         // Valida o valor de referência.
         const resultadoValidacao = validarCondicao(
@@ -253,7 +266,7 @@ function CadastroRegra({ voltar, continuar }) {
                     <CondicaoRegra
 
                         fator={fator}
-                        setFator={setFator}
+                        setFator={alterarFator}
 
                         fatores={fatores}
                         carregandoFatores={carregandoFatores}
@@ -268,6 +281,24 @@ function CadastroRegra({ voltar, continuar }) {
                         erroValor={erroValor}
 
                     />
+
+
+                    {/* ERRO DE SELEÇÃO DO FATOR */}
+
+                    {erroSelecaoFator && (
+
+                        <p
+                            style={{
+                                color: '#dc2626',
+                                marginTop: '8px'
+                            }}
+                        >
+
+                            {erroSelecaoFator}
+
+                        </p>
+
+                    )}
 
 
                     {/* RESULTADO DA CONDIÇÃO */}

@@ -7,6 +7,7 @@ import BotaoCadastro from '../../componentes/cardNomePag/nomePag.jsx';
 import Minicards from '../../componentes/minicard/minicard.jsx';
 import Filtro from '../../componentes/cardFiltros/filtros.jsx';
 import Alerta from '../../componentes/cardAlerta/alerta.jsx';
+import AlertaNotificacao from '../../componentes/alerta/Alerta.jsx';
 
 import buscarDocumentos, {
     buscarArquivoDocumento,
@@ -42,8 +43,13 @@ function Documentos() {
     const [carregando, setCarregando] = useState(true);
     const [erro, setErro] = useState('');
 
-    // Controla qual tela será exibida.
     const [telaAtual, setTelaAtual] = useState('lista');
+
+    // Controla as notificações de sucesso e erro.
+    const [alertaNotificacao, setAlertaNotificacao] = useState({
+        tipo: '',
+        mensagem: ''
+    });
 
 
     //----------------- ESTADOS DA VISUALIZAÇÃO -------------//
@@ -61,19 +67,15 @@ function Documentos() {
 
     //----------------- ESTADOS DO ARQUIVAMENTO -------------//
 
-    // Guarda o documento que será arquivado.
     const [documentoParaArquivar, setDocumentoParaArquivar] = useState(null);
 
-    // Controla a abertura do alerta.
     const [mostrarAlertaArquivamento, setMostrarAlertaArquivamento] = useState(false);
 
-    // Controla o carregamento do arquivamento.
     const [carregandoArquivamento, setCarregandoArquivamento] = useState(false);
 
 
     //----------------- ESTADOS DO DESARQUIVAMENTO ----------//
 
-    // Controla o carregamento do desarquivamento.
     const [carregandoDesarquivamento, setCarregandoDesarquivamento] = useState(false);
 
 
@@ -92,6 +94,28 @@ function Documentos() {
         'Rescisão',
         'Outros'
     ];
+
+
+    //----------------- CONTROLAR NOTIFICAÇÃO ----------------//
+
+    function exibirNotificacao(tipo, mensagem) {
+
+        setAlertaNotificacao({
+            tipo,
+            mensagem
+        });
+
+    }
+
+
+    function fecharNotificacao() {
+
+        setAlertaNotificacao({
+            tipo: '',
+            mensagem: ''
+        });
+
+    }
 
 
     //----------------- CARREGAR DOCUMENTOS ----------------//
@@ -165,7 +189,28 @@ function Documentos() {
 
     function novoDocumento() {
 
+        fecharNotificacao();
+
         setTelaAtual('cadastro');
+
+    }
+
+
+    //----------------- FINALIZAR CADASTRO ------------------//
+
+    async function concluirCadastro(mensagem) {
+
+        setTelaAtual('lista');
+
+        setFiltros({
+            pesquisa: '',
+            status: 'Todos',
+            opcao: ''
+        });
+
+        await carregarDados();
+
+        exibirNotificacao('sucesso', mensagem);
 
     }
 
@@ -191,21 +236,21 @@ function Documentos() {
 
     async function visualizarDocumento(documento) {
 
-        // Recupera o identificador do documento.
         const idDocumento = documento.id_documento || documento.id;
 
         if (!idDocumento) {
 
-            alert('Não foi possível identificar o documento.');
+            exibirNotificacao(
+                'erro',
+                'Não foi possível identificar o documento.'
+            );
 
             return;
 
         }
 
-        // Abre a janela imediatamente.
         setDocumentoSelecionado(documento);
 
-        // Prepara os estados da visualização.
         setCarregandoArquivo(true);
         setErroVisualizacao('');
         setUrlDocumento('');
@@ -213,13 +258,10 @@ function Documentos() {
 
         try {
 
-            // Busca o arquivo físico na API.
             const arquivo = await buscarArquivoDocumento(idDocumento);
 
-            // Cria uma URL temporária para exibir o arquivo.
             const url = URL.createObjectURL(arquivo);
 
-            // Identifica a extensão do arquivo.
             const caminho = documento.caminho_arquivo || '';
 
             const extensao = caminho.includes('.')
@@ -228,7 +270,6 @@ function Documentos() {
 
             let tipo = arquivo.type;
 
-            // Identifica o formato caso a API não informe o MIME.
             if (!tipo || tipo === 'application/octet-stream') {
 
                 if (extensao === 'pdf') {
@@ -257,7 +298,6 @@ function Documentos() {
 
             }
 
-            // Atualiza os dados para exibição.
             setTipoArquivo(tipo);
             setUrlDocumento(url);
 
@@ -282,14 +322,12 @@ function Documentos() {
 
     function fecharVisualizacao() {
 
-        // Libera a URL temporária do arquivo.
         if (urlDocumento) {
 
             URL.revokeObjectURL(urlDocumento);
 
         }
 
-        // Limpa os estados da janela.
         setDocumentoSelecionado(null);
         setUrlDocumento('');
         setTipoArquivo('');
@@ -303,13 +341,10 @@ function Documentos() {
 
     function prepararArquivamento() {
 
-        // Guarda o documento selecionado antes de fechar a visualização.
         setDocumentoParaArquivar(documentoSelecionado);
 
-        // Fecha a pré-visualização.
         fecharVisualizacao();
 
-        // Abre o alerta de confirmação.
         setMostrarAlertaArquivamento(true);
 
     }
@@ -323,10 +358,8 @@ function Documentos() {
             return;
         }
 
-        // Fecha o alerta sem alterar o documento.
         setMostrarAlertaArquivamento(false);
 
-        // Limpa o documento selecionado para arquivamento.
         setDocumentoParaArquivar(null);
 
     }
@@ -345,17 +378,18 @@ function Documentos() {
             setCarregandoArquivamento(true);
             setErro('');
 
-            // Altera o status para arquivado (0).
             await alterarStatusDocumento(documentoParaArquivar, 0);
 
-            // Fecha o alerta.
             setMostrarAlertaArquivamento(false);
 
-            // Limpa o documento selecionado.
             setDocumentoParaArquivar(null);
 
-            // Atualiza a listagem e os indicadores.
             await carregarDados();
+
+            exibirNotificacao(
+                'sucesso',
+                'Documento arquivado com sucesso!'
+            );
 
         } catch (error) {
 
@@ -374,7 +408,7 @@ function Documentos() {
     }
 
 
-    //----------------- DESARQUIVAR DOCUMENTO IMEDIATAMENTE ----------------//
+    //----------------- DESARQUIVAR DOCUMENTO ----------------//
 
     async function desarquivarDocumentoSelecionado() {
 
@@ -387,14 +421,16 @@ function Documentos() {
             setCarregandoDesarquivamento(true);
             setErroVisualizacao('');
 
-            // Altera o status para ativo (1), sem abrir alerta.
             await alterarStatusDocumento(documentoSelecionado, 1);
 
-            // Fecha a janela de visualização.
             fecharVisualizacao();
 
-            // Atualiza a listagem e os indicadores.
             await carregarDados();
+
+            exibirNotificacao(
+                'sucesso',
+                'Documento desarquivado com sucesso!'
+            );
 
         } catch (error) {
 
@@ -421,19 +457,16 @@ function Documentos() {
             return;
         }
 
-        // Recupera a extensão original.
         const caminho = documentoSelecionado.caminho_arquivo || '';
 
         const extensao = caminho.includes('.')
             ? caminho.split('.').pop().toLowerCase()
             : '';
 
-        // Monta o nome do arquivo para o download.
         const nomeArquivo = extensao
             ? `${documentoSelecionado.nome || 'documento'}.${extensao}`
             : `${documentoSelecionado.nome || 'documento'}`;
 
-        // Cria um link temporário para baixar o arquivo.
         const link = document.createElement('a');
 
         link.href = urlDocumento;
@@ -473,6 +506,7 @@ function Documentos() {
 
             <CadastroDocumento
                 voltar={voltarParaLista}
+                onSucesso={concluirCadastro}
             />
 
         );
@@ -485,6 +519,15 @@ function Documentos() {
     return (
 
         <div className="pagina-documentos">
+
+
+            {/* NOTIFICAÇÃO DE SUCESSO OU ERRO */}
+
+            <AlertaNotificacao
+                tipo={alertaNotificacao.tipo}
+                mensagem={alertaNotificacao.mensagem}
+                onFechar={fecharNotificacao}
+            />
 
 
             {/* CABEÇALHO DA PÁGINA */}
@@ -542,9 +585,7 @@ function Documentos() {
                 {carregando && (
 
                     <div className="mensagem-documentos">
-
                         <p>Carregando documentos...</p>
-
                     </div>
 
                 )}

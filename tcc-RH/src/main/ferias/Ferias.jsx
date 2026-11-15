@@ -1,4 +1,3 @@
-//----------------- IMPORTAÇÕES -----------------------------//
 
 import { useEffect, useState } from 'react';
 
@@ -6,6 +5,7 @@ import BotaoCadastro from '../../componentes/cardNomePag/nomePag.jsx';
 import Minicards from '../../componentes/minicard/minicard.jsx';
 import Filtro from '../../componentes/cardFiltros/filtros.jsx';
 import Tabela from '../../componentes/cardTabela/tabela.jsx';
+import Alerta from '../../componentes/alerta/Alerta.jsx';
 
 import ModalAnalisarSolicitacao from './componentes/solicitacao/ModalAnalisarSolicitacao.jsx';
 
@@ -52,6 +52,12 @@ function Ferias() {
     const [carregando, setCarregando] = useState(true);
 
     const [erro, setErro] = useState('');
+
+    // Controla o aviso de sucesso ou erro da tela principal.
+    const [alerta, setAlerta] = useState({
+        tipo: '',
+        mensagem: ''
+    });
 
     // Controla a abertura do modal com todas as solicitações.
     const [modalSolicitacoesAberto, setModalSolicitacoesAberto] =
@@ -131,6 +137,40 @@ function Ferias() {
     }
 
 
+    //----------------- EXIBIR AVISO DE SUCESSO ---------------//
+
+    function concluirCadastro(mensagem) {
+
+        // Retorna para a listagem.
+        setTela('lista');
+
+        // Limpa as férias selecionadas.
+        setFeriasSelecionadas(null);
+
+        // Guarda a mensagem para exibir na listagem.
+        setAlerta({
+            tipo: 'sucesso',
+            mensagem
+        });
+
+        // Atualiza a tabela com os dados cadastrados.
+        carregarDados();
+
+    }
+
+
+    //----------------- FECHAR AVISO ---------------------------//
+
+    function fecharAlerta() {
+
+        setAlerta({
+            tipo: '',
+            mensagem: ''
+        });
+
+    }
+
+
     //----------------- ATUALIZAR FILTROS ----------------------//
 
     function atualizarFiltros(novosFiltros) {
@@ -201,15 +241,6 @@ function Ferias() {
 
 
     //----------------- SOLICITAÇÕES ---------------------------//
-    //
-    // Exibe somente solicitações que atendam às condições:
-    //
-    // origem = GESTOR
-    // status_aprovacao = PENDENTE
-    //
-    // Férias cadastradas diretamente pelo RH não aparecem
-    // nessa lista de solicitações pendentes.
-    //
 
     const solicitacoes = feriasComInformacoes
         .filter(feriasItem => {
@@ -368,6 +399,7 @@ function Ferias() {
 
             <CadastroFerias
                 voltar={voltarParaLista}
+                onSucesso={concluirCadastro}
             />
 
         );
@@ -384,6 +416,7 @@ function Ferias() {
             <EditarFerias
                 ferias={feriasSelecionadas}
                 voltar={voltarParaLista}
+                onSucesso={concluirCadastro}
             />
 
         );
@@ -396,6 +429,14 @@ function Ferias() {
     return (
 
         <div className="pagina-ferias">
+
+            {/* AVISO DE SUCESSO OU ERRO */}
+
+            <Alerta
+                tipo={alerta.tipo}
+                mensagem={alerta.mensagem}
+                onFechar={fecharAlerta}
+            />
 
 
             {/* =================================================
@@ -415,7 +456,6 @@ function Ferias() {
             ================================================= */}
 
             <div className="minicard-ferias">
-
 
                 {/* FÉRIAS PROGRAMADAS */}
 
@@ -546,9 +586,7 @@ function Ferias() {
             {erro && (
 
                 <p className="mensagem-erro-ferias">
-
                     {erro}
-
                 </p>
 
             )}

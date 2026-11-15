@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 
 import BotaoCadastro from '../../componentes/cardNomePag/nomePag.jsx';
 import BotaoSalvarCancelar from '../../componentes/botoes/botaoSalvarCancelar.jsx';
+import Alerta from '../../componentes/alerta/Alerta.jsx';
 
 import validarBeneficio from './funcoes/cadastroBeneficio/validarBeneficio.js';
 
@@ -31,6 +32,7 @@ import './css-beneficios/cadastroBeneficio.css';
 
 function CadastroBeneficio({
     voltar,
+    onSucesso,
     beneficio = null,
     modoEdicao = false
 }) {
@@ -61,6 +63,28 @@ function CadastroBeneficio({
     const [erros, setErros] = useState({});
 
     const [salvando, setSalvando] = useState(false);
+
+    const [alerta, setAlerta] = useState({
+        tipo: '',
+        mensagem: ''
+    });
+
+
+    //----------------- CONTROLE DO ALERTA -------------------//
+
+    function exibirErro(mensagem) {
+        setAlerta({
+            tipo: 'erro',
+            mensagem
+        });
+    }
+
+    function fecharAlerta() {
+        setAlerta({
+            tipo: '',
+            mensagem: ''
+        });
+    }
 
 
     //----------------- CARREGAR SETORES E CARGOS ------------//
@@ -163,7 +187,7 @@ function CadastroBeneficio({
 
                 console.error('Erro ao carregar benefício para edição:', erro);
 
-                alert(
+                exibirErro(
                     erro.message ||
                     'Não foi possível carregar os dados do benefício.'
                 );
@@ -192,6 +216,8 @@ function CadastroBeneficio({
             ...errosAtuais,
             [campo]: ''
         }));
+
+        fecharAlerta();
 
     }
 
@@ -292,6 +318,8 @@ function CadastroBeneficio({
             return;
         }
 
+        fecharAlerta();
+
         if (!validarFormulario()) {
             return;
         }
@@ -325,9 +353,7 @@ function CadastroBeneficio({
                     itensSelecionados
                 });
 
-                alert('Benefício atualizado com sucesso!');
-
-                voltar();
+                onSucesso?.('Benefício atualizado com sucesso!');
 
                 return;
 
@@ -390,10 +416,7 @@ function CadastroBeneficio({
 
             //----------------- SUCESSO ----------------------------//
 
-            alert('Benefício cadastrado com sucesso!');
-
-            voltar();
-
+            onSucesso?.('Benefício cadastrado com sucesso!');
 
         } catch (erro) {
 
@@ -404,7 +427,7 @@ function CadastroBeneficio({
                 erro
             );
 
-            alert(
+            exibirErro(
                 erro.message ||
                 'Não foi possível salvar o benefício.'
             );
@@ -433,6 +456,15 @@ function CadastroBeneficio({
 
     return (
         <>
+
+            {/* ALERTA */}
+
+            <Alerta
+                tipo={alerta.tipo}
+                mensagem={alerta.mensagem}
+                onFechar={fecharAlerta}
+            />
+
 
             {/* CABEÇALHO */}
 
