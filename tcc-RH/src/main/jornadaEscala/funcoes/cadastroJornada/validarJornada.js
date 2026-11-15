@@ -1,15 +1,17 @@
-//----------------- VALIDAÇÃO DA JORNADA -----------------------------//
+
+ //----------------- VALIDAÇÃO DA JORNADA -----------------------------//
 
 function validarJornada(dadosJornada) {
 
-    // Guardar os dados tratados para evitar erros caso algum campo esteja vazio
+    // Recuperar os dados tratados.
     const nome = (dadosJornada.nome || '').trim();
-    const horarioInicio = dadosJornada.horarioInicio || '';
-    const horarioTermino = dadosJornada.horarioTermino || '';
+    const horarioInicio = (dadosJornada.horarioInicio || '').trim();
+    const horarioTermino = (dadosJornada.horarioTermino || '').trim();
     const diasAtivos = dadosJornada.diasAtivos;
 
-    // Guardar os erros encontrados
+    // Guardar os erros encontrados.
     const erros = {};
+
 
     //----------------- VALIDAR NOME -----------------------------//
 
@@ -17,25 +19,40 @@ function validarJornada(dadosJornada) {
         erros.nome = 'Informe o nome da jornada.';
     }
 
-    //----------------- VALIDAR HORÁRIO DE INÍCIO -----------------------------//
+
+    //----------------- VALIDAR HORÁRIO DE INÍCIO ----------------//
+
+    const horarioInicioValido =
+        /^([01]\d|2[0-3]):([0-5]\d)$/.test(horarioInicio);
 
     if (horarioInicio === '') {
         erros.horarioInicio = 'Informe o horário de início.';
+    } else if (!horarioInicioValido) {
+        erros.horarioInicio =
+            'Informe um horário válido entre 00:00 e 23:59.';
     }
 
-    //----------------- VALIDAR HORÁRIO DE TÉRMINO -----------------------------//
+
+    //----------------- VALIDAR HORÁRIO DE TÉRMINO ---------------//
+
+    const horarioTerminoValido =
+        /^([01]\d|2[0-3]):([0-5]\d)$/.test(horarioTermino);
 
     if (horarioTermino === '') {
         erros.horarioTermino = 'Informe o horário de término.';
+    } else if (!horarioTerminoValido) {
+        erros.horarioTermino =
+            'Informe um horário válido entre 00:00 e 23:59.';
     } else if (
-        horarioInicio !== '' &&
+        horarioInicioValido &&
         horarioInicio === horarioTermino
     ) {
         erros.horarioTermino =
             'O horário de início e término não podem ser iguais.';
     }
 
-    //----------------- VALIDAR DIAS DE TRABALHO -----------------------------//
+
+    //----------------- VALIDAR DIAS DE TRABALHO -----------------//
 
     if (
         !Array.isArray(diasAtivos) ||
@@ -44,7 +61,8 @@ function validarJornada(dadosJornada) {
         erros.diasAtivos = 'Selecione pelo menos um dia de trabalho.';
     }
 
-    //----------------- RETORNAR RESULTADO -----------------------------//
+
+    //----------------- RETORNAR RESULTADO -----------------------//
 
     return {
         valido: Object.keys(erros).length === 0,
@@ -67,6 +85,7 @@ function validarJornada(dadosJornada) {
         diasAtivosComErro: Boolean(erros.diasAtivos)
     };
 }
+
 
 //----------------- EXPORTAÇÃO -----------------------------------//
 

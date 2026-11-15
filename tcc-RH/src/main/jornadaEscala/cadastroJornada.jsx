@@ -1,9 +1,11 @@
+
 //----------------- IMPORTAÇÕES -----------------------------//
 
 import { useEffect, useState } from 'react';
 
 import BotaoCadastro from '../../componentes/cardNomePag/nomePag.jsx';
 import Informacoes from '../../componentes/cardInformacoes/informacoes.jsx';
+import Revisao from '../../componentes/cardRevisao/revisao.jsx';
 import BotaoSalvarCancelar from '../../componentes/botoes/botaoSalvarCancelar.jsx';
 
 import { cadastrarJornadaEscala } from './servicos/cadastroJornada.js';
@@ -99,6 +101,11 @@ function CadastroJornada({
         'Seg', 'Ter', 'Qua', 'Qui', 'Sex'
     ]);
 
+    //----------------- ESTADOS DAS MENSAGENS ----------------//
+
+    const [erro, setErro] = useState('');
+    const [sucesso, setSucesso] = useState('');
+
     //----------------- ESTADOS DOS ERROS --------------------//
 
     const [erroNome, setErroNome] = useState('');
@@ -147,7 +154,6 @@ function CadastroJornada({
 
         setDiasAtivos(diasSelecionados);
 
-        // Limpar erros ao carregar os dados para edição
         setErroNome('');
         setErroHorarioInicio('');
         setErroHorarioTermino('');
@@ -161,10 +167,12 @@ function CadastroJornada({
     function alterarNome(valor) {
         setNome(valor);
 
-        // Limpar o erro assim que o usuário corrigir o campo
         if (erroNome) {
             setErroNome('');
         }
+
+        setErro('');
+        setSucesso('');
     }
 
 
@@ -180,10 +188,12 @@ function CadastroJornada({
                 novosDias = [...diasAtuais, dia];
             }
 
-            // Limpar o erro quando algum dia for selecionado
             if (novosDias.length > 0) {
                 setErroDiasAtivos('');
             }
+
+            setSucesso('');
+            setErro('');
 
             return novosDias;
         });
@@ -201,10 +211,12 @@ function CadastroJornada({
             setErroHorarioInicio('');
         }
 
-        // Se os horários ficarem diferentes, limpar o erro de igualdade
         if (valor !== horarioTermino && erroHorarioTermino) {
             setErroHorarioTermino('');
         }
+
+        setErro('');
+        setSucesso('');
     }
 
     function alterarHorarioTermino(evento) {
@@ -215,6 +227,9 @@ function CadastroJornada({
         if (erroHorarioTermino) {
             setErroHorarioTermino('');
         }
+
+        setErro('');
+        setSucesso('');
     }
 
 
@@ -228,7 +243,6 @@ function CadastroJornada({
             diasAtivos
         });
 
-        // Mostrar o erro correspondente a cada campo
         setErroNome(resultado.erroNome);
         setErroHorarioInicio(resultado.erroHorarioInicio);
         setErroHorarioTermino(resultado.erroHorarioTermino);
@@ -238,20 +252,49 @@ function CadastroJornada({
     }
 
 
+    //----------------- LIMPAR FORMULÁRIO ---------------------//
+
+    function limparFormulario() {
+        setNome('');
+        setDescricao('');
+        setStatus(1);
+
+        setHorarioInicio('');
+        setHorarioTermino('');
+
+        setDiasAtivos([
+            'Seg', 'Ter', 'Qua', 'Qui', 'Sex'
+        ]);
+
+        setErroNome('');
+        setErroHorarioInicio('');
+        setErroHorarioTermino('');
+        setErroDiasAtivos('');
+
+        setErro('');
+    }
+
+
     //----------------- SALVAR JORNADA ------------------------//
 
-    async function salvarJornada() {
+    async function salvarJornada(evento) {
+        if (evento?.preventDefault) {
+            evento.preventDefault();
+        }
+
         if (salvando) {
             return;
         }
 
-        // Validar os campos antes de chamar a API
+        setErro('');
+        setSucesso('');
+
         if (!validarFormulario()) {
             return;
         }
 
         if (modoEdicao && (!jornada || jornada.id == null)) {
-            alert('Não foi possível identificar a jornada que será editada.');
+            setErro('Não foi possível identificar a jornada que será editada.');
             return;
         }
 
@@ -282,12 +325,11 @@ function CadastroJornada({
                 return obterIdJornadaDoDia(dia) === idJornada;
             });
 
-            // Não exige sete registros: a API pode retornar menos dias.
             if (
                 diasExistentes.length === 0 ||
                 diasExistentes.some((dia) => dia.id == null)
             ) {
-                alert(
+                setErro(
                     'Não foi possível identificar os dias cadastrados desta jornada.'
                 );
 
@@ -311,9 +353,7 @@ function CadastroJornada({
                     diasExistentes
                 );
 
-                alert('Jornada atualizada com sucesso!');
-
-                await voltar();
+                setSucesso('Jornada atualizada com sucesso!');
 
                 return;
             }
@@ -323,34 +363,31 @@ function CadastroJornada({
 
             await cadastrarJornadaEscala(dadosJornada);
 
-            alert('Jornada cadastrada com sucesso!');
+            // Limpa os campos após o cadastro.
+            limparFormulario();
 
-            await voltar();
+            // Exibe a confirmação na tela.
+            setSucesso('Jornada cadastrada com sucesso!');
 
-        } catch (erro) {
+        } catch (erroApi) {
 
             console.error(
                 modoEdicao
                     ? 'Erro ao editar jornada:'
                     : 'Erro ao cadastrar jornada:',
-                erro
+                erroApi
             );
 
-            if (!modoEdicao && erro.jornadaCriada) {
-                alert(
-                    `A jornada foi criada, mas ocorreu um erro ao cadastrar os dias da semana.\n\n` +
-                    `ID da jornada: ${erro.idJornada}\n` +
-                    `Erro: ${erro.message}\n\n` +
-                    'Confira os dias cadastrados antes de tentar novamente.'
+            if (!modoEdicao && erroApi.jornadaCriada) {
+                setErro(
+                    `A jornada foi criada, mas ocorreu um erro ao cadastrar os dias da semana. ID da jornada: ${erroApi.idJornada}. ${erroApi.message}`
                 );
-
-                await voltar();
 
                 return;
             }
 
-            alert(
-                erro.message ||
+            setErro(
+                erroApi.message ||
                 (
                     modoEdicao
                         ? 'Não foi possível atualizar a jornada. Verifique a API e tente novamente.'
@@ -404,206 +441,247 @@ function CadastroJornada({
             </div>
 
 
-            {/* INFORMAÇÕES GERAIS */}
+            {/* FORMULÁRIO */}
 
-            <Informacoes
-                titulo="Informações da jornada"
-                descricaoCard="Informe os dados básicos para identificar a jornada de trabalho."
-                nomeEntidade="jornada"
-                nome={nome}
-                setNome={alterarNome}
-                erroNome={erroNome}
-                limparErroNome={() => setErroNome('')}
-                descricao={descricao}
-                setDescricao={setDescricao}
-                status={status}
-                setStatus={setStatus}
-                campos={['nome', 'descricao', 'status']}
-            />
-
-
-            {/* HORÁRIOS DE TRABALHO */}
-
-            <section className="cartao-horarios-jornada">
-
-                <div className="cabecalho-horarios-jornada">
-                    <div>
-                        <h2>Horário de trabalho</h2>
-
-                        <p>
-                            Indique o horário padrão de início e término.
-                            Não há registro ou controle eletrônico de ponto.
-                        </p>
-                    </div>
-                </div>
-
-
-                <div className="campos-horarios-jornada">
-
-                    {/* HORÁRIO DE INÍCIO */}
-
-                    <div className="campo-formulario-jornada">
-                        <label htmlFor="horario-inicio-jornada">
-                            Horário de início
-                        </label>
-
-                        <div
-                            className={`input-horario-jornada ${
-                                erroHorarioInicio ? 'input-erro' : ''
-                            }`}
-                        >
-                            <img src={horarioInicioIcone} alt="" />
-
-                            <input
-                                id="horario-inicio-jornada"
-                                type="text"
-                                placeholder={
-                                    erroHorarioInicio || '08:00'
-                                }
-                                value={horarioInicio}
-                                onChange={alterarHorarioInicio}
-                                maxLength={5}
-                                inputMode="numeric"
-                                aria-invalid={Boolean(erroHorarioInicio)}
-                                aria-describedby={
-                                    erroHorarioInicio
-                                        ? 'erro-horario-inicio'
-                                        : undefined
-                                }
-                            />
-                        </div>
-
-                        {erroHorarioInicio && (
-                            <small
-                                id="erro-horario-inicio"
-                                className="mensagem-erro-jornada"
-                            >
-                                {erroHorarioInicio}
-                            </small>
-                        )}
-                    </div>
-
-
-                    {/* HORÁRIO DE TÉRMINO */}
-
-                    <div className="campo-formulario-jornada">
-                        <label htmlFor="horario-termino-jornada">
-                            Horário de término
-                        </label>
-
-                        <div
-                            className={`input-horario-jornada ${
-                                erroHorarioTermino ? 'input-erro' : ''
-                            }`}
-                        >
-                            <img src={horarioFimIcone} alt="" />
-
-                            <input
-                                id="horario-termino-jornada"
-                                type="text"
-                                placeholder={
-                                    erroHorarioTermino || '17:00'
-                                }
-                                value={horarioTermino}
-                                onChange={alterarHorarioTermino}
-                                maxLength={5}
-                                inputMode="numeric"
-                                aria-invalid={Boolean(erroHorarioTermino)}
-                                aria-describedby={
-                                    erroHorarioTermino
-                                        ? 'erro-horario-termino'
-                                        : undefined
-                                }
-                            />
-                        </div>
-
-                        {erroHorarioTermino && (
-                            <small
-                                id="erro-horario-termino"
-                                className="mensagem-erro-jornada"
-                            >
-                                {erroHorarioTermino}
-                            </small>
-                        )}
-                    </div>
-
-                </div>
-            </section>
-
-
-            {/* DIAS DE TRABALHO */}
-
-            <section
-                className={`cartao-dias-jornada ${
-                    erroDiasAtivos ? 'cartao-dias-jornada-erro' : ''
-                }`}
+            <form
+                onSubmit={salvarJornada}
+                noValidate
             >
 
-                <div className="cabecalho-dias-jornada">
-                    <h2>Dias de trabalho da jornada</h2>
+                {/* INFORMAÇÕES GERAIS */}
 
-                    <p>
-                        Selecione os dias da semana em que há atividade nesta jornada.
-                    </p>
-                </div>
+                <Informacoes
+                    titulo="Informações da jornada"
+                    descricaoCard="Informe os dados básicos para identificar a jornada de trabalho."
+                    nomeEntidade="jornada"
+                    nome={nome}
+                    setNome={alterarNome}
+                    erroNome={erroNome}
+                    limparErroNome={() => setErroNome('')}
+                    descricao={descricao}
+                    setDescricao={(valor) => {
+                        setDescricao(valor);
+                        setErro('');
+                        setSucesso('');
+                    }}
+                    status={status}
+                    setStatus={(valor) => {
+                        setStatus(Number(valor));
+                        setErro('');
+                        setSucesso('');
+                    }}
+                    campos={['nome', 'descricao', 'status']}
+                />
 
 
-                <div className="lista-dias-jornada">
+                {/* HORÁRIOS DE TRABALHO */}
 
-                    {opcoesDiasSemana.map((dia) => {
-                        const diaAtivo = diasAtivos.includes(dia.sigla);
+                <section className="cartao-horarios-jornada">
 
-                        return (
-                            <button
-                                type="button"
-                                key={dia.sigla}
-                                className={`card-dia-jornada ${
-                                    diaAtivo
-                                        ? 'dia-jornada-ativo'
-                                        : 'dia-jornada-folga'
-                                }`}
-                                onClick={() => alterarDia(dia.sigla)}
-                                aria-pressed={diaAtivo}
-                                aria-label={`${dia.nome}: ${
-                                    diaAtivo ? 'Ativo' : 'Folga'
+                    <div className="cabecalho-horarios-jornada">
+                        <div>
+                            <h2>Horário de trabalho</h2>
+
+                            <p>
+                                Indique o horário padrão de início e término.
+                                Não há registro ou controle eletrônico de ponto.
+                            </p>
+                        </div>
+                    </div>
+
+
+                    <div className="campos-horarios-jornada">
+
+                        {/* HORÁRIO DE INÍCIO */}
+
+                        <div className="campo-formulario-jornada">
+                            <label htmlFor="horario-inicio-jornada">
+                                Horário de início
+                            </label>
+
+                            <div
+                                className={`input-horario-jornada ${
+                                    erroHorarioInicio ? 'input-erro' : ''
                                 }`}
                             >
-                                <span className="sigla-dia-jornada">
-                                    {dia.sigla}
-                                </span>
+                                <img src={horarioInicioIcone} alt="" />
 
-                                <span className="status-dia-jornada">
-                                    {diaAtivo ? 'Ativo' : 'Folga'}
-                                </span>
-                            </button>
-                        );
-                    })}
+                                <input
+                                    id="horario-inicio-jornada"
+                                    type="text"
+                                    placeholder={
+                                        erroHorarioInicio || '08:00'
+                                    }
+                                    value={horarioInicio}
+                                    onChange={alterarHorarioInicio}
+                                    maxLength={5}
+                                    inputMode="numeric"
+                                    aria-invalid={Boolean(erroHorarioInicio)}
+                                    aria-describedby={
+                                        erroHorarioInicio
+                                            ? 'erro-horario-inicio'
+                                            : undefined
+                                    }
+                                />
+                            </div>
 
+                            {erroHorarioInicio && (
+                                <small
+                                    id="erro-horario-inicio"
+                                    className="mensagem-erro-jornada"
+                                >
+                                    {erroHorarioInicio}
+                                </small>
+                            )}
+                        </div>
+
+
+                        {/* HORÁRIO DE TÉRMINO */}
+
+                        <div className="campo-formulario-jornada">
+                            <label htmlFor="horario-termino-jornada">
+                                Horário de término
+                            </label>
+
+                            <div
+                                className={`input-horario-jornada ${
+                                    erroHorarioTermino ? 'input-erro' : ''
+                                }`}
+                            >
+                                <img src={horarioFimIcone} alt="" />
+
+                                <input
+                                    id="horario-termino-jornada"
+                                    type="text"
+                                    placeholder={
+                                        erroHorarioTermino || '17:00'
+                                    }
+                                    value={horarioTermino}
+                                    onChange={alterarHorarioTermino}
+                                    maxLength={5}
+                                    inputMode="numeric"
+                                    aria-invalid={Boolean(erroHorarioTermino)}
+                                    aria-describedby={
+                                        erroHorarioTermino
+                                            ? 'erro-horario-termino'
+                                            : undefined
+                                    }
+                                />
+                            </div>
+
+                            {erroHorarioTermino && (
+                                <small
+                                    id="erro-horario-termino"
+                                    className="mensagem-erro-jornada"
+                                >
+                                    {erroHorarioTermino}
+                                </small>
+                            )}
+                        </div>
+
+                    </div>
+                </section>
+
+
+                {/* DIAS DE TRABALHO */}
+
+                <section
+                    className={`cartao-dias-jornada ${
+                        erroDiasAtivos ? 'cartao-dias-jornada-erro' : ''
+                    }`}
+                >
+
+                    <div className="cabecalho-dias-jornada">
+                        <h2>Dias de trabalho da jornada</h2>
+
+                        <p>
+                            Selecione os dias da semana em que há atividade nesta jornada.
+                        </p>
+                    </div>
+
+
+                    <div className="lista-dias-jornada">
+
+                        {opcoesDiasSemana.map((dia) => {
+                            const diaAtivo = diasAtivos.includes(dia.sigla);
+
+                            return (
+                                <button
+                                    type="button"
+                                    key={dia.sigla}
+                                    className={`card-dia-jornada ${
+                                        diaAtivo
+                                            ? 'dia-jornada-ativo'
+                                            : 'dia-jornada-folga'
+                                    }`}
+                                    onClick={() => alterarDia(dia.sigla)}
+                                    aria-pressed={diaAtivo}
+                                    aria-label={`${dia.nome}: ${
+                                        diaAtivo ? 'Ativo' : 'Folga'
+                                    }`}
+                                >
+                                    <span className="sigla-dia-jornada">
+                                        {dia.sigla}
+                                    </span>
+
+                                    <span className="status-dia-jornada">
+                                        {diaAtivo ? 'Ativo' : 'Folga'}
+                                    </span>
+                                </button>
+                            );
+                        })}
+
+                    </div>
+
+                    {erroDiasAtivos && (
+                        <small className="mensagem-erro-jornada">
+                            {erroDiasAtivos}
+                        </small>
+                    )}
+
+                </section>
+
+
+                {/* REVISÃO E MENSAGEM DE CONFIRMAÇÃO */}
+
+                <Revisao
+                    nome={nome}
+                    descricao={
+                        `Horário: ${horarioInicio || 'Não informado'} às ${
+                            horarioTermino || 'Não informado'
+                        }. Dias de trabalho: ${
+                            opcoesDiasSemana
+                                .filter((dia) => diasAtivos.includes(dia.sigla))
+                                .map((dia) => dia.nome)
+                                .join(', ') || 'Nenhum dia selecionado'
+                        }.`
+                    }
+                    status={status}
+                    tituloNome="Nome da jornada"
+                    mostrarCodigo={false}
+                    mostrarResponsavel={false}
+                    mostrarDescricao={true}
+                    erro={erro}
+                    sucesso={sucesso}
+                />
+
+
+                {/* BOTÕES */}
+
+                <div className="botoes-cadastro-jornada">
+                    <BotaoSalvarCancelar
+                        onCancelar={voltar}
+                        onSalvar={salvarJornada}
+                        salvando={salvando}
+                        textoBotao={
+                            modoEdicao
+                                ? 'Salvar alterações'
+                                : 'Salvar jornada'
+                        }
+                    />
                 </div>
 
-                {erroDiasAtivos && (
-                    <small className="mensagem-erro-jornada">
-                        {erroDiasAtivos}
-                    </small>
-                )}
-
-            </section>
-
-
-            {/* BOTÕES */}
-
-            <div className="botoes-cadastro-jornada">
-                <BotaoSalvarCancelar
-                    onCancelar={voltar}
-                    onSalvar={salvarJornada}
-                    salvando={salvando}
-                    textoBotao={
-                        modoEdicao
-                            ? 'Salvar alterações'
-                            : 'Salvar jornada'
-                    }
-                />
-            </div>
+            </form>
         </>
     );
 }
