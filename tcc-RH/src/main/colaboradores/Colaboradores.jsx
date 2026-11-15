@@ -1,5 +1,5 @@
 
- //----------------- IMPORTAÇÕES -----------------------------//
+//----------------- IMPORTAÇÕES -----------------------------//
 
 import { useEffect, useState } from 'react';
 
@@ -7,6 +7,7 @@ import BotaoCadastro from '../../componentes/cardNomePag/nomePag.jsx';
 import Minicards from '../../componentes/minicard/minicard.jsx';
 import Filtro from '../../componentes/cardFiltros/filtros.jsx';
 import Tabela from '../../componentes/cardTabela/tabela.jsx';
+import AlertaNotificacao from '../../componentes/alerta/Alerta.jsx';
 
 import CadastroColaborador from './cadastroColaborador.jsx';
 import EditarColaborador from './editarColaborador.jsx';
@@ -46,6 +47,31 @@ function Colaboradores() {
         status: 'Todos',
         opcao: ''
     });
+
+    const [alerta, setAlerta] = useState({
+        tipo: '',
+        mensagem: ''
+    });
+
+
+    //----------------- EXIBIR NOTIFICAÇÃO -------------------//
+
+    function mostrarNotificacao(tipo, mensagem) {
+        setAlerta({
+            tipo,
+            mensagem
+        });
+    }
+
+
+    //----------------- FECHAR NOTIFICAÇÃO -------------------//
+
+    function fecharNotificacao() {
+        setAlerta({
+            tipo: '',
+            mensagem: ''
+        });
+    }
 
 
     //----------------- BUSCAR DADOS ------------------------//
@@ -87,6 +113,7 @@ function Colaboradores() {
     //----------------- ABRIR CADASTRO -----------------------//
 
     function abrirCadastro() {
+        fecharNotificacao();
         setTela('cadastro');
     }
 
@@ -103,10 +130,15 @@ function Colaboradores() {
 
     function abrirEdicao() {
         if (!colaboradorSelecionado) {
-            alert('Selecione um colaborador para editar.');
+            mostrarNotificacao(
+                'atencao',
+                'Selecione um colaborador para editar.'
+            );
+
             return;
         }
 
+        fecharNotificacao();
         setTela('edicao');
     }
 
@@ -129,47 +161,37 @@ function Colaboradores() {
     //----------------- ATUALIZAR APÓS A EDIÇÃO --------------//
 
     async function atualizarDadosDepoisDaEdicao(idColaborador) {
-        try {
-            const dadosAtualizados = await buscarDadosColaboradores();
 
-            const listaColaboradores =
-                dadosAtualizados.colaboradores || [];
+        const dadosAtualizados = await buscarDadosColaboradores();
 
-            const listaUsuarios =
-                dadosAtualizados.usuarios || [];
+        const listaColaboradores =
+            dadosAtualizados.colaboradores || [];
 
-            setColaboradores(listaColaboradores);
-            setUsuarios(listaUsuarios);
+        const listaUsuarios =
+            dadosAtualizados.usuarios || [];
 
-            const colaboradoresComInformacoes =
-                montarInformacoesColaboradores(
-                    listaColaboradores,
-                    listaUsuarios
-                );
+        setColaboradores(listaColaboradores);
+        setUsuarios(listaUsuarios);
 
-            const colaboradorAtualizado =
-                colaboradoresComInformacoes.find((item) => {
-                    const id =
-                        item.id_colaborador ??
-                        item.id ??
-                        item.idColaborador;
-
-                    return String(id) === String(idColaborador);
-                });
-
-            if (colaboradorAtualizado) {
-                setColaboradorSelecionado(colaboradorAtualizado);
-            }
-
-        } catch (erro) {
-            console.error(
-                'Erro ao atualizar os dados após a edição:',
-                erro
+        const colaboradoresComInformacoes =
+            montarInformacoesColaboradores(
+                listaColaboradores,
+                listaUsuarios
             );
 
-            alert(
-                'As alterações foram enviadas, mas não foi possível atualizar a visualização. Tente abrir o colaborador novamente.'
-            );
+        const colaboradorAtualizado =
+            colaboradoresComInformacoes.find((item) => {
+
+                const id =
+                    item.id_colaborador ??
+                    item.id ??
+                    item.idColaborador;
+
+                return String(id) === String(idColaborador);
+            });
+
+        if (colaboradorAtualizado) {
+            setColaboradorSelecionado(colaboradorAtualizado);
         }
     }
 
@@ -188,7 +210,6 @@ function Colaboradores() {
 
         return usuarios.find((usuario) => {
 
-            // Verifica se o usuário possui o ID do colaborador diretamente.
             const idDireto =
                 usuario.id_colaborador ??
                 usuario.idColaborador;
@@ -200,7 +221,6 @@ function Colaboradores() {
                 return true;
             }
 
-            // Algumas respostas trazem os colaboradores relacionados em uma lista.
             let colaboradoresUsuario = usuario.colaborador || [];
 
             if (!Array.isArray(colaboradoresUsuario)) {
@@ -219,14 +239,30 @@ function Colaboradores() {
     }
 
 
+    //----------------- ALERTA -------------------------------//
+
+    const alertaElemento = alerta.mensagem ? (
+        <AlertaNotificacao
+            tipo={alerta.tipo}
+            mensagem={alerta.mensagem}
+            onFechar={fecharNotificacao}
+        />
+    ) : null;
+
+
     //----------------- EXIBIR CADASTRO ---------------------//
 
     if (tela === 'cadastro') {
         return (
-            <CadastroColaborador
-                onVoltar={voltarParaLista}
-                onSalvar={buscarDados}
-            />
+            <>
+                {alertaElemento}
+
+                <CadastroColaborador
+                    onVoltar={voltarParaLista}
+                    onSalvar={buscarDados}
+                    onNotificacao={mostrarNotificacao}
+                />
+            </>
         );
     }
 
@@ -238,12 +274,17 @@ function Colaboradores() {
             localizarUsuarioDoColaborador(colaboradorSelecionado);
 
         return (
-            <EditarColaborador
-                colaborador={colaboradorSelecionado}
-                usuario={usuarioSelecionado}
-                voltar={voltarParaVisualizacao}
-                onSalvar={atualizarDadosDepoisDaEdicao}
-            />
+            <>
+                {alertaElemento}
+
+                <EditarColaborador
+                    colaborador={colaboradorSelecionado}
+                    usuario={usuarioSelecionado}
+                    voltar={voltarParaVisualizacao}
+                    onSalvar={atualizarDadosDepoisDaEdicao}
+                    onNotificacao={mostrarNotificacao}
+                />
+            </>
         );
     }
 
@@ -252,11 +293,15 @@ function Colaboradores() {
 
     if (tela === 'visualizacao') {
         return (
-            <VisualizarColaborador
-                colaborador={colaboradorSelecionado}
-                voltar={voltarParaLista}
-                onEditar={abrirEdicao}
-            />
+            <>
+                {alertaElemento}
+
+                <VisualizarColaborador
+                    colaborador={colaboradorSelecionado}
+                    voltar={voltarParaLista}
+                    onEditar={abrirEdicao}
+                />
+            </>
         );
     }
 
@@ -307,6 +352,8 @@ function Colaboradores() {
 
     return (
         <>
+            {alertaElemento}
+
             <BotaoCadastro
                 titulo="Colaboradores"
                 descricao="Gerencie os dados cadastrais e os vínculos dos colaboradores da empresa."
@@ -315,6 +362,7 @@ function Colaboradores() {
             />
 
             <div className="container-minicards">
+
                 <Minicards
                     icone={IconeColaboradores}
                     numero={colaboradores.length}
@@ -338,6 +386,7 @@ function Colaboradores() {
                     corFundo="#E5EEFF"
                     layout="horizontal"
                 />
+
             </div>
 
             <Filtro
@@ -349,14 +398,19 @@ function Colaboradores() {
             />
 
             {carregando ? (
+
                 <p>Carregando colaboradores...</p>
+
             ) : (
+
                 <Tabela
                     titulo="Lista de Colaboradores"
                     dados={colaboradoresFiltrados}
                     colunas={colunasColaboradores}
                 />
+
             )}
+
         </>
     );
 }

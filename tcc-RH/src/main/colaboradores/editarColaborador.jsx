@@ -1,3 +1,4 @@
+
 import CadastroColaborador from './cadastroColaborador.jsx';
 
 
@@ -7,7 +8,8 @@ function EditarColaborador({
     colaborador,
     usuario,
     voltar,
-    onSalvar
+    onSalvar,
+    onNotificacao
 }) {
 
     return (
@@ -17,6 +19,7 @@ function EditarColaborador({
             usuario={usuario}
             onVoltar={voltar}
             onSalvar={onSalvar}
+            onNotificacao={onNotificacao}
         />
     );
 }

@@ -61,12 +61,10 @@ function estaAtivo(item) {
 function filtrarOpcoes(lista, idAtual, modoEdicao, obterId) {
     return lista.filter((item) => {
 
-        // As opções ativas aparecem tanto no cadastro quanto na edição.
         if (estaAtivo(item)) {
             return true;
         }
 
-        // Na edição, mantém a opção inativa já vinculada.
         if (
             modoEdicao &&
             idAtual !== null &&
@@ -76,7 +74,6 @@ function filtrarOpcoes(lista, idAtual, modoEdicao, obterId) {
             return String(obterId(item)) === String(idAtual);
         }
 
-        // No cadastro, opções inativas não aparecem.
         return false;
     });
 }
@@ -87,6 +84,7 @@ function filtrarOpcoes(lista, idAtual, modoEdicao, obterId) {
 function CadastroColaborador({
     onVoltar,
     onSalvar,
+    onNotificacao,
     modoEdicao = false,
     colaborador = null,
     usuario = null
@@ -126,10 +124,7 @@ function CadastroColaborador({
 
     const [idColaboradorCriado, setIdColaboradorCriado] = useState(null);
 
-    // Benefícios selecionados no formulário.
     const [beneficiosSelecionados, setBeneficiosSelecionados] = useState([]);
-
-    // Vínculos que já existem na API.
     const [vinculosBeneficios, setVinculosBeneficios] = useState([]);
 
 
@@ -186,19 +181,16 @@ function CadastroColaborador({
                     buscarJornadas()
                 ]);
 
-                // Identificar o setor atual do colaborador.
                 const setorAtual = Array.isArray(colaborador?.setor)
                     ? colaborador.setor[0]
                     : colaborador?.setor;
 
-                // Identificar o cargo atual do colaborador.
                 let cargoAtual = colaborador?.cargo;
 
                 if (Array.isArray(cargoAtual?.classificacao)) {
                     cargoAtual = cargoAtual.classificacao[0];
                 }
 
-                // Identificar a jornada atual do colaborador.
                 const jornadaAtual = Array.isArray(
                     colaborador?.jornada_escala
                 )
@@ -274,7 +266,8 @@ function CadastroColaborador({
                     erro
                 );
 
-                alert(
+                onNotificacao?.(
+                    'erro',
                     'Não foi possível carregar as opções do formulário. Verifique se a API está funcionando.'
                 );
 
@@ -332,7 +325,7 @@ function CadastroColaborador({
 
             status:
                 String(colaborador.status).toLowerCase() === 'inativo' ||
-                    Number(colaborador.status) === 0
+                Number(colaborador.status) === 0
                     ? 0
                     : 1,
 
@@ -351,10 +344,7 @@ function CadastroColaborador({
                 '',
 
             tipoVinculo: colaborador.tipo_vinculo ?? '',
-
             login: usuario?.login ?? '',
-
-            // Não preencher a senha atual no formulário.
             senha: '',
 
             idNivelAcesso:
@@ -375,7 +365,7 @@ function CadastroColaborador({
     }, [modoEdicao, colaborador, usuario]);
 
 
-    //----------------- CARREGAR BENEFÍCIOS DA EDIÇÃO -----------//
+    //----------------- CARREGAR BENEFÍCIOS DA EDIÇÃO --------//
 
     useEffect(() => {
 
@@ -414,7 +404,6 @@ function CadastroColaborador({
 
                 setVinculosBeneficios(vinculosDoColaborador);
 
-                // Carregar os benefícios que possuem vínculo ativo.
                 const beneficiosAtivos = vinculosDoColaborador
                     .filter((vinculo) =>
                         vinculo.ativo === true ||
@@ -432,14 +421,14 @@ function CadastroColaborador({
                 ]);
 
             } catch (erro) {
-
                 console.error(
                     'Erro ao carregar benefícios do colaborador:',
                     erro
                 );
 
                 if (componenteAtivo) {
-                    alert(
+                    onNotificacao?.(
+                        'erro',
                         'Não foi possível carregar os benefícios vinculados ao colaborador.'
                     );
                 }
@@ -548,19 +537,18 @@ function CadastroColaborador({
             (id) => String(id)
         );
 
-        // Identificar os vínculos que já estão ativos.
         const vinculosAtivos = vinculosBeneficios.filter((vinculo) =>
             vinculo.ativo === true ||
             vinculo.ativo === 1 ||
             vinculo.ativo === '1'
         );
 
-        // Identificar os benefícios que já estão vinculados.
         const idsJaVinculados = vinculosAtivos.flatMap((vinculo) =>
             (vinculo.beneficio?.beneficios || []).map(
                 (beneficio) => String(beneficio.id)
             )
         );
+
 
         //----------------- EXCLUIR DESMARCADOS ----------------//
 
@@ -574,8 +562,6 @@ function CadastroColaborador({
                     idsSelecionados.includes(String(beneficio.id))
                 );
 
-            // Excluir o vínculo somente quando nenhum benefício
-            // daquele vínculo continuar selecionado.
             if (!possuiBeneficioSelecionado) {
                 await excluirBeneficioColaborador(vinculo.id);
             }
@@ -586,12 +572,10 @@ function CadastroColaborador({
 
         for (const idBeneficio of idsSelecionados) {
 
-            // Se já existe um vínculo ativo, não cadastrar novamente.
             if (idsJaVinculados.includes(idBeneficio)) {
                 continue;
             }
 
-            // Verificar se existe um vínculo antigo inativo.
             const vinculoInativo = vinculosBeneficios.find((vinculo) => {
 
                 const beneficioRelacionado =
@@ -620,7 +604,6 @@ function CadastroColaborador({
 
             if (vinculoInativo) {
 
-                // Reativar o vínculo que já existe.
                 await editarBeneficioColaborador(
                     vinculoInativo.id,
                     dadosVinculo
@@ -628,7 +611,6 @@ function CadastroColaborador({
 
             } else {
 
-                // Criar um novo vínculo.
                 await cadastrarBeneficioColaborador(
                     dadosVinculo
                 );
@@ -688,14 +670,16 @@ function CadastroColaborador({
                     usuario
                 );
 
-                // Sincronizar os benefícios selecionados.
                 await salvarBeneficiosColaborador(idColaborador);
-
-                alert('Colaborador atualizado com sucesso!');
 
                 if (onSalvar) {
                     await onSalvar(idColaborador);
                 }
+
+                onNotificacao?.(
+                    'sucesso',
+                    'Colaborador atualizado com sucesso!'
+                );
 
                 if (onVoltar) {
                     await onVoltar();
@@ -763,13 +747,14 @@ function CadastroColaborador({
 
             //----------------- CONCLUSÃO DO CADASTRO -----------//
 
-            alert(
-                'Colaborador, usuário e benefícios cadastrados com sucesso!'
-            );
-
             if (onSalvar) {
                 await onSalvar();
             }
+
+            onNotificacao?.(
+                'sucesso',
+                'Colaborador, usuário e benefícios cadastrados com sucesso!'
+            );
 
             if (onVoltar) {
                 onVoltar();
@@ -784,11 +769,12 @@ function CadastroColaborador({
                 erro
             );
 
-            alert(
+            onNotificacao?.(
+                'erro',
                 `Não foi possível ${modoEdicao
                     ? 'atualizar'
                     : 'concluir o cadastro do'
-                } colaborador.\n\nErro: ${erro.message}`
+                } colaborador. Erro: ${erro.message}`
             );
 
         } finally {
