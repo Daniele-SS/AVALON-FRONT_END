@@ -297,6 +297,17 @@ function MotorRegras() {
     }
 
 
+    //----------------- VOLTAR PARA CONDIÇÃO ------------------//
+
+    function voltarParaCondicao() {
+
+        // Retorna para a primeira etapa do cadastro.
+        // Mantém os dados da condição preenchidos anteriormente.
+        setTelaAtual('condicao');
+
+    }
+
+
     //----------------- VOLTAR PARA LISTAGEM -----------------//
 
     function voltarCadastro() {
@@ -354,6 +365,8 @@ function MotorRegras() {
             <AcaoRegra
 
                 voltar={voltarCadastro}
+
+                voltarParaCondicao={voltarParaCondicao}
 
                 concluir={finalizarCadastro}
 

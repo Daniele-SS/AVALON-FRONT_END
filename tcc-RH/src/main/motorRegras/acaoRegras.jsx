@@ -22,7 +22,12 @@ const opcoesClassificacao = [
 
 //----------------- COMPONENTE ------------------------------//
 
-function AcaoRegra({ condicao, voltar, concluir }) {
+function AcaoRegra({
+    condicao,
+    voltar,
+    voltarParaCondicao,
+    concluir
+}) {
 
     //----------------- ESTADOS -----------------------------//
 
@@ -33,6 +38,19 @@ function AcaoRegra({ condicao, voltar, concluir }) {
     const [salvando, setSalvando] = useState(false);
 
     const [erro, setErro] = useState('');
+
+
+    //----------------- VOLTAR PARA NOVA REGRA ---------------//
+
+    function retornarParaNovaRegra() {
+
+        if (voltarParaCondicao) {
+
+            voltarParaCondicao();
+
+        }
+
+    }
 
 
     //----------------- SALVAR REGRA -------------------------//
@@ -138,9 +156,12 @@ function AcaoRegra({ condicao, voltar, concluir }) {
 
                         <span className="seta">&gt;</span>
 
-                        <span>
+                        <button
+                            type="button"
+                            onClick={retornarParaNovaRegra}
+                        >
                             Nova Regra
-                        </span>
+                        </button>
 
                         <span className="seta">&gt;</span>
 
@@ -275,7 +296,7 @@ function AcaoRegra({ condicao, voltar, concluir }) {
 
                     <BotaoSalvarCancelar
 
-                        voltar={voltar}
+                        voltar={retornarParaNovaRegra}
 
                         onSalvar={salvarRegra}
 

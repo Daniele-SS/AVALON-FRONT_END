@@ -1,38 +1,68 @@
 
-/*----------------- CABEÇALHO -------------------------------*/
+/*----------------- PÁGINA DE CADASTRO DE REGRA ------------*/
+
+.pagina-cadastro-regra {
+    width: 100%;
+}
+
+
+/*----------------- CABEÇALHO NOVA REGRA -------------------*/
 
 .cabecalho-cadastro-regra {
     width: 100%;
+    min-height: 129px;
 }
+
+.cabecalho-cadastro-regra .card-tiulo {
+    width: 100%;
+    height: 129px;
+    min-height: 129px;
+}
+
+
+/*----------------- CAMINHO DO CADASTRO --------------------*/
 
 .caminho-cadastro-regra {
     display: flex;
     align-items: center;
-    gap: 10px;
-    margin-top: 8px;
+    gap: 8px;
+
+    margin-bottom: 8px;
+
     font-size: 13px;
 }
 
 .caminho-cadastro-regra button {
+    width: auto;
+    height: auto;
     padding: 0;
-    background: transparent;
+
     border: none;
-    color: #64748B;
+    background: transparent;
+
+    color: #434655;
     font-size: 13px;
+    font-weight: 500;
     cursor: pointer;
 }
 
-.caminho-cadastro-regra button:hover {
-    color: #034AC5;
-}
-
 .caminho-cadastro-regra .seta {
-    color: #94A3B8;
+    display: flex;
+    gap: 8px;
 }
 
-.pagina-atual-regra {
-    color: #034AC5;
-    font-weight: 600;
+.caminho-cadastro-regra button:hover {
+    text-decoration: underline;
+    color: #0866FF;
+}
+
+.caminho-cadastro-regra > span {
+    color: #9AA3B2;
+}
+
+.caminho-cadastro-regra .pagina-atual-regra {
+    color: #131B2E;
+    font-weight: 500;
 }
 
 
@@ -620,4 +650,3 @@
 .botao-continuar-regra:hover {
     background-color: #003DA8;
 }
-
