@@ -1,0 +1,500 @@
+
+/* --------------------------------------------------------- */
+/* PÁGINA DE ACOMPANHAMENTO                                  */
+/* --------------------------------------------------------- */
+
+.pagina-acompanhamento-avaliacao {
+    width: 100%;
+    padding: 0 5px 30px;
+    color: #344054;
+}
+
+
+/* --------------------------------------------------------- */
+/* CABEÇALHO                                                  */
+/* --------------------------------------------------------- */
+
+.cabecalho-acompanhamento {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+
+    width: 100%;
+    min-height: 82px;
+
+    padding: 15px 20px;
+    margin-bottom: 25px;
+
+    background-color: #FFFFFF;
+    border: 1px solid #EAECF0;
+    border-radius: 8px;
+}
+
+
+.informacoes-cabecalho-acompanhamento {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+
+.informacoes-cabecalho-acompanhamento h2 {
+    margin: 0;
+
+    color: #172B4D;
+    font-size: 17px;
+    font-weight: 700;
+}
+
+
+.informacoes-cabecalho-acompanhamento p {
+    margin: 0;
+
+    color: #667085;
+    font-size: 12px;
+}
+
+
+.botao-encerrar-acompanhamento {
+    padding: 9px 15px;
+
+    color: #B42318;
+    background-color: #FEE4E2;
+
+    border: none;
+    border-radius: 5px;
+
+    font-size: 11px;
+    font-weight: 600;
+
+    cursor: not-allowed;
+    opacity: 0.75;
+}
+
+
+/* --------------------------------------------------------- */
+/* LISTA DE FATORES                                           */
+/* --------------------------------------------------------- */
+
+.lista-fatores-acompanhamento {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    width: 100%;
+}
+
+
+/* --------------------------------------------------------- */
+/* CARD DO FATOR                                              */
+/* --------------------------------------------------------- */
+
+.card-fator-acompanhamento {
+    width: 100%;
+    overflow: hidden;
+
+    background-color: #FFFFFF;
+
+    border: 1px solid #EAECF0;
+    border-radius: 8px;
+}
+
+
+/* --------------------------------------------------------- */
+/* CABEÇALHO DO FATOR                                         */
+/* --------------------------------------------------------- */
+
+.cabecalho-fator-acompanhamento {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 25px;
+
+    min-height: 115px;
+
+    padding: 20px;
+}
+
+
+.descricao-fator-acompanhamento {
+    flex: 1;
+}
+
+
+.descricao-fator-acompanhamento h3 {
+    margin: 0 0 7px;
+
+    color: #172B4D;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+
+.descricao-fator-acompanhamento p {
+    max-width: 650px;
+
+    margin: 0;
+
+    color: #667085;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+
+/* --------------------------------------------------------- */
+/* INDICADOR CONSOLIDADO                                      */
+/* --------------------------------------------------------- */
+
+.indicador-fator-acompanhamento {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+
+    min-width: 145px;
+    min-height: 85px;
+
+    padding: 10px;
+
+    background-color: #EFF4FF;
+    border-radius: 7px;
+}
+
+
+.indicador-fator-acompanhamento > span:first-child {
+    color: #667085;
+    font-size: 9px;
+    font-weight: 600;
+}
+
+
+.indicador-fator-acompanhamento strong {
+    color: #172B4D;
+    font-size: 24px;
+    font-weight: 700;
+}
+
+
+.indicador-fator-acompanhamento strong small {
+    font-size: 12px;
+    font-weight: 500;
+}
+
+
+/* --------------------------------------------------------- */
+/* CLASSIFICAÇÕES                                             */
+/* --------------------------------------------------------- */
+
+.classificacao-acompanhamento {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 3px 8px;
+
+    border-radius: 20px;
+
+    font-size: 10px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+
+.classificacao-acompanhamento.normal {
+    color: #039855;
+    background-color: #D1FADF;
+}
+
+
+.classificacao-acompanhamento.atencao {
+    color: #B54708;
+    background-color: #FEF0C7;
+}
+
+
+.classificacao-acompanhamento.prioridade {
+    color: #B42318;
+    background-color: #FEE4E2;
+}
+
+
+.classificacao-acompanhamento.indisponivel {
+    color: #667085;
+    background-color: #EAECF0;
+}
+
+
+/* --------------------------------------------------------- */
+/* CONTEÚDO DO GRÁFICO                                        */
+/* --------------------------------------------------------- */
+
+.conteudo-grafico-acompanhamento {
+    padding: 20px;
+
+    border-top: 1px solid #EAECF0;
+}
+
+
+.titulo-grafico-acompanhamento {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+
+    margin-bottom: 22px;
+}
+
+
+.titulo-grafico-acompanhamento h4 {
+    margin: 0 0 6px;
+
+    color: #344054;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+
+.titulo-grafico-acompanhamento p {
+    margin: 0;
+
+    color: #667085;
+    font-size: 10px;
+}
+
+
+/* --------------------------------------------------------- */
+/* LEGENDA                                                    */
+/* --------------------------------------------------------- */
+
+.legenda-grafico-acompanhamento {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+
+.legenda-grafico-acompanhamento span {
+    position: relative;
+
+    padding-left: 15px;
+
+    color: #667085;
+    font-size: 9px;
+}
+
+
+.legenda-grafico-acompanhamento span::before {
+    content: '';
+
+    position: absolute;
+    left: 0;
+    top: 50%;
+
+    width: 9px;
+    height: 3px;
+
+    transform: translateY(-50%);
+    border-radius: 3px;
+}
+
+
+.legenda-media::before {
+    background-color: #176BEB;
+}
+
+
+.legenda-parametro::before {
+    width: 2px !important;
+    height: 12px !important;
+
+    background-color: #F04438;
+}
+
+
+.legenda-escala::before {
+    background-color: #98A2B3;
+}
+
+
+/* --------------------------------------------------------- */
+/* SETORES                                                     */
+/* --------------------------------------------------------- */
+
+.lista-setores-acompanhamento {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+
+.linha-setor-acompanhamento {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+
+.informacoes-setor-acompanhamento {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+
+.nome-setor-acompanhamento {
+    color: #344054;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+
+.resultado-setor-acompanhamento {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+
+.resultado-setor-acompanhamento strong {
+    color: #475467;
+    font-size: 10px;
+    font-weight: 600;
+}
+
+
+.dados-ocultos-acompanhamento {
+    color: #667085;
+    font-size: 10px;
+    font-style: italic;
+}
+
+
+/* --------------------------------------------------------- */
+/* BARRAS DE RESULTADO                                        */
+/* --------------------------------------------------------- */
+
+.trilho-grafico-acompanhamento {
+    position: relative;
+
+    width: 100%;
+    height: 8px;
+
+    overflow: visible;
+
+    background-color: #E8EDFA;
+    border-radius: 10px;
+}
+
+
+.barra-grafico-acompanhamento {
+    height: 100%;
+
+    border-radius: 10px;
+
+    transition: width 0.3s ease;
+}
+
+
+.barra-grafico-acompanhamento.normal {
+    background-color: #176BEB;
+}
+
+
+.barra-grafico-acompanhamento.atencao {
+    background-color: #FDB022;
+}
+
+
+.barra-grafico-acompanhamento.prioridade {
+    background-color: #D92D20;
+}
+
+
+.barra-grafico-acompanhamento.indisponivel {
+    background-color: #98A2B3;
+}
+
+
+/* --------------------------------------------------------- */
+/* LINHA DE PARÂMETRO                                         */
+/* --------------------------------------------------------- */
+
+.linha-parametro-acompanhamento {
+    position: absolute;
+    top: -12px;
+    bottom: -12px;
+
+    width: 1px;
+
+    background-color: #F04438;
+
+    z-index: 2;
+}
+
+
+/* --------------------------------------------------------- */
+/* MENSAGENS                                                  */
+/* --------------------------------------------------------- */
+
+.mensagem-acompanhamento {
+    padding: 25px;
+
+    color: #667085;
+    font-size: 13px;
+}
+
+
+.mensagem-setor-acompanhamento {
+    padding: 15px;
+
+    color: #667085;
+    font-size: 11px;
+}
+
+
+.erro-acompanhamento {
+    padding: 20px;
+
+    color: #D92D20;
+    font-size: 13px;
+}
+
+
+/* --------------------------------------------------------- */
+/* RODAPÉ                                                     */
+/* --------------------------------------------------------- */
+
+.rodape-acompanhamento {
+    display: flex;
+    justify-content: flex-end;
+
+    width: 100%;
+    margin-top: 25px;
+}
+
+
+.botao-voltar-acompanhamento {
+    min-width: 120px;
+    padding: 11px 20px;
+
+    color: #344054;
+    background-color: #EAECFF;
+
+    border: none;
+    border-radius: 5px;
+
+    font-size: 12px;
+    font-weight: 500;
+
+    cursor: pointer;
+}
+
+
+.botao-voltar-acompanhamento:hover {
+    background-color: #DDE3FF;
+}
+

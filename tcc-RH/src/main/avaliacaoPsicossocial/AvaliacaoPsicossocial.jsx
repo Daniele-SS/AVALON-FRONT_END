@@ -9,6 +9,7 @@ import AlertaNotificacao from '../../componentes/alerta/Alerta.jsx';
 
 import CardAvaliacao from './componentes/CardAvaliacao.jsx';
 import CadastroAvaliacao from './cadastroAvaliacao.jsx';
+import AcompanhamentoAvaliacao from './AcompanhamentoAvaliacao.jsx';
 
 import buscarDadosAvaliacaoPsicossocial from './servico/avaliacoesApi.js';
 import cadastrarAvaliacaoPsicossocial from './servico/cadastroAvaliacaoApi.js';
@@ -315,33 +316,24 @@ function AvaliacaoPsicossocial() {
     }
 
 
-    //----------------- TELA DE DETALHES --------------------//
+//----------------- TELA DE DETALHES --------------------//
 
-    if (telaAtual === 'detalhes') {
+if (telaAtual === 'detalhes') {
 
-        return (
+    return (
 
-            <div className="pagina-avaliacao-psicossocial">
+        <div className="pagina-avaliacao-psicossocial">
 
-                <button
-                    className="botao-voltar-avaliacao"
-                    type="button"
-                    onClick={voltarParaLista}
-                >
-                    ← Voltar para avaliações
-                </button>
+            <AcompanhamentoAvaliacao
+                avaliacao={avaliacaoSelecionada}
+                onVoltar={voltarParaLista}
+            />
 
-                <h2>{avaliacaoSelecionada?.titulo}</h2>
+        </div>
 
-                <p>
-                    {avaliacaoSelecionada?.descricao}
-                </p>
+    );
 
-            </div>
-
-        );
-
-    }
+}
 
 
     //----------------- TELA PRINCIPAL ----------------------//
