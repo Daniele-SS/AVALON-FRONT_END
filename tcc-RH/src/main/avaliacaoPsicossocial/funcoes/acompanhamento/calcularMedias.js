@@ -1,9 +1,14 @@
 
+/********************************************************************************
+ * Objetivo: Calcular as médias gerais e por setor dos fatores psicossociais,
+ *           considerando somente os colaboradores que responderam.
+ ********************************************************************************/
+
 function calcularMedias(
     respostasValidas,
     fatores,
     setoresAvaliacao,
-    quantidadeMinima = 5
+    quantidadeMinima = 1
 ) {
 
     const resultados = [];
@@ -11,60 +16,63 @@ function calcularMedias(
     // Percorre todos os fatores da avaliação.
     fatores.forEach((fator) => {
 
+        // Busca somente as respostas válidas do fator.
         const respostasFator = respostasValidas.filter((resposta) => {
+
             return Number(resposta.idFator) === Number(fator.id);
+
         });
 
-        const colaboradoresGeral = new Set();
+        // Identifica somente os colaboradores que responderam.
+        const colaboradoresGeral = new Set(
+            respostasFator.map((resposta) => Number(resposta.idColaborador))
+        );
 
-        respostasFator.forEach((resposta) => {
-            colaboradoresGeral.add(resposta.idColaborador);
-        });
+        const quantidadeParticipantesGeral = colaboradoresGeral.size;
 
+        // Soma somente as respostas recebidas.
         const somaGeral = respostasFator.reduce(
             (total, resposta) => total + resposta.valor,
             0
         );
 
+        // A média geral não exige quantidade mínima de participantes.
         const mediaGeral = respostasFator.length > 0
             ? Number((somaGeral / respostasFator.length).toFixed(2))
-            : 0;
+            : null;
 
-        // Cria os resultados de todos os setores da avaliação.
+
+        // Calcula os resultados de cada setor.
         const setores = setoresAvaliacao.map((setor) => {
 
             const respostasSetor = respostasFator.filter((resposta) => {
+
                 return Number(resposta.idSetor) === Number(setor.idSetor);
+
             });
 
-            const colaboradoresSetor = new Set();
-
-            respostasSetor.forEach((resposta) => {
-                colaboradoresSetor.add(resposta.idColaborador);
-            });
+            // Identifica somente quem respondeu naquele setor.
+            const colaboradoresSetor = new Set(
+                respostasSetor.map((resposta) => Number(resposta.idColaborador))
+            );
 
             const quantidadeParticipantes = colaboradoresSetor.size;
 
-            const somaSetor = respostasSetor.reduce(
-                (total, resposta) => total + resposta.valor,
-                0
-            );
-
-            // Sem respostas, a barra aparece zerada.
+            // Setor sem respostas.
             if (respostasSetor.length === 0) {
 
                 return {
                     idSetor: setor.idSetor,
                     nomeSetor: setor.nomeSetor,
                     quantidadeParticipantes: 0,
-                    media: 0,
-                    disponivel: true,
+                    media: null,
+                    disponivel: false,
                     semRespostas: true
                 };
 
             }
 
-            // Mantém a proteção de anonimato.
+            // Proteção de anonimato por setor.
             if (quantidadeParticipantes < quantidadeMinima) {
 
                 return {
@@ -78,24 +86,34 @@ function calcularMedias(
 
             }
 
+            // Calcula a média somente com as respostas daquele setor.
+            const somaSetor = respostasSetor.reduce(
+                (total, resposta) => total + resposta.valor,
+                0
+            );
+
+            const mediaSetor = Number(
+                (somaSetor / respostasSetor.length).toFixed(2)
+            );
+
             return {
                 idSetor: setor.idSetor,
                 nomeSetor: setor.nomeSetor,
                 quantidadeParticipantes,
-                media: Number(
-                    (somaSetor / respostasSetor.length).toFixed(2)
-                ),
+                media: mediaSetor,
                 disponivel: true,
                 semRespostas: false
             };
 
         });
 
+
+        // Armazena os resultados do fator.
         resultados.push({
 
             idFator: fator.id,
 
-            quantidadeParticipantes: colaboradoresGeral.size,
+            quantidadeParticipantes: quantidadeParticipantesGeral,
 
             quantidadeRespostas: respostasFator.length,
 

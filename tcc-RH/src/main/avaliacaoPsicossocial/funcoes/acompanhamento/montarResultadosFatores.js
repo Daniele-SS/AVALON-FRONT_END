@@ -1,4 +1,9 @@
 
+/********************************************************************************
+ * Objetivo: Montar os resultados dos fatores psicossociais e aplicar
+ *           as regras de classificação cadastradas no Motor de Regras.
+ ********************************************************************************/
+
 import classificarResultados from './classificarResultados.js';
 
 function montarResultadosFatores(fatores, medias, regras) {
@@ -15,7 +20,7 @@ function montarResultadosFatores(fatores, medias, regras) {
 
             });
 
-            // Caso não exista resultado, mantém valores zerados.
+            // Caso não exista resultado.
             if (!resultadoMedia) {
 
                 return {
@@ -24,7 +29,7 @@ function montarResultadosFatores(fatores, medias, regras) {
                     descricao: fator.descricao,
                     quantidadeParticipantes: 0,
                     quantidadeRespostas: 0,
-                    mediaGeral: 0,
+                    mediaGeral: null,
                     classificacao: 'Sem respostas',
                     acao: '',
                     setores: []
@@ -32,7 +37,7 @@ function montarResultadosFatores(fatores, medias, regras) {
 
             }
 
-            // Não aplica regras quando não existem respostas.
+            // Classifica a média geral quando existem respostas.
             const classificacaoGeral =
                 resultadoMedia.quantidadeRespostas > 0
                     ? classificarResultados(
@@ -44,6 +49,7 @@ function montarResultadosFatores(fatores, medias, regras) {
                         classificacao: 'Sem respostas',
                         acao: ''
                     };
+
 
             // Monta os resultados por setor.
             const setores = resultadoMedia.setores.map((setor) => {
@@ -80,6 +86,7 @@ function montarResultadosFatores(fatores, medias, regras) {
                 };
 
             });
+
 
             return {
 

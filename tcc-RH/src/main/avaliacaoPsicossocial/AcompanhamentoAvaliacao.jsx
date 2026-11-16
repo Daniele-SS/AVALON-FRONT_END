@@ -67,7 +67,7 @@ function AcompanhamentoAvaliacao({ avaliacao, onVoltar }) {
                 dadosAgrupados.respostasValidas,
                 fatores,
                 dadosAgrupados.setoresAvaliacao,
-                5
+                1
             );
 
             // Monta os resultados e aplica as regras.
