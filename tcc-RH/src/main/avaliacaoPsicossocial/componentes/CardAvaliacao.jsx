@@ -1,6 +1,6 @@
 //----------------- IMPORTAÇÕES -----------------------------//
 
-import './cardAvaliacao.css';
+import './css-componentes/cardAvaliacao.css';
 
 
 //----------------- COMPONENTE ------------------------------//

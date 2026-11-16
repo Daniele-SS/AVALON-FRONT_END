@@ -1,0 +1,277 @@
+
+/* =========================================================
+   IDENTIFICAÇÃO DA AVALIAÇÃO
+========================================================= */
+
+.cartao-identificacao-avaliacao {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    width: 100%;
+    padding: 0;
+    margin: 0;
+
+    background: transparent;
+    border: none;
+
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   CABEÇALHO
+========================================================= */
+
+.cabecalho-cartao-avaliacao {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 15px;
+
+    margin-bottom: 2px;
+}
+
+.cabecalho-cartao-avaliacao h2 {
+    margin: 0;
+
+    color: #172033;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.cabecalho-cartao-avaliacao p {
+    margin: 6px 0 0;
+
+    color: #52586B;
+    font-size: 12px;
+    line-height: 18px;
+}
+
+.etiqueta-obrigatorio-avaliacao {
+    flex-shrink: 0;
+
+    padding: 6px 10px;
+
+    color: #1E40AF;
+    background: #E8EDFF;
+
+    border-radius: 5px;
+
+    font-size: 10px;
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   CAMPOS
+========================================================= */
+
+.campo-avaliacao {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    width: 100%;
+    min-width: 0;
+}
+
+.campo-avaliacao label,
+.rotulo-campo-avaliacao label {
+    display: block;
+
+    margin: 0;
+
+    color: #202A40;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.campo-avaliacao label span,
+.rotulo-campo-avaliacao label span {
+    color: #DC2626;
+}
+
+.rotulo-campo-avaliacao {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.rotulo-campo-avaliacao small {
+    color: #777D90;
+    font-size: 10px;
+}
+
+.campo-avaliacao input,
+.campo-avaliacao textarea {
+    box-sizing: border-box;
+
+    width: 100%;
+    min-width: 0;
+
+    padding: 9px 10px;
+
+    color: #202A40;
+    background: #F1F2FF;
+
+    border: 1px solid transparent;
+    border-radius: 5px;
+
+    outline: none;
+
+    font-family: inherit;
+    font-size: 12px;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.campo-avaliacao input {
+    height: 36px;
+}
+
+.campo-avaliacao textarea {
+    min-height: 90px;
+    resize: vertical;
+    line-height: 18px;
+}
+
+.campo-avaliacao input:focus,
+.campo-avaliacao textarea:focus {
+    background: #FFFFFF;
+    border-color: #2452E8;
+    box-shadow: 0 0 0 2px rgba(36, 82, 232, 0.10);
+}
+
+.campo-avaliacao input::placeholder,
+.campo-avaliacao textarea::placeholder {
+    color: #777D90;
+    opacity: 1;
+}
+
+
+/* =========================================================
+   ERROS
+========================================================= */
+
+.campo-avaliacao-erro {
+    background: #FFF5F5 !important;
+    border: 1px solid #DC2626 !important;
+}
+
+.mensagem-erro-avaliacao {
+    display: block;
+
+    color: #DC2626;
+    font-size: 11px;
+    line-height: 16px;
+}
+
+
+/* =========================================================
+   PERÍODO
+========================================================= */
+
+.campos-periodo-avaliacao {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+
+    width: 100%;
+}
+
+
+/* =========================================================
+   ANONIMATO
+========================================================= */
+
+.campo-anonimato-avaliacao {
+    box-sizing: border-box;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+
+    width: 100%;
+    padding: 14px;
+
+    background: #F1F2FF;
+    border: 1px solid #E5E7F2;
+    border-radius: 6px;
+}
+
+.texto-anonimato-avaliacao strong {
+    color: #202A40;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.texto-anonimato-avaliacao p {
+    margin: 5px 0 0;
+
+    color: #626B80;
+    font-size: 11px;
+    line-height: 17px;
+}
+
+
+/* =========================================================
+   ALTERNÂNCIA
+========================================================= */
+
+.alternancia-anonimato-avaliacao {
+    position: relative;
+
+    display: inline-block;
+    flex-shrink: 0;
+
+    width: 42px;
+    height: 23px;
+}
+
+.alternancia-anonimato-avaliacao input {
+    width: 0;
+    height: 0;
+    opacity: 0;
+}
+
+.controle-alternancia-avaliacao {
+    position: absolute;
+    inset: 0;
+
+    cursor: pointer;
+
+    background: #CBD5E1;
+    border-radius: 20px;
+
+    transition: 0.2s;
+}
+
+.controle-alternancia-avaliacao::before {
+    content: "";
+
+    position: absolute;
+
+    width: 17px;
+    height: 17px;
+    left: 3px;
+    bottom: 3px;
+
+    background: #FFFFFF;
+    border-radius: 50%;
+
+    transition: 0.2s;
+}
+
+.alternancia-anonimato-avaliacao input:checked + .controle-alternancia-avaliacao {
+    background: #2452E8;
+}
+
+.alternancia-anonimato-avaliacao input:checked + .controle-alternancia-avaliacao::before {
+    transform: translateX(19px);
+}
+

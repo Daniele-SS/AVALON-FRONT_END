@@ -1,0 +1,166 @@
+
+/* =========================================================
+   SELEÇÃO DO PÚBLICO
+========================================================= */
+
+.cartao-publico-avaliacao {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+
+    width: 100%;
+    padding: 0;
+    margin: 0;
+
+    background: transparent;
+    border: none;
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   CABEÇALHO
+========================================================= */
+
+.cabecalho-publico-avaliacao h2 {
+    margin: 0;
+
+    color: #172033;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.cabecalho-publico-avaliacao p {
+    margin: 6px 0 0;
+
+    color: #52586B;
+    font-size: 12px;
+    line-height: 18px;
+}
+
+
+/* =========================================================
+   OPÇÕES DE PÚBLICO
+========================================================= */
+
+.opcoes-publico-avaliacao {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+
+    width: 100%;
+}
+
+.opcao-publico-avaliacao {
+    box-sizing: border-box;
+
+    display: flex;
+    align-items: center;
+    gap: 9px;
+
+    min-height: 44px;
+    padding: 10px 12px;
+
+    background: #F1F2FF;
+    border: 1px solid transparent;
+    border-radius: 5px;
+
+    color: #202A40;
+    font-size: 12px;
+    font-weight: 500;
+
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.opcao-publico-avaliacao:hover {
+    border-color: #2452E8;
+}
+
+.opcao-publico-avaliacao input {
+    flex-shrink: 0;
+    margin: 0;
+
+    accent-color: #2452E8;
+}
+
+
+/* =========================================================
+   SELEÇÃO DE SETORES E CARGOS
+========================================================= */
+
+.selecao-itens-publico {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    width: 100%;
+    margin-top: 2px;
+}
+
+.selecao-itens-publico h3 {
+    margin: 0;
+
+    color: #202A40;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.selecao-itens-publico > p {
+    margin: 0;
+    color: #777D90;
+    font-size: 12px;
+}
+
+.lista-itens-publico {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+
+    width: 100%;
+}
+
+.lista-itens-publico label {
+    box-sizing: border-box;
+
+    display: flex;
+    align-items: center;
+    gap: 9px;
+
+    min-height: 38px;
+    padding: 9px 11px;
+
+    background: #F1F2FF;
+    border-radius: 5px;
+
+    color: #202A40;
+    font-size: 12px;
+
+    cursor: pointer;
+}
+
+.lista-itens-publico input {
+    flex-shrink: 0;
+    margin: 0;
+
+    accent-color: #2452E8;
+}
+
+
+/* =========================================================
+   ERRO
+========================================================= */
+
+.erro-publico-avaliacao {
+    margin: 0;
+    padding: 10px 12px;
+
+    color: #B42318;
+    background: #FFF5F5;
+
+    border: 1px solid #F0C7CC;
+    border-radius: 5px;
+
+    font-size: 11px;
+}
+

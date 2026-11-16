@@ -1,0 +1,84 @@
+
+/* =========================================================
+   CARD DE FATOR
+========================================================= */
+
+.card-fator-avaliacao {
+    box-sizing: border-box;
+
+    display: flex;
+    align-items: flex-start;
+    gap: 11px;
+
+    width: 100%;
+    min-width: 0;
+    min-height: 105px;
+
+    padding: 14px;
+
+    background: #FFFFFF;
+    border: 1px solid #E1E4ED;
+    border-radius: 6px;
+
+    cursor: pointer;
+
+    transition:
+        border-color 0.2s ease,
+        background-color 0.2s ease;
+}
+
+.card-fator-avaliacao:hover {
+    border-color: #2452E8;
+}
+
+.card-fator-avaliacao.fator-selecionado {
+    background: #F1F2FF;
+    border-color: #2452E8;
+}
+
+.card-fator-avaliacao input {
+    flex-shrink: 0;
+
+    width: 15px;
+    height: 15px;
+    margin: 2px 0 0;
+
+    accent-color: #2452E8;
+    cursor: pointer;
+}
+
+
+/* =========================================================
+   INFORMAÇÕES
+========================================================= */
+
+.informacoes-fator-avaliacao {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+
+    min-width: 0;
+}
+
+.informacoes-fator-avaliacao h3 {
+    margin: 0;
+
+    color: #202A40;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 17px;
+}
+
+.informacoes-fator-avaliacao p {
+    margin: 0;
+
+    color: #626B80;
+    font-size: 11px;
+    line-height: 16px;
+}
+
+.informacoes-fator-avaliacao span {
+    color: #1E40AF;
+    font-size: 10px;
+    font-weight: 600;
+}

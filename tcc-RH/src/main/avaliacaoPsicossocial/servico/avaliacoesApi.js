@@ -1,3 +1,4 @@
+
 //----------------- API DE AVALIAÇÃO PSICOSSOCIAL -----------------//
 
 const API = 'http://localhost:8080/v1/senai/avalon';
@@ -17,6 +18,25 @@ function obterConfiguracao() {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
     };
+
+}
+
+
+//----------------- CONVERTER RESPOSTA ----------------------------//
+
+async function converterResposta(resposta) {
+
+    const texto = await resposta.text();
+
+    if (!texto) {
+        return {};
+    }
+
+    try {
+        return JSON.parse(texto);
+    } catch {
+        throw new Error('O servidor retornou uma resposta inválida.');
+    }
 
 }
 
@@ -71,11 +91,7 @@ async function buscarDadosAvaliacaoPsicossocial() {
         respostaColaboradores
     ];
 
-    const autenticacaoExpirada = respostas.some(
-        (resposta) => resposta.status === 401
-    );
-
-    if (autenticacaoExpirada) {
+    if (respostas.some(resposta => resposta.status === 401)) {
 
         localStorage.removeItem('access_token');
 
@@ -86,7 +102,7 @@ async function buscarDadosAvaliacaoPsicossocial() {
     }
 
 
-    //----------------- VERIFICAR RESPOSTAS -----------------------//
+    //----------------- VERIFICAR RESPOSTAS OBRIGATÓRIAS ----------//
 
     if (!respostaAvaliacoes.ok) {
         throw new Error('Não foi possível carregar as avaliações.');
@@ -100,26 +116,43 @@ async function buscarDadosAvaliacaoPsicossocial() {
         throw new Error('Não foi possível carregar os setores das avaliações.');
     }
 
-    if (!respostaCargos.ok) {
-        throw new Error('Não foi possível carregar os cargos das avaliações.');
-    }
-
     if (!respostaColaboradores.ok) {
         throw new Error('Não foi possível carregar os colaboradores.');
     }
 
 
+    //----------------- VERIFICAR ROTA DE CARGOS ------------------//
+
+    if (!respostaCargos.ok && respostaCargos.status !== 404) {
+
+        throw new Error(
+            'Não foi possível carregar os cargos das avaliações.'
+        );
+
+    }
+
+    if (respostaCargos.status === 404) {
+
+        console.warn(
+            'A rota /avaliacao_cargo não foi encontrada no Back-end. A tela continuará carregando sem os vínculos de cargos.'
+        );
+
+    }
+
+
     //----------------- CONVERTER RESPOSTAS -----------------------//
 
-    const dadosAvaliacoes = await respostaAvaliacoes.json();
+    const dadosAvaliacoes = await converterResposta(respostaAvaliacoes);
 
-    const dadosParticipacoes = await respostaParticipacoes.json();
+    const dadosParticipacoes = await converterResposta(respostaParticipacoes);
 
-    const dadosSetores = await respostaSetores.json();
+    const dadosSetores = await converterResposta(respostaSetores);
 
-    const dadosCargos = await respostaCargos.json();
+    const dadosColaboradores = await converterResposta(respostaColaboradores);
 
-    const dadosColaboradores = await respostaColaboradores.json();
+    const dadosCargos = respostaCargos.ok
+        ? await converterResposta(respostaCargos)
+        : {};
 
 
     //----------------- ORGANIZAR AVALIAÇÕES ----------------------//
@@ -150,7 +183,9 @@ async function buscarDadosAvaliacaoPsicossocial() {
 
     const avaliacoesCargos =
         dadosCargos.response?.avaliacaoCargos ??
+        dadosCargos.response?.avaliacao_cargo ??
         dadosCargos.avaliacaoCargos ??
+        dadosCargos.avaliacao_cargo ??
         [];
 
 

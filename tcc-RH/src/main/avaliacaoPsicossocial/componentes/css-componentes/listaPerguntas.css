@@ -1,0 +1,48 @@
+
+/* =========================================================
+   LISTA DE PERGUNTAS
+========================================================= */
+
+.lista-perguntas-avaliacao {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    width: 100%;
+}
+
+
+/* =========================================================
+   ITENS
+========================================================= */
+
+.itens-lista-perguntas {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    width: 100%;
+}
+
+
+/* =========================================================
+   LISTA VAZIA
+========================================================= */
+
+.lista-perguntas-vazia {
+    box-sizing: border-box;
+
+    width: 100%;
+    margin: 0;
+    padding: 22px;
+
+    color: #777D90;
+    background: #F1F2FF;
+
+    border: 1px dashed #D5DAE0;
+    border-radius: 6px;
+
+    text-align: center;
+    font-size: 12px;
+    line-height: 18px;
+}

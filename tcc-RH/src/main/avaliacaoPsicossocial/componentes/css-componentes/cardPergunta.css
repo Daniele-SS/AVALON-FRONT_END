@@ -1,0 +1,161 @@
+
+/* =========================================================
+   CARD DE PERGUNTA
+========================================================= */
+
+.card-pergunta-avaliacao {
+    box-sizing: border-box;
+
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+
+    width: 100%;
+    min-width: 0;
+
+    padding: 16px 18px;
+
+    background: #F1F2FF;
+    border: none;
+    border-radius: 7px;
+}
+
+
+/* =========================================================
+   IDENTIFICAÇÃO DA PERGUNTA
+========================================================= */
+
+.identificacao-pergunta-avaliacao {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+
+    width: 100%;
+}
+
+.identificacao-pergunta-esquerda {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+
+/* =========================================================
+   NÚMERO DA PERGUNTA
+========================================================= */
+
+.numero-pergunta-avaliacao {
+    display: inline-flex;
+    align-items: center;
+
+    padding: 6px 10px;
+
+    color: #2452E8;
+    background: #E1E8FF;
+
+    border-radius: 5px;
+
+    font-size: 11px;
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   FATOR
+========================================================= */
+
+.fator-pergunta-avaliacao {
+    color: #30384D;
+
+    font-size: 12px;
+    font-weight: 500;
+}
+
+
+/* =========================================================
+   PERGUNTA OBRIGATÓRIA
+========================================================= */
+
+.pergunta-obrigatoria-avaliacao {
+    color: #D94848;
+
+    font-size: 11px;
+    font-weight: 500;
+}
+
+
+/* =========================================================
+   ENUNCIADO
+========================================================= */
+
+.texto-pergunta-avaliacao {
+    width: 100%;
+    max-width: 700px;
+    margin: 0;
+
+    color: #172033;
+
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 21px;
+}
+
+
+/* =========================================================
+   ESCALA DE RESPOSTAS
+========================================================= */
+
+.escala-pergunta-avaliacao {
+    display: grid;
+    grid-template-columns: repeat(5, 76px);
+    gap: 7px;
+
+    width: fit-content;
+    max-width: 100%;
+
+    margin-top: 1px;
+}
+
+
+/* =========================================================
+   OPÇÕES
+========================================================= */
+
+.opcao-escala-pergunta {
+    box-sizing: border-box;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+
+    min-height: 42px;
+    padding: 6px 4px;
+
+    background: #FFFFFF;
+    border-radius: 4px;
+
+    text-align: center;
+}
+
+.opcao-escala-pergunta strong {
+    color: #30384D;
+
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 13px;
+}
+
+.opcao-escala-pergunta span {
+    color: #30384D;
+
+    font-size: 10px;
+    font-weight: 400;
+    line-height: 12px;
+}
+
+

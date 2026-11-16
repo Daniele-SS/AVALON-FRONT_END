@@ -5,37 +5,40 @@ import { useEffect, useState } from 'react';
 import BotaoCadastro from '../../componentes/cardNomePag/nomePag.jsx';
 import Minicards from '../../componentes/minicard/minicard.jsx';
 import Filtro from '../../componentes/cardFiltros/filtros.jsx';
+import AlertaNotificacao from '../../componentes/alerta/Alerta.jsx';
 
 import CardAvaliacao from './componentes/CardAvaliacao.jsx';
+import CadastroAvaliacao from './cadastroAvaliacao.jsx';
 
 import buscarDadosAvaliacaoPsicossocial from './servico/avaliacoesApi.js';
+import cadastrarAvaliacaoPsicossocial from './servico/cadastroAvaliacaoApi.js';
 
 import filtrarAvaliacoes from './funcoes/avaliacao/filtrarAvaliacoes.js';
 import montarInformacoesAvaliacoes from './funcoes/avaliacao/montarInformacoesAvaliacoes.js';
 
 import './css-avaliacaoPsicossocial/avaliacaoPsicossocial.css';
 
+
 //----------------- ÍCONES DOS MINICARDS --------------------//
 
 import AvaliacoesIcone from './img/avaliacoes-icon.svg';
 import AtencaoIcone from './img/atencao-icon.svg';
 import ParticipantesIcone from './img/participantes-icon.svg';
+import AmpulhetaIcone from './img/ampulheta-icon.svg';
 
 
-// --------------------------------------------------------- //
-// COMPONENTE
-// --------------------------------------------------------- //
+//----------------- COMPONENTE PRINCIPAL -------------------//
 
 function AvaliacaoPsicossocial() {
+
+    //----------------- ESTADOS -----------------------------//
 
     const [avaliacoes, setAvaliacoes] = useState([]);
     const [participacoes, setParticipacoes] = useState([]);
 
-    // Estados para armazenar os setores e cargos.
     const [avaliacoesSetores, setAvaliacoesSetores] = useState([]);
     const [avaliacoesCargos, setAvaliacoesCargos] = useState([]);
 
-    // Estado para armazenar os colaboradores cadastrados.
     const [colaboradores, setColaboradores] = useState([]);
 
     const [carregando, setCarregando] = useState(true);
@@ -44,6 +47,12 @@ function AvaliacaoPsicossocial() {
     const [telaAtual, setTelaAtual] = useState('lista');
     const [avaliacaoSelecionada, setAvaliacaoSelecionada] = useState(null);
 
+    // Controla as notificações de sucesso e erro.
+    const [alertaNotificacao, setAlertaNotificacao] = useState({
+        tipo: '',
+        mensagem: ''
+    });
+
     const [filtros, setFiltros] = useState({
         pesquisa: '',
         status: 'Todos',
@@ -51,33 +60,50 @@ function AvaliacaoPsicossocial() {
     });
 
 
-    // ----------------------------------------------------- //
-    // CARREGAR DADOS
-    // ----------------------------------------------------- //
+    //----------------- CONTROLAR NOTIFICAÇÃO ---------------//
+
+    function exibirNotificacao(tipo, mensagem) {
+
+        setAlertaNotificacao({
+            tipo,
+            mensagem
+        });
+
+    }
+
+
+    function fecharNotificacao() {
+
+        setAlertaNotificacao({
+            tipo: '',
+            mensagem: ''
+        });
+
+    }
+
+
+    //----------------- CARREGAR DADOS ----------------------//
 
     async function carregarDados() {
 
-        setCarregando(true);
-        setErro('');
-
         try {
+
+            setCarregando(true);
+            setErro('');
 
             const dados = await buscarDadosAvaliacaoPsicossocial();
 
             setAvaliacoes(dados.avaliacoes || []);
-
             setParticipacoes(dados.participacoes || []);
 
-            // Armazena os vínculos entre avaliações e setores.
             setAvaliacoesSetores(dados.avaliacoesSetores || []);
-
-            // Armazena os vínculos entre avaliações e cargos.
             setAvaliacoesCargos(dados.avaliacoesCargos || []);
 
-            // Armazena os colaboradores cadastrados.
             setColaboradores(dados.colaboradores || []);
 
         } catch (erro) {
+
+            console.error('Erro ao carregar avaliações:', erro);
 
             setErro(
                 erro.message || 'Não foi possível carregar as avaliações.'
@@ -92,49 +118,107 @@ function AvaliacaoPsicossocial() {
     }
 
 
-    // ----------------------------------------------------- //
-    // CARREGAR DADOS AO ABRIR A TELA
-    // ----------------------------------------------------- //
+    //----------------- CARREGAMENTO INICIAL ----------------//
 
     useEffect(() => {
+
         carregarDados();
+
     }, []);
 
 
-    // ----------------------------------------------------- //
-    // NAVEGAÇÃO
-    // ----------------------------------------------------- //
+    //----------------- NAVEGAÇÃO ---------------------------//
 
     function abrirCadastro() {
-        console.log('Abrir cadastro de avaliação');
+
+        fecharNotificacao();
+
+        setTelaAtual('cadastro');
+
     }
 
 
     function abrirDetalhes(avaliacao) {
+
         setAvaliacaoSelecionada(avaliacao);
         setTelaAtual('detalhes');
+
     }
 
 
-    function voltarParaLista() {
+    //----------------- CONCLUIR CADASTRO -------------------//
+
+    async function concluirCadastro(mensagem) {
+
         setTelaAtual('lista');
         setAvaliacaoSelecionada(null);
-        carregarDados();
+
+        setFiltros({
+            pesquisa: '',
+            status: 'Todos',
+            opcao: ''
+        });
+
+        await carregarDados();
+
+        exibirNotificacao('sucesso', mensagem);
+
     }
 
 
-    // ----------------------------------------------------- //
-    // FILTROS
-    // ----------------------------------------------------- //
+    //----------------- VOLTAR PARA LISTAGEM -----------------//
+
+    async function voltarParaLista() {
+
+        setTelaAtual('lista');
+        setAvaliacaoSelecionada(null);
+
+        setFiltros({
+            pesquisa: '',
+            status: 'Todos',
+            opcao: ''
+        });
+
+        await carregarDados();
+
+    }
+
+
+    //----------------- CADASTRAR AVALIAÇÃO -----------------//
+
+    async function salvarAvaliacao(dadosAvaliacao) {
+
+        try {
+
+            // Envia os dados para o backend.
+            await cadastrarAvaliacaoPsicossocial(dadosAvaliacao);
+
+        } catch (erro) {
+
+            console.error('Erro ao cadastrar avaliação:', erro);
+
+            // Devolve o erro para a tela de cadastro.
+            throw erro;
+
+        }
+
+    }
+
+
+    //----------------- FILTROS -----------------------------//
 
     function receberFiltros(novosFiltros) {
-        setFiltros(novosFiltros);
+
+        setFiltros({
+            pesquisa: novosFiltros.pesquisa || '',
+            status: novosFiltros.status || 'Todos',
+            opcao: novosFiltros.opcao || ''
+        });
+
     }
 
 
-    // ----------------------------------------------------- //
-    // INFORMAÇÕES
-    // ----------------------------------------------------- //
+    //----------------- INFORMAÇÕES -------------------------//
 
     const informacoes = montarInformacoesAvaliacoes(
         avaliacoes,
@@ -142,9 +226,7 @@ function AvaliacaoPsicossocial() {
     );
 
 
-    // ----------------------------------------------------- //
-    // CONTAGEM DE AVALIAÇÕES ATIVAS
-    // ----------------------------------------------------- //
+    //----------------- CONTAGEM DE AVALIAÇÕES ATIVAS --------//
 
     const avaliacoesAtivas = avaliacoes.filter((avaliacao) => {
 
@@ -166,17 +248,16 @@ function AvaliacaoPsicossocial() {
         inicio.setHours(0, 0, 0, 0);
         fim.setHours(0, 0, 0, 0);
 
-        return hoje >= inicio && hoje <= fim;
+        return (
+            Number(avaliacao.status) !== 1 &&
+            hoje >= inicio &&
+            hoje <= fim
+        );
 
     }).length;
 
 
-    // ----------------------------------------------------- //
-    // COLABORADORES PARTICIPANTES
-    // ----------------------------------------------------- //
-
-    // Conta os colaboradores que já concluíram uma participação.
-    // Não exibe nomes nem respostas individuais.
+    //----------------- COLABORADORES PARTICIPANTES ----------//
 
     const colaboradoresParticipantes = new Set(
 
@@ -205,9 +286,7 @@ function AvaliacaoPsicossocial() {
     ).size;
 
 
-    // ----------------------------------------------------- //
-    // APLICAR FILTROS
-    // ----------------------------------------------------- //
+    //----------------- APLICAR FILTROS ---------------------//
 
     const avaliacoesFiltradas = filtrarAvaliacoes(
         avaliacoes,
@@ -215,9 +294,28 @@ function AvaliacaoPsicossocial() {
     );
 
 
-    // ----------------------------------------------------- //
-    // TELA DE DETALHES
-    // ----------------------------------------------------- //
+    //----------------- TELA DE CADASTRO --------------------//
+
+    if (telaAtual === 'cadastro') {
+
+        return (
+
+            <div className="pagina-avaliacao-psicossocial">
+
+                <CadastroAvaliacao
+                    voltar={voltarParaLista}
+                    onSalvar={salvarAvaliacao}
+                    onSucesso={concluirCadastro}
+                />
+
+            </div>
+
+        );
+
+    }
+
+
+    //----------------- TELA DE DETALHES --------------------//
 
     if (telaAtual === 'detalhes') {
 
@@ -227,6 +325,7 @@ function AvaliacaoPsicossocial() {
 
                 <button
                     className="botao-voltar-avaliacao"
+                    type="button"
                     onClick={voltarParaLista}
                 >
                     ← Voltar para avaliações
@@ -245,13 +344,23 @@ function AvaliacaoPsicossocial() {
     }
 
 
-    // ----------------------------------------------------- //
-    // TELA PRINCIPAL
-    // ----------------------------------------------------- //
+    //----------------- TELA PRINCIPAL ----------------------//
 
     return (
 
         <div className="pagina-avaliacao-psicossocial">
+
+
+            {/* NOTIFICAÇÃO DE SUCESSO OU ERRO */}
+
+            <AlertaNotificacao
+                tipo={alertaNotificacao.tipo}
+                mensagem={alertaNotificacao.mensagem}
+                onFechar={fecharNotificacao}
+            />
+
+
+            {/* CABEÇALHO */}
 
             <BotaoCadastro
                 titulo="Avaliação Psicossocial"
@@ -261,9 +370,7 @@ function AvaliacaoPsicossocial() {
             />
 
 
-            {/* ------------------------------------------------ */}
-            {/* MINICARDS                                         */}
-            {/* ------------------------------------------------ */}
+            {/* MINICARDS */}
 
             <div className="container-minicards">
 
@@ -294,9 +401,7 @@ function AvaliacaoPsicossocial() {
             </div>
 
 
-            {/* ------------------------------------------------ */}
-            {/* FILTROS                                           */}
-            {/* ------------------------------------------------ */}
+            {/* FILTROS */}
 
             <div className="filtros-avaliacoes-psicossociais">
 
@@ -314,9 +419,7 @@ function AvaliacaoPsicossocial() {
             </div>
 
 
-            {/* ------------------------------------------------ */}
-            {/* ERRO                                              */}
-            {/* ------------------------------------------------ */}
+            {/* ERRO DE CARREGAMENTO */}
 
             {erro && (
 
@@ -327,15 +430,16 @@ function AvaliacaoPsicossocial() {
             )}
 
 
-            {/* ------------------------------------------------ */}
-            {/* LISTA DE AVALIAÇÕES                               */}
-            {/* ------------------------------------------------ */}
+            {/* LISTA DE AVALIAÇÕES */}
 
             <section className="secao-avaliacoes-andamento">
 
                 <h2 className="titulo-secao-avaliacoes">
-                    <span>⌛</span>
+
+                    <img src={AmpulhetaIcone} alt="ampulheta" />
+
                     Avaliações
+
                 </h2>
 
 
@@ -361,14 +465,9 @@ function AvaliacaoPsicossocial() {
                                 key={avaliacao.id}
                                 avaliacao={avaliacao}
                                 participacoes={participacoes}
-
-                                // Envia os vínculos de setores e cargos.
                                 avaliacoesSetores={avaliacoesSetores}
                                 avaliacoesCargos={avaliacoesCargos}
-
-                                // Envia os colaboradores para calcular o público elegível.
                                 colaboradores={colaboradores}
-
                                 onVerDetalhes={() => abrirDetalhes(avaliacao)}
                             />
 
@@ -387,8 +486,6 @@ function AvaliacaoPsicossocial() {
 }
 
 
-// --------------------------------------------------------- //
-// EXPORTAÇÃO
-// --------------------------------------------------------- //
+//----------------- EXPORTAÇÃO ------------------------------//
 
 export default AvaliacaoPsicossocial;
