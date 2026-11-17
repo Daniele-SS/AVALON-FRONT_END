@@ -11,30 +11,28 @@ import Minicards from '../../componentes/minicard/minicard.jsx';
 
 import LinhaTempoFeedback from './componentes/LinhaTempoFeedback';
 import DetalhesFeedback from './componentes/DetalhesFeedback';
+import CadastroFeedback from './cadastroFeedback';
 
 import buscarFeedbacks from './servicos/feedbacksApi';
 import buscarRespostasFeedback from './servicos/respostasFeedbackApi';
-
 
 import montarInformacoesFeedbacks from './funcoes/feedback/montarInformacoesFeedbacks';
 import calcularIndicadoresFeedbacks from './funcoes/feedback/calcularIndicadoresFeedbacks';
 import filtrarFeedbacks from './funcoes/feedback/filtrarFeedbacks';
 
-import FeedbackIcone from './img/feedbackEsseMes.svg'
-import PedenteIcone from './img/pedente.svg'
-import RegistradoIcone from './img/registrado.svg'
-import RespostaIcone from './img/resposta.svg'
+import FeedbackIcone from './img/feedbackEsseMes.svg';
+import PedenteIcone from './img/pedente.svg';
+import RegistradoIcone from './img/registrado.svg';
+import RespostaIcone from './img/resposta.svg';
 
 import './css-feedbacks/feedbacks.css';
-
 import '../../componentes/cardNomePag/nomePag.css';
-
-
-//----------------- COMPONENTE PRINCIPAL -----------------//
 
 function Feedbacks() {
 
     //----------------- ESTADOS ---------------------------//
+
+    const [tela, setTela] = useState('lista');
 
     const [feedbacks, setFeedbacks] = useState([]);
 
@@ -54,18 +52,9 @@ function Feedbacks() {
     //----------------- OPÇÕES DE PERÍODO -----------------//
 
     const periodos = [
-        {
-            id: '7dias',
-            nome: 'Últimos 7 dias'
-        },
-        {
-            id: '30dias',
-            nome: 'Últimos 30 dias'
-        },
-        {
-            id: '6meses',
-            nome: 'Últimos 6 meses'
-        }
+        { id: '7dias', nome: 'Últimos 7 dias' },
+        { id: '30dias', nome: 'Últimos 30 dias' },
+        { id: '6meses', nome: 'Últimos 6 meses' }
     ];
 
 
@@ -76,15 +65,11 @@ function Feedbacks() {
         try {
 
             setCarregando(true);
-
             setErro('');
 
             const [dadosFeedbacks, dadosRespostas] = await Promise.all([
-
                 buscarFeedbacks(),
-
                 buscarRespostasFeedback()
-
             ]);
 
             const informacoes = montarInformacoesFeedbacks(
@@ -112,18 +97,21 @@ function Feedbacks() {
     //----------------- EXECUTAR BUSCA --------------------//
 
     useEffect(() => {
-
         carregarDados();
-
     }, []);
+
+
+    //----------------- ATUALIZAR FILTROS -----------------//
+
+    function atualizarFiltros(novosFiltros) {
+        setFiltros(novosFiltros);
+    }
 
 
     //----------------- CALCULAR INDICADORES --------------//
 
     const indicadores = useMemo(() => {
-
         return calcularIndicadoresFeedbacks(feedbacks);
-
     }, [feedbacks]);
 
 
@@ -133,10 +121,7 @@ function Feedbacks() {
 
         if (!data) return null;
 
-        // Evita problemas de fuso horário com datas no formato YYYY-MM-DD.
-
         const dataTexto = String(data);
-
         const partes = dataTexto.substring(0, 10).split('-');
 
         if (partes.length === 3) {
@@ -144,9 +129,7 @@ function Feedbacks() {
             const [ano, mes, dia] = partes.map(Number);
 
             if (ano && mes && dia) {
-
                 return new Date(ano, mes - 1, dia);
-
             }
 
         }
@@ -154,9 +137,7 @@ function Feedbacks() {
         const dataConvertida = new Date(data);
 
         if (isNaN(dataConvertida.getTime())) {
-
             return null;
-
         }
 
         return new Date(
@@ -172,53 +153,30 @@ function Feedbacks() {
 
     const feedbacksFiltrados = useMemo(() => {
 
-        // Primeiro, aplica a pesquisa por nome.
-
         let resultado = filtrarFeedbacks(
             feedbacks,
             filtros.pesquisa,
             'Todos'
         );
 
-
-        // Se o período for Todos, não precisa filtrar por data.
-
         if (!filtros.opcao) {
-
             return resultado;
-
         }
 
-
-        // Data atual sem horário.
-
         const hoje = new Date();
-
         hoje.setHours(0, 0, 0, 0);
-
-
-        // Definir data inicial conforme o período selecionado.
 
         const dataInicial = new Date(hoje);
 
         if (filtros.opcao === '7dias') {
-
             dataInicial.setDate(hoje.getDate() - 6);
-
         } else if (filtros.opcao === '30dias') {
-
             dataInicial.setDate(hoje.getDate() - 29);
-
         } else if (filtros.opcao === '6meses') {
-
             dataInicial.setMonth(hoje.getMonth() - 6);
-
         }
 
-
-        // Manter somente feedbacks dentro do período.
-
-        resultado = resultado.filter(feedback => {
+        return resultado.filter(feedback => {
 
             const dataFeedback = converterData(feedback.data);
 
@@ -231,39 +189,64 @@ function Feedbacks() {
 
         });
 
-
-        return resultado;
-
     }, [feedbacks, filtros]);
 
 
-    //----------------- NOVO FEEDBACK ---------------------//
+    //----------------- ABRIR CADASTRO --------------------//
 
     function novoFeedback() {
+        setFeedbackSelecionado(null);
+        setTela('cadastro');
+    }
 
-        console.log('Botão Novo Feedback clicado!');
+
+    //----------------- FINALIZAR CADASTRO ----------------//
+
+    async function finalizarCadastro() {
+
+        await carregarDados();
+
+        setTela('lista');
 
     }
 
 
-    //----------------- RETORNAR TELA ---------------------//
+    //----------------- VOLTAR PARA LISTAGEM --------------//
+
+    function voltarListagem() {
+        setTela('lista');
+    }
+
+
+    //----------------- EXIBIR CADASTRO -------------------//
+
+    if (tela === 'cadastro') {
+
+        return (
+            <div className="pagina-feedbacks">
+
+                <CadastroFeedback
+                    onVoltar={voltarListagem}
+                    onSucesso={finalizarCadastro}
+                />
+
+            </div>
+        );
+
+    }
+
+
+    //----------------- TELA PRINCIPAL --------------------//
 
     return (
 
         <div className="pagina-feedbacks">
 
-            {/*----------------- CABEÇALHO -----------------*/}
-
             <BotaoCadastro
-
                 titulo="Feedbacks"
-
                 descricao="Registre, acompanhe e consulte feedbacks entre gestores e colaboradores com foco em desenvolvimento contínuo e alinhamento de expectativas."
-
                 textoBotao="Novo Feedback"
-
                 onClick={novoFeedback}
-
             />
 
 
@@ -308,25 +291,19 @@ function Feedbacks() {
 
             {/*----------------- FILTRO ---------------------*/}
 
-            <div className="filtros-feedbacks">
-
-                <Filtro
-                    titulo="Pesquisar Feedbacks"
-                    placeholder="Buscar por nome do colaborador"
-                    nomeDropdown="Período"
-                    opcoesDropdown={periodos}
-                    mostrarStatus={false}
-                    onFiltrosChange={setFiltros}
-                />
-
-            </div>
+            <Filtro
+                titulo="Pesquisar Feedbacks"
+                placeholder="Buscar por nome do colaborador"
+                nomeDropdown="Período"
+                opcoesDropdown={periodos}
+                mostrarStatus={false}
+                onFiltrosChange={atualizarFiltros}
+            />
 
 
-            {/*----------------- CONTEÚDO DA LINHA DO TEMPO ---------------------*/}
+            {/*----------------- LINHA DO TEMPO -------------*/}
 
             <div className="conteudo-feedbacks">
-
-                {/* CABEÇALHO DA LINHA DO TEMPO */}
 
                 <div className="cabecalho-linha-tempo">
 
@@ -346,18 +323,12 @@ function Feedbacks() {
                 </div>
 
 
-                {/* CARREGAMENTO */}
-
                 {carregando && (
-
                     <div className="mensagem-feedbacks">
                         Carregando feedbacks...
                     </div>
-
                 )}
 
-
-                {/* ERRO */}
 
                 {!carregando && erro && (
 
@@ -377,8 +348,6 @@ function Feedbacks() {
                 )}
 
 
-                {/* CARDS DA LINHA DO TEMPO */}
-
                 {!carregando && !erro && (
 
                     <LinhaTempoFeedback
@@ -393,17 +362,13 @@ function Feedbacks() {
             </div>
 
 
-
             {/*----------------- DETALHES --------------------*/}
 
             {feedbackSelecionado && (
 
                 <DetalhesFeedback
-
                     feedback={feedbackSelecionado}
-
                     onFechar={() => setFeedbackSelecionado(null)}
-
                 />
 
             )}

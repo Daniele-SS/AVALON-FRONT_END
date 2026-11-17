@@ -1,0 +1,208 @@
+
+/********************************************************************************
+ * Objetivo: Estilização da tela de cadastro de Feedback.
+ ********************************************************************************/
+
+.pagina-cadastro-feedback {
+    width: 100%;
+    min-height: 100vh;
+    padding-bottom: 40px;
+    background-color: #F8F9FF;
+    font-family: 'Geist', sans-serif;
+}
+
+
+/*----------------- FORMULÁRIO PRINCIPAL -----------------*/
+
+.formulario-feedback {
+    width: 87%;
+    margin: 45px auto 0;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+
+    background-color: #FFFFFF;
+    border: 1px solid #E6E8EF;
+    border-radius: 12px;
+
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+
+/*----------------- CABEÇALHO ----------------------------*/
+
+.cabecalho-formulario-feedback {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+
+    padding-bottom: 22px;
+    border-bottom: 1px solid #E6E8EF;
+}
+
+.cabecalho-formulario-feedback h2 {
+    margin: 0 0 8px;
+    color: #25283A;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.cabecalho-formulario-feedback p {
+    margin: 0;
+    color: #777D8C;
+    font-size: 14px;
+}
+
+.campo-obrigatorio-feedback {
+    color: #777D8C;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+
+/*----------------- CAMPOS -------------------------------*/
+
+.campo-feedback {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+}
+
+.campo-feedback label {
+    color: #25283A;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.campo-feedback input,
+.campo-feedback select,
+.campo-feedback textarea {
+    width: 100%;
+    min-height: 46px;
+    padding: 12px 14px;
+
+    border: 1px solid #E0E3EB;
+    border-radius: 8px;
+
+    outline: none;
+    background-color: #FFFFFF;
+
+    color: #25283A;
+    font-family: 'Geist', sans-serif;
+    font-size: 14px;
+
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.campo-feedback textarea {
+    min-height: 145px;
+    resize: vertical;
+}
+
+.campo-feedback input:focus,
+.campo-feedback select:focus,
+.campo-feedback textarea:focus {
+    border-color: #0050CB;
+    box-shadow: 0 0 0 3px rgba(0, 80, 203, 0.08);
+}
+
+.campo-feedback input:disabled,
+.campo-feedback select:disabled,
+.campo-feedback textarea:disabled {
+    background-color: #F4F5F8;
+    cursor: not-allowed;
+}
+
+.campo-feedback small {
+    color: #858B99;
+    font-size: 12px;
+}
+
+
+/*----------------- CAMPOS DUPLOS ------------------------*/
+
+.campos-duplos-feedback {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 22px;
+}
+
+
+/*----------------- MENSAGENS ----------------------------*/
+
+.mensagem-formulario-feedback {
+    width: 100%;
+    padding: 13px 15px;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.erro-feedback {
+    color: #B42318;
+    background-color: #FEF3F2;
+    border: 1px solid #FECACA;
+}
+
+.sucesso-feedback {
+    color: #067647;
+    background-color: #ECFDF3;
+    border: 1px solid #ABEFC6;
+}
+
+
+/*----------------- RODAPÉ E BOTÕES ----------------------*/
+
+.rodape-formulario-feedback {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 12px;
+
+    padding-top: 22px;
+    border-top: 1px solid #E6E8EF;
+}
+
+.rodape-formulario-feedback button {
+    min-width: 145px;
+    height: 44px;
+    padding: 0 20px;
+
+    border-radius: 8px;
+    font-family: 'Geist', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.botao-cancelar-feedback {
+    color: #424656;
+    background-color: #FFFFFF;
+    border: 1px solid #D9DDE7;
+}
+
+.botao-cancelar-feedback:hover {
+    background-color: #F4F5F8;
+}
+
+.botao-salvar-feedback {
+    color: #FFFFFF;
+    background-color: #0050CB;
+    border: 1px solid #0050CB;
+}
+
+.botao-salvar-feedback:hover {
+    background-color: #003FA3;
+}
+
+.rodape-formulario-feedback button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
