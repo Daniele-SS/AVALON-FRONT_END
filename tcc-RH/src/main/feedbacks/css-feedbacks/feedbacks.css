@@ -1,0 +1,167 @@
+
+/********************************************************************************
+ * Objetivo: Estilização da tela principal de Feedbacks.
+ ********************************************************************************/
+
+/*----------------- TELA PRINCIPAL -----------------------------*/
+
+.pagina-feedbacks {
+    width: 100%;
+    min-height: 100vh;
+
+    display: flex;
+    flex-direction: column;
+
+    padding-bottom: 40px;
+
+    background-color: #F8F9FF;
+
+    font-family: 'Geist', sans-serif;
+}
+
+
+/*----------------- INDICADORES -----------------------------*/
+
+.indicadores-feedbacks {
+    width: 87%;
+
+    display: flex;
+    align-items: center;
+    gap: 20px;
+
+    margin: 45px auto 30px;
+}
+
+
+/*----------------- FILTROS -----------------------------*/
+
+.filtros-feedbacks {
+    width: 100%;
+}
+
+
+/*----------------- CONTEÚDO DA LINHA DO TEMPO -----------------------------*/
+
+.conteudo-feedbacks {
+    width: 100%;
+}
+
+
+/*----------------- CABEÇALHO DA LINHA DO TEMPO -----------------------------*/
+
+.cabecalho-linha-tempo {
+    width: 100%;
+
+    margin: 35px 0 20px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.cabecalho-linha-tempo > div {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.cabecalho-linha-tempo h3 {
+    margin: 0;
+
+    color: #25283A;
+
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.cabecalho-linha-tempo span {
+    padding: 5px 10px;
+
+    background-color: #E8F8EF;
+
+    color: #16834A;
+
+    border-radius: 20px;
+
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.cabecalho-linha-tempo small {
+    color: #74798B;
+
+    font-size: 12px;
+}
+
+
+/*----------------- MENSAGENS -----------------------------*/
+
+.mensagem-feedbacks,
+.mensagem-erro-feedbacks {
+    width: 100%;
+
+    margin: 30px 0;
+
+    padding: 25px;
+
+    box-sizing: border-box;
+
+    background-color: #FFFFFF;
+
+    border: 1px solid #E6E8EF;
+
+    border-radius: 12px;
+
+    color: #424656;
+
+    text-align: center;
+
+    font-size: 14px;
+}
+
+.mensagem-erro-feedbacks p {
+    margin: 0 0 15px;
+}
+
+.mensagem-erro-feedbacks button {
+    padding: 10px 18px;
+
+    background-color: #0050CB;
+
+    color: #FFFFFF;
+
+    border: none;
+
+    border-radius: 8px;
+
+    cursor: pointer;
+
+    font-size: 13px;
+    font-weight: 600;
+}
+
+
+/*----------------- RESPONSIVIDADE -----------------------------*/
+
+@media (max-width: 900px) {
+
+    .indicadores-feedbacks {
+        width: 92%;
+        flex-wrap: wrap;
+    }
+
+}
+
+@media (max-width: 600px) {
+
+    .cabecalho-linha-tempo {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .cabecalho-linha-tempo > div {
+        flex-wrap: wrap;
+    }
+
+}

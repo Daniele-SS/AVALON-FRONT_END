@@ -1,0 +1,264 @@
+
+/********************************************************************************
+ * Objetivo: Estilização dos cards de feedback.
+ ********************************************************************************/
+
+/*----------------- CARD PRINCIPAL -----------------------------*/
+
+.card-feedback {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+
+    padding: 22px 24px;
+
+    background-color: #FFFFFF;
+
+    border: 1px solid #E6E8EF;
+    border-radius: 12px;
+
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+
+    transition: 0.2s;
+}
+
+.card-feedback:hover {
+    border-color: #D2DDF4;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
+}
+
+
+/*----------------- PESSOAS ------------------------------------*/
+
+.feedback-pessoas {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.feedback-pessoa {
+    min-width: 0;
+
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.feedback-avatar {
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.avatar-remetente {
+    background-color: #EAF0FF;
+    color: #0050CB;
+}
+
+.avatar-destinatario {
+    background-color: #EAF6EE;
+    color: #27834B;
+}
+
+.feedback-dados-pessoa {
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.feedback-dados-pessoa strong {
+    overflow: hidden;
+
+    color: #25283A;
+    font-size: 13px;
+    font-weight: 600;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.feedback-dados-pessoa span {
+    color: #777D8C;
+    font-size: 12px;
+}
+
+.feedback-seta {
+    color: #9298A6;
+    font-size: 20px;
+}
+
+
+/*----------------- ETIQUETAS ----------------------------------*/
+
+.feedback-etiquetas {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 9px;
+}
+
+.feedback-tipo,
+.feedback-status {
+    width: fit-content;
+
+    padding: 6px 11px;
+
+    border-radius: 20px;
+
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.tipo-reconhecimento {
+    background-color: #EAF6EE;
+    color: #27834B;
+}
+
+.tipo-desenvolvimento {
+    background-color: #EEF3FF;
+    color: #0050CB;
+}
+
+.feedback-status.status-respondido {
+    background-color: #EAF6EE;
+    color: #27834B;
+}
+
+.feedback-status.status-registrado {
+    background-color: #FFF5E8;
+    color: #B7791F;
+}
+
+.feedback-etiquetas .feedback-data {
+    margin-left: auto;
+
+    color: #858B9A;
+    font-size: 12px;
+}
+
+
+/*----------------- DESCRIÇÃO ----------------------------------*/
+
+.feedback-descricao {
+    width: 100%;
+    box-sizing: border-box;
+
+    padding: 15px 17px;
+
+    background-color: #F8F9FF;
+
+    border-left: 3px solid #0050CB;
+    border-radius: 5px;
+
+    color: #424656;
+
+    font-size: 13px;
+    line-height: 1.7;
+
+    overflow-wrap: anywhere;
+}
+
+
+/*----------------- RODAPÉ -------------------------------------*/
+
+.feedback-rodape {
+    width: 100%;
+    box-sizing: border-box;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+
+    padding-top: 14px;
+
+    border-top: 1px solid #EDF0F5;
+}
+
+.feedback-compartilhamento,
+.feedback-informacao-resposta {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+
+    color: #777D8C;
+    font-size: 11px;
+}
+
+.feedback-compartilhamento > span:first-child {
+    color: #0050CB;
+    font-size: 15px;
+}
+
+.feedback-informacao-resposta span {
+    color: #27834B;
+}
+
+.botao-detalhes-feedback {
+    width: auto;
+
+    padding: 8px 13px;
+
+    background-color: #EEF3FF;
+
+    border: 1px solid #DCE6FF;
+    border-radius: 7px;
+
+    color: #0050CB;
+
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+.botao-detalhes-feedback:hover {
+    background-color: #DDE8FF;
+}
+
+
+/*----------------- RESPONSIVIDADE -----------------------------*/
+
+@media (max-width: 600px) {
+
+    .card-feedback {
+        padding: 17px;
+    }
+
+    .feedback-pessoas {
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .feedback-rodape {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .botao-detalhes-feedback {
+        align-self: flex-end;
+    }
+
+}

@@ -1,0 +1,149 @@
+
+/********************************************************************************
+ * Objetivo: Estilização da linha do tempo de feedbacks.
+ ********************************************************************************/
+
+/*----------------- LINHA DO TEMPO -----------------------------*/
+
+.linha-tempo-feedback {
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+
+    margin: 0 auto;
+
+    box-sizing: border-box;
+}
+
+
+/*----------------- GRUPOS -------------------------------------*/
+
+.grupo-tempo-feedback {
+    position: relative;
+
+    width: 100%;
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    box-sizing: border-box;
+}
+
+
+/*----------------- MARCADOR -----------------------------------*/
+
+.marcador-tempo-feedback {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+}
+
+.ponto-tempo-feedback {
+    width: 11px;
+    height: 11px;
+
+    flex-shrink: 0;
+
+    background-color: #0050CB;
+
+    border: 3px solid #DCE8FF;
+    border-radius: 50%;
+
+    box-sizing: content-box;
+}
+
+.marcador-tempo-feedback strong {
+    color: #25283A;
+
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.data-grupo-feedback {
+    color: #858B9A;
+
+    font-size: 12px;
+}
+
+
+/*----------------- LISTA --------------------------------------*/
+
+.lista-tempo-feedback {
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+
+    padding-left: 23px;
+    margin-left: 5px;
+
+    border-left: 1px solid #DCE2EF;
+
+    box-sizing: border-box;
+}
+
+
+/*----------------- ESTADO VAZIO -------------------------------*/
+
+.feedback-vazio {
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    gap: 9px;
+
+    margin: 0 auto;
+    padding: 55px 20px;
+
+    background-color: #FFFFFF;
+
+    border: 1px solid #E6E8EF;
+    border-radius: 12px;
+
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+
+    box-sizing: border-box;
+}
+
+.feedback-vazio span {
+    color: #25283A;
+
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.feedback-vazio p {
+    margin: 0;
+
+    color: #858B9A;
+
+    font-size: 13px;
+    text-align: center;
+}
+
+
+/*----------------- RESPONSIVIDADE -----------------------------*/
+
+@media (max-width: 768px) {
+    .linha-tempo-feedback {
+        gap: 22px;
+    }
+
+    .lista-tempo-feedback {
+        padding-left: 15px;
+        margin-left: 4px;
+    }
+}

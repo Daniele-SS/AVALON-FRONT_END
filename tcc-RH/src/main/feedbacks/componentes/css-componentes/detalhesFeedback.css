@@ -1,0 +1,305 @@
+/********************************************************************************
+ * Objetivo: Estilização da janela de detalhes do feedback.
+ ********************************************************************************/
+
+/*----------------- FUNDO SOBREPOSTO ---------------------------*/
+
+.fundo-detalhes-feedback {
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 9999;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    background-color: rgba(20, 27, 43, 0.50);
+
+    backdrop-filter: blur(2px);
+}
+
+
+/*----------------- JANELA PRINCIPAL ---------------------------*/
+
+.janela-detalhes-feedback {
+    width: 100%;
+    max-width: 650px;
+    max-height: 90vh;
+
+    display: flex;
+    flex-direction: column;
+
+    overflow: hidden;
+
+    background-color: #FFFFFF;
+
+    border: 1px solid #E6E8EF;
+    border-radius: 14px;
+
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
+
+    animation: abrirDetalhesFeedback 0.2s ease;
+}
+
+@keyframes abrirDetalhesFeedback {
+
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+}
+
+
+/*----------------- CABEÇALHO ----------------------------------*/
+
+.cabecalho-detalhes-feedback {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 23px 25px;
+
+    border-bottom: 1px solid #E6E8EF;
+}
+
+.cabecalho-detalhes-feedback h2 {
+    margin: 0 0 7px;
+
+    color: #25283A;
+
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.cabecalho-detalhes-feedback p {
+    margin: 0;
+
+    color: #858B9A;
+
+    font-size: 12px;
+}
+
+.fechar-detalhes-feedback {
+    width: 34px;
+    height: 34px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background-color: #F4F6FA;
+
+    border: 1px solid #E6E8EF;
+    border-radius: 8px;
+
+    color: #555B69;
+
+    font-size: 23px;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+.fechar-detalhes-feedback:hover {
+    background-color: #E9EDF5;
+
+    color: #25283A;
+}
+
+
+/*----------------- CONTEÚDO -----------------------------------*/
+
+.conteudo-detalhes-feedback {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    padding: 24px 25px;
+
+    overflow-y: auto;
+}
+
+
+/*----------------- TIPO E DATA --------------------------------*/
+
+.detalhes-tipo-data {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.detalhes-tipo-data .feedback-tipo {
+    padding: 7px 12px;
+
+    background-color: #EEF3FF;
+
+    border-radius: 20px;
+
+    color: #0050CB;
+
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.detalhes-tipo-data .feedback-data {
+    color: #777D8C;
+
+    font-size: 12px;
+}
+
+
+/*----------------- PESSOAS ------------------------------------*/
+
+.detalhes-pessoas {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+}
+
+.detalhes-pessoas > div {
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+
+    padding: 16px;
+
+    background-color: #F8F9FF;
+
+    border: 1px solid #E6E8EF;
+    border-radius: 10px;
+}
+
+.detalhes-pessoas > div > span {
+    color: #858B9A;
+
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.detalhes-pessoas strong {
+    color: #25283A;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    overflow-wrap: anywhere;
+}
+
+.detalhes-pessoas small {
+    color: #777D8C;
+
+    font-size: 11px;
+}
+
+
+/*----------------- BLOCOS DE INFORMAÇÃO -----------------------*/
+
+.detalhes-bloco {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    padding: 17px 18px;
+
+    background-color: #FFFFFF;
+
+    border: 1px solid #E6E8EF;
+    border-radius: 10px;
+}
+
+.detalhes-bloco h3 {
+    margin: 0;
+
+    color: #25283A;
+
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.detalhes-bloco p {
+    margin: 0;
+
+    color: #424656;
+
+    font-size: 13px;
+    line-height: 1.7;
+
+    overflow-wrap: anywhere;
+}
+
+.data-resposta-feedback {
+    color: #858B9A;
+
+    font-size: 11px;
+}
+
+.sem-resposta-feedback {
+    padding: 12px;
+
+    background-color: #FFF8ED;
+
+    border-radius: 7px;
+
+    color: #A36B18 !important;
+
+    font-size: 12px !important;
+}
+
+
+/*----------------- RODAPÉ -------------------------------------*/
+
+.rodape-detalhes-feedback {
+    display: flex;
+    justify-content: flex-end;
+
+    padding: 16px 25px;
+
+    background-color: #FFFFFF;
+
+    border-top: 1px solid #E6E8EF;
+}
+
+.rodape-detalhes-feedback button {
+    width: auto;
+
+    min-width: 100px;
+    height: 38px;
+
+    padding: 0 18px;
+
+    background-color: #0050CB;
+
+    border: none;
+    border-radius: 7px;
+
+    color: #FFFFFF;
+
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+.rodape-detalhes-feedback button:hover {
+    background-color: #003FA3;
+}
+
+

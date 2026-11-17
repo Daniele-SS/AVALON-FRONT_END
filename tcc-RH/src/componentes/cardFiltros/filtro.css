@@ -164,6 +164,7 @@
 .dropdown-nome {
     position: absolute;
     top: 100%;
+    z-index: 9999;
 
 
     width: 100%;
