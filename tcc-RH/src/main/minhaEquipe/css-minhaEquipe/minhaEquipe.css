@@ -1,0 +1,230 @@
+
+/*----------------- CONTAINER DOS MINICARDS -----------------*/
+
+.minicard-equipe {
+    display: flex;
+    gap: 30px;
+    width: 100%;
+    height: 127px;
+
+    margin-top: 78px;
+    padding-left: 78px;
+    padding-right: 78px;
+
+    box-sizing: border-box;
+}
+
+/*----------------- CARDS -----------------------------------*/
+
+.minicard-equipe .item-minicard {
+    flex: 1;
+    min-width: 0;
+}
+
+/*----------------- CARD ------------------------------------*/
+
+.minicard-equipe .minicard {
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+}
+
+/*----------------- CONTEÚDO INTERNO ------------------------*/
+
+.minicard-equipe .conteudo-minicard {
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+}
+
+/*----------------- INFORMAÇÕES -----------------------------*/
+
+.minicard-equipe .info-minicard {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+
+    min-width: 0;
+    margin-top: 0;
+    padding: 16px;
+}
+/*----------------- NOMES DO SETOR E GESTOR -----------------*/
+
+/* Setor e gestor: título em cima e valor embaixo */
+.minicard-equipe .item-minicard:nth-child(2) .info-minicard,
+.minicard-equipe .item-minicard:nth-child(3) .info-minicard {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+}
+
+/* Nome do setor e do gestor */
+.minicard-equipe .item-minicard:nth-child(2) .info-minicard h1,
+.minicard-equipe .item-minicard:nth-child(3) .info-minicard h1 {
+    font-size: 16px;
+    font-weight: 500;
+    margin: 0;
+}
+
+
+/*----------------- FUNDO DO MODAL -----------------------------*/
+
+.fundo-modal-equipe {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    background-color: rgba(0, 15, 35, 0.55);
+    backdrop-filter: blur(3px);
+
+    box-sizing: border-box;
+}
+
+/*----------------- CARD PRINCIPAL DO MODAL -----------------------------*/
+
+.modal-equipe {
+    width: 100%;
+    max-width: 650px;
+    max-height: 90vh;
+
+    padding: 28px;
+
+    overflow-y: auto;
+
+    background-color: #FFFFFF;
+    border: 1px solid #E9EDFA;
+    border-radius: 16px;
+
+    box-shadow: 0 12px 40px rgba(0, 31, 63, 0.18);
+    box-sizing: border-box;
+}
+
+/*----------------- CABEÇALHO -----------------------------*/
+
+.cabecalho-modal-equipe {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 20px;
+}
+
+.cabecalho-modal-equipe h2 {
+    margin: 0;
+
+    color: #001F3F;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.cabecalho-modal-equipe button {
+    width: 34px;
+    height: 34px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background-color: #F4F6FF;
+    border: none;
+    border-radius: 8px;
+
+    color: #51596A;
+    font-size: 24px;
+
+    cursor: pointer;
+}
+
+/*----------------- INFORMAÇÕES -----------------------------*/
+
+.dados-modal-equipe {
+    width: 100%;
+
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+/*----------------- CARD DE INFORMAÇÃO -----------------------------*/
+
+.card-informacao-equipe {
+    width: 100%;
+    min-width: 0;
+    min-height: 80px;
+
+    padding: 15px 16px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 8px;
+
+    background-color: #F4F6FF;
+    border: 1px solid #E9EDFA;
+    border-left: 4px solid #DCE5FF;
+    border-radius: 10px;
+
+    box-sizing: border-box;
+    transition: 0.2s;
+}
+
+.card-informacao-equipe:hover {
+    background-color: #EEF2FF;
+    border-color: #D6DFF5;
+    border-left-color: #0057D9;
+    box-shadow: 0px 2px 8px rgba(0, 31, 63, 0.05);
+}
+
+.card-informacao-equipe span {
+    color: #51596A;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.card-informacao-equipe strong {
+    min-width: 0;
+
+    color: #172337;
+    font-size: 14px;
+    font-weight: 600;
+
+    overflow-wrap: anywhere;
+}
+
+/*----------------- BOTÃO FECHAR -----------------------------*/
+
+.botao-fechar-modal {
+    width: 100%;
+    height: 42px;
+
+    margin-top: 22px;
+
+    background-color: #0057D9;
+    border: none;
+    border-radius: 8px;
+
+    color: #FFFFFF;
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.botao-fechar-modal:hover {
+    background-color: #0046B3;
+}
+
+

@@ -1,14 +1,54 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import '../../componentes/cardNomePag/nomePag.css';
 import './css-dashboard/dashboard.css';
+import buscarDadosDashboard from './servico/dashboardService';
 
 function Dashboard() {
+  const [carregando, setCarregando] = useState(true);
+  const [erro, setErro] = useState('');
+  const [dadosDashboard, setDadosDashboard] = useState({
+    colaboradores: [],
+    setores: [],
+    avaliacoes: [],
+    participacoes: [],
+    avaliacoesSetores: [],
+    avaliacoesCargos: [],
+    documentos: [],
+    ferias: [],
+    planosAcao: [],
+  });
+
+  useEffect(() => {
+    async function carregar() {
+      try {
+        setCarregando(true);
+        setErro('');
+
+        const resultado = await buscarDadosDashboard();
+        setDadosDashboard(resultado);
+      } catch (err) {
+        console.error('Erro ao buscar dados do dashboard:', err);
+        setErro(err.message || 'Erro ao carregar o dashboard.');
+      } finally {
+        setCarregando(false);
+      }
+    }
+
+    carregar();
+  }, []);
+
+  // --- CÁLCULOS E EXTRAÇÃO DOS DADOS DO BANCO / API ---
+  const totalColaboradores = dadosDashboard.colaboradores?.length ?? 248;
+  const totalPendencias = (dadosDashboard.documentos?.length ?? 0) + (dadosDashboard.ferias?.length ?? 0);
+  const totalPesquisas = dadosDashboard.avaliacoes?.length ?? 3;
+  const totalPlanos = dadosDashboard.planosAcao?.length ?? 5;
+
   const kpis = [
     {
       id: 1,
       titulo: 'Total de colaboradores',
-      valor: '248',
-      statusTexto: '12 novos este mês',
+      valor: String(totalColaboradores),
+      statusTexto: 'Ativos na organização',
       statusCor: 'verde',
       iconeBg: '#dcfce7',
       iconeCor: '#16a34a',
@@ -19,19 +59,19 @@ function Dashboard() {
     {
       id: 2,
       titulo: 'Pendências',
-      valor: '12',
-      statusTexto: '5 requerem atenção',
+      valor: String(totalPendencias),
+      statusTexto: 'Documentos e férias pendentes',
       statusCor: 'amarelo',
       iconeBg: '#fef9c3',
       iconeCor: '#ca8a04',
-      linkTexto: 'Ver todas as pendência',
+      linkTexto: 'Ver todas as pendências',
       iconeTipo: 'relogio',
       statusIcone: 'exclamacao',
     },
     {
       id: 3,
       titulo: 'Pesquisas e avaliações',
-      valor: '3',
+      valor: String(totalPesquisas),
       statusTexto: 'Em andamento',
       statusCor: 'azul',
       iconeBg: '#dbeafe',
@@ -43,8 +83,8 @@ function Dashboard() {
     {
       id: 4,
       titulo: 'Planos de ação',
-      valor: '5',
-      statusTexto: '2 próximos do prazo',
+      valor: String(totalPlanos),
+      statusTexto: 'Registrados no sistema',
       statusCor: 'amarelo',
       iconeBg: '#fef9c3',
       iconeCor: '#ca8a04',
@@ -62,65 +102,44 @@ function Dashboard() {
     { nome: 'Carga de trabalho', nota: '2,9 / 5', percentual: 58, status: 'Prioridade', tipo: 'prioridade' },
   ];
 
-  const pesquisas = [
-    {
-      nome: 'Pesquisa de Clima Organizacional',
-      setor: 'Produção',
-      participacao: 27,
-      metaTexto: '< meta',
-      corBarra: '#e69500',
-      corTexto: '#d97706',
-      status: 'Em andamento',
-    },
-    {
-      nome: 'Experiência do Colaborador',
-      setor: 'Tecnologia',
-      participacao: 55,
-      metaTexto: '',
-      corBarra: '#0b5ed7',
-      corTexto: '#1e293b',
-      status: 'Em andamento',
-    },
-    {
-      nome: 'Avaliação Psicossocial',
-      setor: 'Administrativo',
-      participacao: 42,
-      metaTexto: '',
-      corBarra: '#0b5ed7',
-      corTexto: '#1e293b',
-      status: 'Em andamento',
-    },
-  ];
+  const pesquisasFormatadas = (dadosDashboard.avaliacoes?.length > 0
+    ? dadosDashboard.avaliacoes.slice(0, 3)
+    : [
+        { titulo: 'Pesquisa de Clima Organizacional', setor: 'Produção', participacao: 27, status: 'Em andamento' },
+        { titulo: 'Experiência do Colaborador', setor: 'Tecnologia', participacao: 55, status: 'Em andamento' },
+        { titulo: 'Avaliação Psicossocial', setor: 'Administrativo', participacao: 42, status: 'Em andamento' },
+      ]
+  ).map((pesq, idx) => ({
+    nome: pesq.titulo ?? pesq.nome ?? `Pesquisa ${idx + 1}`,
+    setor: pesq.setor ?? pesq.nome_setor ?? 'Geral',
+    participacao: pesq.participacao ?? 50,
+    metaTexto: idx === 0 ? '< meta' : '',
+    corBarra: idx === 0 ? '#e69500' : '#0b5ed7',
+    corTexto: idx === 0 ? '#d97706' : '#1e293b',
+    status: pesq.status ?? 'Em andamento',
+  }));
 
-  const planosAcao = [
-    {
-      plano: 'Carga de trabalho',
-      origem: 'Indicador',
-      responsavel: 'Gestor Produção',
-      prazo: '15/09/2024',
-      status: 'Em andamento',
-      atrasado: false,
-      statusTipo: 'andamento',
-    },
-    {
-      plano: 'Comunicação interna',
-      origem: 'Pesquisa',
-      responsavel: 'RH',
-      prazo: '20/09/2024',
-      status: 'Não iniciada',
-      atrasado: false,
-      statusTipo: 'nao-iniciada',
-    },
-    {
-      plano: 'Ambiente',
-      origem: 'Avaliação',
-      responsavel: 'Gestor',
-      prazo: '05/09/2024',
-      status: 'Atrasada',
-      atrasado: true,
-      statusTipo: 'atrasada',
-    },
-  ];
+  const planosFormatados = (dadosDashboard.planosAcao?.length > 0
+    ? dadosDashboard.planosAcao.slice(0, 4)
+    : [
+        { titulo: 'Carga de trabalho', origem: 'Indicador', responsavel: 'Gestor Produção', prazo: '15/09/2026', status: 'Em andamento' },
+        { titulo: 'Comunicação interna', origem: 'Pesquisa', responsavel: 'RH', prazo: '20/09/2026', status: 'Não iniciada' },
+        { titulo: 'Ambiente', origem: 'Avaliação', responsavel: 'Gestor', prazo: '05/09/2026', status: 'Atrasada' },
+      ]
+  ).map((plano) => {
+    const statusStr = String(plano.status ?? plano.situacao ?? 'Em andamento');
+    const atrasado = statusStr.toLowerCase().includes('atrasada') || statusStr.toLowerCase().includes('atrasado');
+
+    return {
+      plano: plano.titulo ?? plano.descricao ?? 'Plano de Ação',
+      origem: plano.origem ?? 'Sistema',
+      responsavel: plano.responsavel ?? plano.nome_responsavel ?? 'RH',
+      prazo: plano.prazo ?? plano.data_termino ?? '20/09/2026',
+      status: statusStr,
+      atrasado,
+      statusTipo: atrasado ? 'atrasada' : statusStr.toLowerCase().includes('não') ? 'nao-iniciada' : 'andamento',
+    };
+  });
 
   const renderKpiIcone = (tipo, cor) => {
     switch (tipo) {
@@ -199,7 +218,6 @@ function Dashboard() {
 
   return (
     <div className="dashboard-wrapper">
-      {/* Cabeçalho padrão já existente no seu projeto */}
       <div className="card-tiulo">
         <div className="titulo-descricao">
           <h2>Dashboard</h2>
@@ -208,209 +226,221 @@ function Dashboard() {
       </div>
 
       <div className="dashboard-conteudo">
-        {/* Linha 1: 4 Cards de Resumo */}
-        <section className="kpi-grid">
-          {kpis.map((item) => (
-            <div key={item.id} className="dash-card kpi-card">
-              <div className="kpi-topo">
-                <span className="kpi-titulo">{item.titulo}</span>
-                <span
-                  className="kpi-icone-box"
-                  style={{ backgroundColor: item.iconeBg }}
-                >
-                  {renderKpiIcone(item.iconeTipo, item.iconeCor)}
-                </span>
-              </div>
+        {erro && (
+          <div style={{ background: '#fee2e2', color: '#b91c1c', padding: '14px 18px', borderRadius: '10px', marginBottom: '20px', fontWeight: 500 }}>
+            {erro}
+          </div>
+        )}
 
-              <div className="kpi-numero">{item.valor}</div>
-
-              <div className={`kpi-substatus status-${item.statusCor}`}>
-                {renderStatusIcone(item.statusIcone)}
-                <span>{item.statusTexto}</span>
-              </div>
-
-              <a href="#/" className="dash-link" onClick={(e) => e.preventDefault()}>
-                {item.linkTexto}
-              </a>
-            </div>
-          ))}
-        </section>
-
-        {/* Linha 2: Indicadores (esquerda) + Pesquisas em andamento (direita) */}
-        <section className="meio-grid">
-          {/* Card Indicadores */}
-          <div className="dash-card card-indicadores">
-            <h3 className="card-titulo-secao">Indicadores</h3>
-
-            <div className="indicadores-lista">
-              {indicadores.map((ind, idx) => (
-                <div key={idx} className="indicador-item">
-                  <div className="indicador-linha-info">
-                    <span className="indicador-nome">{ind.nome}</span>
-                    <div className="indicador-direita">
-                      <span className={`indicador-nota nota-${ind.tipo}`}>
-                        {ind.nota}
-                      </span>
-                      <span className={`badge-indicador badge-${ind.tipo}`}>
-                        {ind.status}
-                      </span>
-                    </div>
+        {carregando ? (
+          <div style={{ padding: '48px', textAlign: 'center', color: '#64748b' }}>
+            Carregando dados do dashboard...
+          </div>
+        ) : (
+          <>
+            {/* Linha 1: 4 Cards de Resumo */}
+            <section className="kpi-grid">
+              {kpis.map((item) => (
+                <div key={item.id} className="dash-card kpi-card">
+                  <div className="kpi-topo">
+                    <span className="kpi-titulo">{item.titulo}</span>
+                    <span
+                      className="kpi-icone-box"
+                      style={{ backgroundColor: item.iconeBg }}
+                    >
+                      {renderKpiIcone(item.iconeTipo, item.iconeCor)}
+                    </span>
                   </div>
-                  <div className="indicador-barra-bg">
-                    <div
-                      className={`indicador-barra-fill fill-${ind.tipo}`}
-                      style={{ width: `${ind.percentual}%` }}
-                    ></div>
+
+                  <div className="kpi-numero">{item.valor}</div>
+
+                  <div className={`kpi-substatus status-${item.statusCor}`}>
+                    {renderStatusIcone(item.statusIcone)}
+                    <span>{item.statusTexto}</span>
                   </div>
+
+                  <a href="#/" className="dash-link" onClick={(e) => e.preventDefault()}>
+                    {item.linkTexto}
+                  </a>
                 </div>
               ))}
-            </div>
+            </section>
 
-            <div className="card-rodape-link">
-              <a href="#/" className="dash-link" onClick={(e) => e.preventDefault()}>
-                Ver Mais
-              </a>
-            </div>
-          </div>
+            {/* Linha 2: Indicadores (esquerda) + Pesquisas em andamento (direita) */}
+            <section className="meio-grid">
+              <div className="dash-card card-indicadores">
+                <h3 className="card-titulo-secao">Indicadores</h3>
 
-          {/* Card Pesquisas em andamento */}
-          <div className="dash-card card-pesquisas">
-            <h3 className="card-titulo-secao">Pesquisas em andamento</h3>
-
-            <div className="tabela-responsiva">
-              <table className="dash-tabela tabela-pesquisas">
-                <thead>
-                  <tr>
-                    <th>PESQUISA</th>
-                    <th>SETOR</th>
-                    <th>PARTICIPAÇÃO</th>
-                    <th>STATUS</th>
-                    <th>AÇÃO</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {pesquisas.map((pesq, idx) => (
-                    <tr key={idx}>
-                      <td className="celula-pesquisa-nome">{pesq.nome}</td>
-                      <td className="celula-setor">{pesq.setor}</td>
-                      <td className="celula-participacao">
-                        <div className="part-topo">
-                          <span style={{ color: pesq.corTexto, fontWeight: 700 }}>
-                            {pesq.participacao}%
+                <div className="indicadores-lista">
+                  {indicadores.map((ind, idx) => (
+                    <div key={idx} className="indicador-item">
+                      <div className="indicador-linha-info">
+                        <span className="indicador-nome">{ind.nome}</span>
+                        <div className="indicador-direita">
+                          <span className={`indicador-nota nota-${ind.tipo}`}>
+                            {ind.nota}
                           </span>
-                          {pesq.metaTexto && (
-                            <span className="part-meta">{pesq.metaTexto}</span>
-                          )}
+                          <span className={`badge-indicador badge-${ind.tipo}`}>
+                            {ind.status}
+                          </span>
                         </div>
-                        <div className="part-barra-bg">
-                          <div
-                            className="part-barra-fill"
-                            style={{
-                              width: `${pesq.participacao}%`,
-                              backgroundColor: pesq.corBarra,
-                            }}
-                          ></div>
-                        </div>
-                      </td>
-                      <td>
-                        <span className="pill-status pill-azul">{pesq.status}</span>
-                      </td>
-                      <td>
-                        <button type="button" className="btn-ver">
-                          Ver
-                        </button>
-                      </td>
-                    </tr>
+                      </div>
+                      <div className="indicador-barra-bg">
+                        <div
+                          className={`indicador-barra-fill fill-${ind.tipo}`}
+                          style={{ width: `${ind.percentual}%` }}
+                        ></div>
+                      </div>
+                    </div>
                   ))}
-                </tbody>
-              </table>
-            </div>
+                </div>
 
-            <div className="card-rodape-link">
-              <a href="#/" className="dash-link" onClick={(e) => e.preventDefault()}>
-                Ver Mais
-              </a>
-            </div>
-          </div>
-        </section>
+                <div className="card-rodape-link">
+                  <a href="#/" className="dash-link" onClick={(e) => e.preventDefault()}>
+                    Ver Mais
+                  </a>
+                </div>
+              </div>
 
-        {/* Linha 3: Planos de ação (centralizado embaixo) */}
-        <section className="planos-wrapper">
-          <div className="dash-card card-planos">
-            <h3 className="card-titulo-secao">Planos de ação</h3>
+              <div className="dash-card card-pesquisas">
+                <h3 className="card-titulo-secao">Pesquisas em andamento</h3>
 
-            <div className="tabela-responsiva">
-              <table className="dash-tabela tabela-planos">
-                <thead>
-                  <tr>
-                    <th>PLANO</th>
-                    <th>ORIGEM</th>
-                    <th>RESPONSÁVEL</th>
-                    <th>PRAZO</th>
-                    <th>STATUS</th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {planosAcao.map((plano, idx) => (
-                    <tr
-                      key={idx}
-                      className={plano.atrasado ? 'linha-atrasada' : ''}
-                    >
-                      <td className="celula-plano-nome">
-                        {plano.atrasado && <span className="ponto-vermelho"></span>}
-                        {plano.plano}
-                      </td>
-                      <td>
-                        <span className="tag-origem">{plano.origem}</span>
-                      </td>
-                      <td className="celula-responsavel">{plano.responsavel}</td>
-                      <td className={plano.atrasado ? 'celula-prazo-atrasado' : 'celula-prazo'}>
-                        {plano.atrasado && (
-                          <svg
-                            width="14"
-                            height="14"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2.2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            style={{ marginRight: '5px', verticalAlign: '-2px' }}
-                          >
-                            <circle cx="12" cy="12" r="10" />
-                            <polyline points="12 6 12 12 16 14" />
-                          </svg>
-                        )}
-                        {plano.prazo}
-                      </td>
-                      <td>
-                        <span className={`pill-status pill-${plano.statusTipo}`}>
-                          {plano.status}
-                        </span>
-                      </td>
-                      <td className="celula-detalhes">
-                        <a
-                          href="#/"
-                          className={plano.atrasado ? 'link-detalhes-vermelho' : 'link-detalhes'}
-                          onClick={(e) => e.preventDefault()}
+                <div className="tabela-responsiva">
+                  <table className="dash-tabela tabela-pesquisas">
+                    <thead>
+                      <tr>
+                        <th>PESQUISA</th>
+                        <th>SETOR</th>
+                        <th>PARTICIPAÇÃO</th>
+                        <th>STATUS</th>
+                        <th>AÇÃO</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {pesquisasFormatadas.map((pesq, idx) => (
+                        <tr key={idx}>
+                          <td className="celula-pesquisa-nome">{pesq.nome}</td>
+                          <td className="celula-setor">{pesq.setor}</td>
+                          <td className="celula-participacao">
+                            <div className="part-topo">
+                              <span style={{ color: pesq.corTexto, fontWeight: 700 }}>
+                                {pesq.participacao}%
+                              </span>
+                              {pesq.metaTexto && (
+                                <span className="part-meta">{pesq.metaTexto}</span>
+                              )}
+                            </div>
+                            <div className="part-barra-bg">
+                              <div
+                                className="part-barra-fill"
+                                style={{
+                                  width: `${pesq.participacao}%`,
+                                  backgroundColor: pesq.corBarra,
+                                }}
+                              ></div>
+                            </div>
+                          </td>
+                          <td>
+                            <span className="pill-status pill-azul">{pesq.status}</span>
+                          </td>
+                          <td>
+                            <button type="button" className="btn-ver">
+                              Ver
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                <div className="card-rodape-link">
+                  <a href="#/" className="dash-link" onClick={(e) => e.preventDefault()}>
+                    Ver Mais
+                  </a>
+                </div>
+              </div>
+            </section>
+
+            {/* Linha 3: Planos de ação (centralizado embaixo) */}
+            <section className="planos-wrapper">
+              <div className="dash-card card-planos">
+                <h3 className="card-titulo-secao">Planos de ação</h3>
+
+                <div className="tabela-responsiva">
+                  <table className="dash-tabela tabela-planos">
+                    <thead>
+                      <tr>
+                        <th>PLANO</th>
+                        <th>ORIGEM</th>
+                        <th>RESPONSÁVEL</th>
+                        <th>PRAZO</th>
+                        <th>STATUS</th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {planosFormatados.map((plano, idx) => (
+                        <tr
+                          key={idx}
+                          className={plano.atrasado ? 'linha-atrasada' : ''}
                         >
-                          Detalhes
-                        </a>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                          <td className="celula-plano-nome">
+                            {plano.atrasado && <span className="ponto-vermelho"></span>}
+                            {plano.plano}
+                          </td>
+                          <td>
+                            <span className="tag-origem">{plano.origem}</span>
+                          </td>
+                          <td className="celula-responsavel">{plano.responsavel}</td>
+                          <td className={plano.atrasado ? 'celula-prazo-atrasado' : 'celula-prazo'}>
+                            {plano.atrasado && (
+                              <svg
+                                width="14"
+                                height="14"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2.2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                style={{ marginRight: '5px', verticalAlign: '-2px' }}
+                              >
+                                <circle cx="12" cy="12" r="10" />
+                                <polyline points="12 6 12 12 16 14" />
+                              </svg>
+                            )}
+                            {plano.prazo}
+                          </td>
+                          <td>
+                            <span className={`pill-status pill-${plano.statusTipo}`}>
+                              {plano.status}
+                            </span>
+                          </td>
+                          <td className="celula-detalhes">
+                            <a
+                              href="#/"
+                              className={plano.atrasado ? 'link-detalhes-vermelho' : 'link-detalhes'}
+                              onClick={(e) => e.preventDefault()}
+                            >
+                              Detalhes
+                            </a>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
 
-            <div className="card-rodape-link">
-              <a href="#/" className="dash-link" onClick={(e) => e.preventDefault()}>
-                Ver Mais
-              </a>
-            </div>
-          </div>
-        </section>
+                <div className="card-rodape-link">
+                  <a href="#/" className="dash-link" onClick={(e) => e.preventDefault()}>
+                    Ver Mais
+                  </a>
+                </div>
+              </div>
+            </section>
+          </>
+        )}
       </div>
     </div>
   );
