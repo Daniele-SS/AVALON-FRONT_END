@@ -1,4 +1,5 @@
-//----------------- IMPORTAÇÕES -----------------------------//
+
+ //----------------- IMPORTAÇÕES -----------------------------//
 
 import { useEffect, useState } from 'react';
 
@@ -9,10 +10,13 @@ import IdentificacaoAvaliacao from './componentes/IdentificacaoAvaliacao.jsx';
 import SelecaoPublico from './componentes/SelecaoPublico.jsx';
 import CardFator from './componentes/CardFator.jsx';
 import ListaPerguntas from './componentes/ListaPerguntas.jsx';
+import SelecaoRegras from './componentes/SelecaoRegras.jsx';
 
 import { buscarPerguntasAvaliacao } from './servico/buscarPerguntasApi.js';
 import buscarCargosAvaliacao from './servico/buscarCargosAvaliacao.js';
 import buscarSetoresAvaliacao from './servico/buscarSetoresAvaliacao.js';
+
+import buscarDadosMotorRegras from '../motorRegras/servicos/motorRegrasApi.js';
 
 import './css-avaliacaoPsicossocial/cadastroAvaliacao.css';
 
@@ -52,6 +56,13 @@ function CadastroAvaliacao({ voltar, onSalvar, onSucesso }) {
     const [fatoresSelecionados, setFatoresSelecionados] = useState([]);
 
 
+    //----------------- REGRAS DO MOTOR ---------------------//
+
+    const [regrasMotor, setRegrasMotor] = useState([]);
+
+    const [regrasSelecionadas, setRegrasSelecionadas] = useState([]);
+
+
     //----------------- ESTADOS DA TELA ---------------------//
 
     const [carregando, setCarregando] = useState(true);
@@ -78,19 +89,30 @@ function CadastroAvaliacao({ voltar, onSalvar, onSucesso }) {
                 const [
                     dadosPerguntas,
                     dadosSetores,
-                    dadosCargos
+                    dadosCargos,
+                    dadosRegras
                 ] = await Promise.all([
+
                     buscarPerguntasAvaliacao(),
+
                     buscarSetoresAvaliacao(),
-                    buscarCargosAvaliacao()
+
+                    buscarCargosAvaliacao(),
+
+                    buscarDadosMotorRegras()
+
                 ]);
+
+
+                //----------------- GUARDAR DADOS ----------------//
 
                 setPerguntas(dadosPerguntas);
                 setSetores(dadosSetores);
                 setCargos(dadosCargos);
+                setRegrasMotor(dadosRegras);
 
 
-                // Identifica os fatores sem repetir.
+                //----------------- IDENTIFICAR FATORES ---------//
 
                 const fatoresUnicos = dadosPerguntas.reduce(
                     (lista, pergunta) => {
@@ -116,7 +138,7 @@ function CadastroAvaliacao({ voltar, onSalvar, onSucesso }) {
                 );
 
 
-                // Organiza os fatores pelo ID.
+                //----------------- ORDENAR FATORES -------------//
 
                 fatoresUnicos.sort(
                     (a, b) => Number(a.id) - Number(b.id)
@@ -150,8 +172,11 @@ function CadastroAvaliacao({ voltar, onSalvar, onSucesso }) {
     function limparErro(campo) {
 
         setErros(anteriores => ({
+
             ...anteriores,
+
             [campo]: ''
+
         }));
 
     }
@@ -163,17 +188,31 @@ function CadastroAvaliacao({ voltar, onSalvar, onSucesso }) {
 
         const id = Number(idFator);
 
-        setFatoresSelecionados(anteriores => {
+        // Verifica se o fator já está selecionado.
+        const novosFatores = fatoresSelecionados.includes(id)
 
-            if (anteriores.includes(id)) {
+            ? fatoresSelecionados.filter(item => item !== id)
 
-                return anteriores.filter(item => item !== id);
+            : [...fatoresSelecionados, id];
 
-            }
 
-            return [...anteriores, id];
+        // Atualiza os fatores da avaliação.
+        setFatoresSelecionados(novosFatores);
 
-        });
+
+        // Remove as regras dos fatores que foram desmarcados.
+        setRegrasSelecionadas(anteriores =>
+
+            anteriores.filter(regra =>
+
+                novosFatores.includes(
+                    Number(regra.id_psicossocial_fator)
+                )
+
+            )
+
+        );
+
 
         limparErro('fatores');
 
@@ -185,9 +224,11 @@ function CadastroAvaliacao({ voltar, onSalvar, onSucesso }) {
     const perguntasSelecionadas = perguntas
 
         .filter(pergunta =>
+
             fatoresSelecionados.includes(
                 Number(pergunta.psicossocial_fator?.id)
             )
+
         )
 
         .sort((a, b) => Number(a.ordem) - Number(b.ordem));
@@ -256,6 +297,9 @@ function CadastroAvaliacao({ voltar, onSalvar, onSucesso }) {
 
         }
 
+
+        //----------------- VERIFICAR ERROS ------------------//
+
         setErros(novosErros);
 
         if (Object.keys(novosErros).length > 0) {
@@ -268,9 +312,11 @@ function CadastroAvaliacao({ voltar, onSalvar, onSucesso }) {
         const dadosAvaliacao = {
 
             titulo: titulo.trim(),
+
             descricao: descricao.trim(),
 
             data_inicio: dataInicio,
+
             data_fim: dataFim,
 
             anonimo: Number(anonimato),
@@ -281,9 +327,13 @@ function CadastroAvaliacao({ voltar, onSalvar, onSucesso }) {
             publico_selecionado: publicoSelecionado,
 
             setores_selecionados: setoresSelecionados,
+
             cargos_selecionados: cargosSelecionados,
 
-            fatores_selecionados: fatoresSelecionados
+            fatores_selecionados: fatoresSelecionados,
+
+            // Regras escolhidas para cada fator.
+            regras_selecionadas: regrasSelecionadas
 
         };
 
@@ -293,6 +343,7 @@ function CadastroAvaliacao({ voltar, onSalvar, onSucesso }) {
         try {
 
             setSalvando(true);
+
             setErroSalvar('');
 
             // O componente pai realiza o cadastro na API.
@@ -371,39 +422,40 @@ function CadastroAvaliacao({ voltar, onSalvar, onSucesso }) {
         <div className="cadastro-avaliacao-psicossocial">
 
 
-{/* CABEÇALHO */}
+            {/* CABEÇALHO */}
 
-<div className="cabecalho-nova-avaliacao">
+            <div className="cabecalho-nova-avaliacao">
 
-    <BotaoCadastro 
-    titulo="Nova Avaliação Psicossocial"
-    descricao="Crie uma Avaliação para coletar percepções e opiniões dos colaboradores com total controle de público e
-anonimato."
-    >
-        
+                <BotaoCadastro
 
-        <nav className="caminho-cadastro-avaliacao">
+                    titulo="Nova Avaliação Psicossocial"
 
-            <button
-                type="button"
-                onClick={voltar}
-            >
-                Avaliação Psicossocial
-            </button>
+                    descricao="Crie uma Avaliação para coletar percepções e opiniões dos colaboradores com total controle de público e anonimato."
 
-            <span className="seta">
-                &gt;
-            </span>
+                >
 
-            <span className="pagina-atual-avaliacao">
-                Nova Avaliação Psicossocial
-            </span>
+                    <nav className="caminho-cadastro-avaliacao">
 
-        </nav>
+                        <button
+                            type="button"
+                            onClick={voltar}
+                        >
+                            Avaliação Psicossocial
+                        </button>
 
-    </BotaoCadastro>
+                        <span className="seta">
+                            &gt;
+                        </span>
 
-</div>
+                        <span className="pagina-atual-avaliacao">
+                            Nova Avaliação Psicossocial
+                        </span>
+
+                    </nav>
+
+                </BotaoCadastro>
+
+            </div>
 
 
             {/* ERRO AO CADASTRAR */}
@@ -438,7 +490,9 @@ anonimato."
                                 ETAPA 1
                             </span>
 
-                            <h2>Identificação da Avaliação</h2>
+                            <h2>
+                                Identificação da Avaliação
+                            </h2>
 
                         </div>
 
@@ -451,18 +505,25 @@ anonimato."
                 </div>
 
                 <IdentificacaoAvaliacao
+
                     titulo={titulo}
                     setTitulo={setTitulo}
+
                     descricao={descricao}
                     setDescricao={setDescricao}
+
                     dataInicio={dataInicio}
                     setDataInicio={setDataInicio}
+
                     dataFim={dataFim}
                     setDataFim={setDataFim}
+
                     anonimato={anonimato}
                     setAnonimato={setAnonimato}
+
                     erros={erros}
                     limparErro={limparErro}
+
                 />
 
             </section>
@@ -482,14 +543,18 @@ anonimato."
                                 CONFIGURAÇÃO EM ABERTO
                             </span>
 
-                            <h2>Fatores Psicossociais a Avaliar</h2>
+                            <h2>
+                                Fatores Psicossociais a Avaliar
+                            </h2>
 
                         </div>
 
                     </div>
 
                     <span className="contador-fatores-avaliacao">
+
                         {fatoresSelecionados.length} de {fatores.length} selecionados
+
                     </span>
 
                 </div>
@@ -501,20 +566,28 @@ anonimato."
 
                         const quantidadePerguntas = perguntas.filter(
                             pergunta =>
+
                                 Number(pergunta.psicossocial_fator?.id) ===
                                 Number(fator.id)
+
                         ).length;
 
                         return (
 
                             <CardFator
+
                                 key={fator.id}
+
                                 fator={fator}
+
                                 selecionado={fatoresSelecionados.includes(
                                     Number(fator.id)
                                 )}
+
                                 onChange={() => alterarFator(fator.id)}
+
                                 quantidadePerguntas={quantidadePerguntas}
+
                             />
 
                         );
@@ -583,23 +656,82 @@ anonimato."
             </section>
 
 
-            {/* ETAPA 4 - PÚBLICO E PRIVACIDADE */}
+            {/* ETAPA 4 - REGRAS DO MOTOR */}
+
+            <section className="cartao-cadastro-avaliacao secao-regras-avaliacao">
+
+                <div className="cabecalho-etapa-avaliacao">
+
+                    <div className="informacao-etapa-avaliacao">
+
+                        <div>
+
+                            <span className="legenda-etapa-avaliacao">
+                                CONFIGURAÇÃO DAS REGRAS
+                            </span>
+
+                            <h2>
+                                Regras do Motor de Regras
+                            </h2>
+
+                            <p>
+                                Selecione as regras que serão utilizadas
+                                para classificar os resultados dos fatores
+                                desta avaliação.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <span className="contador-fatores-avaliacao">
+                        {regrasSelecionadas.length} selecionadas
+                    </span>
+
+                </div>
+
+
+                <SelecaoRegras
+
+                    fatores={fatores}
+
+                    fatoresSelecionados={fatoresSelecionados}
+
+                    regras={regrasMotor}
+
+                    regrasSelecionadas={regrasSelecionadas}
+
+                    setRegrasSelecionadas={setRegrasSelecionadas}
+
+                />
+
+            </section>
+
+
+            {/* ETAPA 5 - PÚBLICO E PRIVACIDADE */}
 
             <section className="cartao-cadastro-avaliacao secao-publico-avaliacao">
 
                 <SelecaoPublico
+
                     publicoSelecionado={publicoSelecionado}
                     setPublicoSelecionado={setPublicoSelecionado}
+
                     setores={setores}
                     cargos={cargos}
+
                     setoresSelecionados={setoresSelecionados}
                     setSetoresSelecionados={setSetoresSelecionados}
+
                     cargosSelecionados={cargosSelecionados}
                     setCargosSelecionados={setCargosSelecionados}
+
                     anonimato={anonimato}
                     setAnonimato={setAnonimato}
+
                     limparErro={limparErro}
                     erro={erros.publico}
+
                 />
 
             </section>
@@ -610,10 +742,15 @@ anonimato."
             <div className="botoes-cadastro-avaliacao">
 
                 <BotaoSalvarCancelar
+
                     onCancelar={voltar}
+
                     onSalvar={salvarAvaliacao}
+
                     salvando={salvando}
+
                     textoBotao="Salvar Avaliação"
+
                 />
 
             </div>

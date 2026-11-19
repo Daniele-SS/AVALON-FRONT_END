@@ -1,0 +1,161 @@
+
+/* --------------------------------------------------------- */
+/* SELEÇÃO DE REGRAS                                         */
+/* --------------------------------------------------------- */
+
+.selecao-regras-avaliacao {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+
+/* --------------------------------------------------------- */
+/* GRUPO DE REGRAS                                           */
+/* --------------------------------------------------------- */
+
+.grupo-regras-avaliacao {
+    width: 100%;
+    padding: 20px;
+    border: 1px solid #E4E7EC;
+    border-radius: 10px;
+    background-color: #FFFFFF;
+}
+
+
+/* --------------------------------------------------------- */
+/* CABEÇALHO DO GRUPO                                        */
+/* --------------------------------------------------------- */
+
+.cabecalho-grupo-regras {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.cabecalho-grupo-regras h3 {
+    margin: 0;
+    color: #001F3F;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.cabecalho-grupo-regras span {
+    color: #667085;
+    font-size: 12px;
+}
+
+
+/* --------------------------------------------------------- */
+/* LISTA DE REGRAS                                           */
+/* --------------------------------------------------------- */
+
+.lista-regras-avaliacao {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+
+/* --------------------------------------------------------- */
+/* ITEM DA REGRA                                             */
+/* --------------------------------------------------------- */
+
+.item-regra-avaliacao {
+    width: 100%;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 16px;
+    border: 1px solid #E4E7EC;
+    border-radius: 8px;
+    background-color: #FFFFFF;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.item-regra-avaliacao:hover {
+    border-color: #98AFC7;
+    background-color: #F8FAFC;
+}
+
+.item-regra-avaliacao.regra-selecionada {
+    border-color: #1976D2;
+    background-color: #F0F6FF;
+}
+
+.item-regra-avaliacao input {
+    width: 17px;
+    height: 17px;
+    margin-top: 3px;
+    accent-color: #1976D2;
+    cursor: pointer;
+}
+
+
+/* --------------------------------------------------------- */
+/* INFORMAÇÕES DA REGRA                                      */
+/* --------------------------------------------------------- */
+
+.informacoes-regra-avaliacao {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.informacoes-regra-avaliacao strong {
+    color: #344054;
+    font-size: 14px;
+}
+
+.informacoes-regra-avaliacao span {
+    color: #667085;
+    font-size: 13px;
+}
+
+.informacoes-regra-avaliacao p {
+    margin: 0;
+    color: #475467;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+
+/* --------------------------------------------------------- */
+/* MENSAGENS                                                 */
+/* --------------------------------------------------------- */
+
+.mensagem-regras-avaliacao {
+    margin: 0;
+    padding: 16px;
+    color: #667085;
+    font-size: 13px;
+    background-color: #F8F9FC;
+    border-radius: 8px;
+}
+
+
+/* --------------------------------------------------------- */
+/* RODAPÉ                                                    */
+/* --------------------------------------------------------- */
+
+.rodape-selecao-regras {
+    padding: 16px;
+    border-radius: 8px;
+    background-color: #F0F6FF;
+}
+
+.rodape-selecao-regras span {
+    color: #001F3F;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.rodape-selecao-regras p {
+    margin: 5px 0 0;
+    color: #667085;
+    font-size: 12px;
+}

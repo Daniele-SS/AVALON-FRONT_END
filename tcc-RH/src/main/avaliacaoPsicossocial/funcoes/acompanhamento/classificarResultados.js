@@ -28,29 +28,57 @@ function compararValor(media, operador, referencia) {
 
 }
 
+
+// Padroniza a classificação recebida pela API.
+function normalizarClassificacao(classificacao) {
+
+    const valor = String(classificacao || '')
+        .trim()
+        .toUpperCase();
+
+    switch (valor) {
+
+        case 'NORMAL':
+            return 'Normal';
+
+        case 'ATENÇÃO':
+        case 'ATENCAO':
+            return 'Atenção';
+
+        case 'PRIORIDADE':
+            return 'Prioridade';
+
+        default:
+            return classificacao;
+
+    }
+
+}
+
+
 function classificarResultados(media, idFator, regras) {
 
     if (media === null || media === undefined) {
+
         return {
             classificacao: 'Indisponível',
             acao: ''
         };
+
     }
 
-    const regrasAtivas = regras.filter((regra) => {
-
-        const idFatorRegra =
-            regra.fator_psicossocial?.id ??
-            regra.id_psicossocial_fator;
+    // Considera somente as regras vinculadas ao fator.
+    const regrasFator = regras.filter((regra) => {
 
         return (
-            Number(idFatorRegra) === Number(idFator) &&
+            Number(regra.id_psicossocial_fator) === Number(idFator) &&
             Number(regra.ativo) === 1
         );
 
     });
 
-    const regrasCorrespondentes = regrasAtivas.filter((regra) => {
+    // Verifica quais regras correspondem à média calculada.
+    const regrasCorrespondentes = regrasFator.filter((regra) => {
 
         return compararValor(
             Number(media),
@@ -78,9 +106,12 @@ function classificarResultados(media, idFator, regras) {
 
     regrasCorrespondentes.sort((a, b) => {
 
+        const classificacaoA = normalizarClassificacao(a.classificacao);
+        const classificacaoB = normalizarClassificacao(b.classificacao);
+
         return (
-            (prioridade[b.classificacao] || 0) -
-            (prioridade[a.classificacao] || 0)
+            (prioridade[classificacaoB] || 0) -
+            (prioridade[classificacaoA] || 0)
         );
 
     });
@@ -88,7 +119,9 @@ function classificarResultados(media, idFator, regras) {
     const regraSelecionada = regrasCorrespondentes[0];
 
     return {
-        classificacao: regraSelecionada.classificacao,
+        classificacao: normalizarClassificacao(
+            regraSelecionada.classificacao
+        ),
         acao: regraSelecionada.acao ?? ''
     };
 

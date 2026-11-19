@@ -1,5 +1,5 @@
 
- //----------------- IMPORTAÇÕES -----------------------------//
+//----------------- IMPORTAÇÕES -----------------------------//
 
 import { useEffect, useState } from 'react';
 
@@ -19,14 +19,11 @@ import './css-avaliacaoPsicossocial/acompanhamentoAvaliacao.css';
 
 function AcompanhamentoAvaliacao({ avaliacao, onVoltar }) {
 
-
     //----------------- ESTADOS -------------------------------//
 
     const [resultados, setResultados] = useState([]);
-
     const [carregando, setCarregando] = useState(true);
     const [erro, setErro] = useState('');
-
     const [regras, setRegras] = useState([]);
 
 
@@ -39,22 +36,22 @@ function AcompanhamentoAvaliacao({ avaliacao, onVoltar }) {
             setCarregando(true);
             setErro('');
 
-            // Busca os dados necessários para o acompanhamento.
+            // Busca os dados da avaliação e seus parâmetros vinculados.
             const [
                 participacoes,
                 respostas,
                 fatores,
-                regrasMotor
+                regrasVinculadas
             ] = await Promise.all([
 
                 buscarParticipacoesAvaliacao(avaliacao.id),
                 buscarRespostasAvaliacao(avaliacao.id),
                 buscarFatoresAvaliacao(),
-                buscarRegrasAvaliacao()
+                buscarRegrasAvaliacao(avaliacao.id)
 
             ]);
 
-            setRegras(regrasMotor);
+            setRegras(regrasVinculadas);
 
             // Relaciona respostas, participações e setores.
             const dadosAgrupados = agruparRespostas(
@@ -62,7 +59,7 @@ function AcompanhamentoAvaliacao({ avaliacao, onVoltar }) {
                 respostas
             );
 
-            // Calcula as médias de todos os fatores da avaliação.
+            // Calcula as médias dos fatores.
             const medias = calcularMedias(
                 dadosAgrupados.respostasValidas,
                 fatores,
@@ -70,11 +67,11 @@ function AcompanhamentoAvaliacao({ avaliacao, onVoltar }) {
                 1
             );
 
-            // Monta os resultados e aplica as regras.
+            // Monta os resultados usando somente as regras vinculadas.
             const resultadosMontados = montarResultadosFatores(
                 fatores,
                 medias,
-                regrasMotor
+                regrasVinculadas
             );
 
             setResultados(resultadosMontados);
@@ -111,15 +108,18 @@ function AcompanhamentoAvaliacao({ avaliacao, onVoltar }) {
 
     function obterClasseClassificacao(classificacao) {
 
-        switch (classificacao) {
+        const valor = String(classificacao || '').toUpperCase();
 
-            case 'Normal':
+        switch (valor) {
+
+            case 'NORMAL':
                 return 'normal';
 
-            case 'Atenção':
+            case 'ATENÇÃO':
+            case 'ATENCAO':
                 return 'atencao';
 
-            case 'Prioridade':
+            case 'PRIORIDADE':
                 return 'prioridade';
 
             default:
@@ -147,32 +147,40 @@ function AcompanhamentoAvaliacao({ avaliacao, onVoltar }) {
 
     function obterParametro(fator) {
 
+        // Busca as regras vinculadas ao fator atual.
         const regrasFator = regras.filter((regra) => {
 
-            const idFator =
-                regra.fator_psicossocial?.id ??
-                regra.id_psicossocial_fator;
-
             return (
-                Number(idFator) === Number(fator.id) &&
-                Number(regra.ativo) === 1
+                Number(regra.id_psicossocial_fator) === Number(fator.id)
             );
 
         });
 
-        // Procura um limite de referência cadastrado.
+        if (regrasFator.length === 0) {
+            return null;
+        }
+
+        // Se houver uma regra de Atenção ou Prioridade,
+        // utiliza seu valor como referência visual.
         const regraLimite = regrasFator.find((regra) => {
 
+            const classificacao = String(regra.classificacao || '')
+                .trim()
+                .toUpperCase();
+
             return (
-                regra.operador === '<' ||
-                regra.operador === '<='
+                classificacao === 'ATENÇÃO' ||
+                classificacao === 'ATENCAO' ||
+                classificacao === 'PRIORIDADE'
             );
 
         });
 
-        return regraLimite
-            ? Number(regraLimite.valor_referencial)
-            : null;
+        // Se houver somente uma regra, utiliza seu valor.
+        // Isso permite exibir o parâmetro do exemplo > 2.50.
+        const regraReferencia = regraLimite || regrasFator[0];
+
+        return Number(regraReferencia.valor_referencial);
 
     }
 
@@ -228,7 +236,6 @@ function AcompanhamentoAvaliacao({ avaliacao, onVoltar }) {
     return (
 
         <div className="pagina-acompanhamento-avaliacao">
-
 
             {/* CABEÇALHO */}
 
@@ -287,7 +294,6 @@ function AcompanhamentoAvaliacao({ avaliacao, onVoltar }) {
                                 className="card-fator-acompanhamento"
                                 key={fator.id}
                             >
-
 
                                 {/* IDENTIFICAÇÃO DO FATOR */}
 
@@ -356,7 +362,7 @@ function AcompanhamentoAvaliacao({ avaliacao, onVoltar }) {
                                             {parametro !== null && (
 
                                                 <span className="legenda-parametro">
-                                                    Limite de Atenção ({formatarMedia(parametro)})
+                                                    Parâmetro ({formatarMedia(parametro)})
                                                 </span>
 
                                             )}
@@ -456,6 +462,8 @@ function AcompanhamentoAvaliacao({ avaliacao, onVoltar }) {
                                                                     width: largura
                                                                 }}
                                                             />
+
+                                                            {/* MARCADOR DO PARÂMETRO */}
 
                                                             {parametro !== null && (
 
