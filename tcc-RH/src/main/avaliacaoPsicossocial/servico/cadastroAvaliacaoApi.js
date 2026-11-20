@@ -224,6 +224,55 @@ async function registrarParticipantes(
 }
 
 
+//----------------- CADASTRAR REGRAS DA AVALIAÇÃO ----------------------//
+
+async function registrarRegrasAvaliacao(
+    idAvaliacao,
+    regrasSelecionadas,
+    token
+) {
+
+    // Percorre todas as regras selecionadas no cadastro.
+    for (const regra of regrasSelecionadas || []) {
+
+        const idMotorRegras = Number(regra.id_motor_regras);
+
+        const idFator = Number(regra.id_psicossocial_fator);
+
+        // Valida os identificadores antes de enviar.
+        if (
+            !Number.isInteger(idMotorRegras) ||
+            idMotorRegras <= 0 ||
+            !Number.isInteger(idFator) ||
+            idFator <= 0
+        ) {
+
+            throw new Error(
+                'Uma das regras selecionadas possui identificadores inválidos.'
+            );
+
+        }
+
+        // Registra o vínculo entre avaliação, regra e fator.
+        await realizarRequisicao(
+            'avaliacao_motor_regras',
+            token,
+            {
+                id_avaliacao: idAvaliacao,
+                id_motor_regras: idMotorRegras,
+                id_psicossocial_fator: idFator
+            }
+        );
+
+    }
+
+    console.log(
+        `${(regrasSelecionadas || []).length} regras vinculadas à avaliação ${idAvaliacao}.`
+    );
+
+}
+
+
 //----------------- CADASTRAR AVALIAÇÃO -------------------------------//
 
 async function cadastrarAvaliacaoPsicossocial(dadosAvaliacao) {
@@ -297,7 +346,16 @@ async function cadastrarAvaliacaoPsicossocial(dadosAvaliacao) {
         }
 
 
-        // 3. CADASTRA OS SETORES, CASO O PÚBLICO SEJA SETOR.
+        // 3. CADASTRA AS REGRAS SELECIONADAS.
+
+        await registrarRegrasAvaliacao(
+            idAvaliacao,
+            dadosAvaliacao.regras_selecionadas,
+            token
+        );
+
+
+        // 4. CADASTRA OS SETORES, CASO O PÚBLICO SEJA SETOR.
 
         if (dadosAvaliacao.publico_selecionado === 'SETOR') {
 
@@ -325,7 +383,7 @@ async function cadastrarAvaliacaoPsicossocial(dadosAvaliacao) {
         }
 
 
-        // 4. CADASTRA OS CARGOS, CASO O PÚBLICO SEJA CARGO.
+        // 5. CADASTRA OS CARGOS, CASO O PÚBLICO SEJA CARGO.
 
         if (dadosAvaliacao.publico_selecionado === 'CARGO') {
 
@@ -353,7 +411,7 @@ async function cadastrarAvaliacaoPsicossocial(dadosAvaliacao) {
         }
 
 
-        // 5. REGISTRA AUTOMATICAMENTE OS PARTICIPANTES.
+        // 6. REGISTRA AUTOMATICAMENTE OS PARTICIPANTES.
 
         const quantidadeParticipantes = await registrarParticipantes(
             idAvaliacao,

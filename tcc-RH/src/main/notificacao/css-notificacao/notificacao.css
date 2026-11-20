@@ -334,3 +334,245 @@
       padding: 16px;
     }
   }
+  .notif-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(15, 23, 42, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 1000;
+}
+
+.notif-modal-box {
+  background-color: #ffffff;
+  border-radius: 14px;
+  border: 1px solid #e6ecf5;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.18);
+  width: 100%;
+  max-width: 620px;
+  padding: 24px 28px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.notif-modal-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.notif-modal-titulo-grupo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.notif-modal-titulo {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.notif-modal-fechar {
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: #64748b;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 8px;
+}
+
+.notif-modal-fechar:hover {
+  background-color: #f1f5f9;
+  color: #0f172a;
+}
+
+.notif-modal-corpo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.notif-modal-secao-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #374151;
+}
+
+.notif-modal-descricao {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: #4b5563;
+}
+
+.notif-modal-rodape {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  padding-top: 6px;
+}
+
+.notif-modal-btn-voltar {
+  background-color: #f1f5f9;
+  color: #334155;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.notif-modal-btn-voltar:hover {
+  background-color: #e2e8f0;
+}
+
+.notif-modal-btn-primario {
+  background-color: #1d63dc;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.notif-modal-btn-primario:hover {
+  background-color: #1551b8;
+}
+
+/*----------------- FUNDO E DESFOQUE DO ALERTA ----------------*/
+
+.notif-fundo-alerta {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 20px;
+
+  background: rgba(15, 23, 42, 0.35);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/*----------------- CARD PRINCIPAL DO ALERTA ------------------*/
+
+.notif-card-alerta {
+  width: 100%;
+  max-width: 620px;
+  padding: 26px 28px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.18);
+  box-sizing: border-box;
+}
+
+/*----------------- CABEÇALHO DO ALERTA -----------------------*/
+
+.notif-cabecalho-alerta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.notif-titulo-alerta {
+  flex: 1;
+  min-width: 0;
+}
+
+.notif-titulo-alerta h2 {
+  margin: 0;
+  color: #172033;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.notif-fechar-alerta {
+  width: 28px;
+  height: 28px;
+  background: transparent;
+  border: none;
+  color: #7b8190;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.notif-fechar-alerta:hover {
+  color: #172033;
+}
+
+/*----------------- DESCRIÇÃO E MENSAGEM ----------------------*/
+
+.notif-corpo-alerta {
+  margin: 20px 0 24px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.notif-label-descricao {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #172033;
+}
+
+.notif-mensagem-alerta {
+  margin: 0;
+  color: #50576a;
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
+/*----------------- BOTÕES DO ALERTA --------------------------*/
+
+.notif-botoes-alerta {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.notif-botao-voltar,
+.notif-botao-acompanhar {
+  border: none;
+  border-radius: 7px;
+  padding: 10px 18px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.notif-botao-voltar {
+  background: #64748b;
+  color: #ffffff;
+}
+
+.notif-botao-voltar:hover {
+  background: #475569;
+}
+
+.notif-botao-acompanhar {
+  background: #1d63dc;
+  color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
+}
+
+.notif-botao-acompanhar:hover {
+  background: #1551b8;
+}

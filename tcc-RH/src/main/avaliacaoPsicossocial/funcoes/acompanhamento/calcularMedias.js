@@ -2,7 +2,11 @@
 /********************************************************************************
  * Objetivo: Calcular as médias gerais e por setor dos fatores psicossociais,
  *           considerando somente os colaboradores que responderam.
+ *           Respeita o mínimo de participantes para proteger o anonimato.
  ********************************************************************************/
+
+
+//----------------- CALCULAR MÉDIAS -------------------------//
 
 function calcularMedias(
     respostasValidas,
@@ -13,36 +17,50 @@ function calcularMedias(
 
     const resultados = [];
 
+
     // Percorre todos os fatores da avaliação.
     fatores.forEach((fator) => {
 
-        // Busca somente as respostas válidas do fator.
+
+        //----------------- RESPOSTAS DO FATOR ----------------//
+
         const respostasFator = respostasValidas.filter((resposta) => {
 
             return Number(resposta.idFator) === Number(fator.id);
 
         });
 
-        // Identifica somente os colaboradores que responderam.
+
+        //----------------- PARTICIPANTES GERAIS --------------//
+
+        // Conta colaboradores diferentes que responderam ao fator.
         const colaboradoresGeral = new Set(
-            respostasFator.map((resposta) => Number(resposta.idColaborador))
+
+            respostasFator.map((resposta) =>
+                Number(resposta.idColaborador)
+            )
+
         );
 
         const quantidadeParticipantesGeral = colaboradoresGeral.size;
 
-        // Soma somente as respostas recebidas.
+
+        //----------------- MÉDIA GERAL -----------------------//
+
         const somaGeral = respostasFator.reduce(
             (total, resposta) => total + resposta.valor,
             0
         );
 
-        // A média geral não exige quantidade mínima de participantes.
-        const mediaGeral = respostasFator.length > 0
+
+        // Só libera a média quando atingir o mínimo de participantes.
+        const mediaGeral = quantidadeParticipantesGeral >= quantidadeMinima
             ? Number((somaGeral / respostasFator.length).toFixed(2))
             : null;
 
 
-        // Calcula os resultados de cada setor.
+        //----------------- RESULTADOS POR SETOR --------------//
+
         const setores = setoresAvaliacao.map((setor) => {
 
             const respostasSetor = respostasFator.filter((resposta) => {
@@ -51,42 +69,63 @@ function calcularMedias(
 
             });
 
-            // Identifica somente quem respondeu naquele setor.
+
+            // Conta colaboradores diferentes naquele setor.
             const colaboradoresSetor = new Set(
-                respostasSetor.map((resposta) => Number(resposta.idColaborador))
+
+                respostasSetor.map((resposta) =>
+                    Number(resposta.idColaborador)
+                )
+
             );
 
             const quantidadeParticipantes = colaboradoresSetor.size;
 
-            // Setor sem respostas.
+
+            //----------------- SETOR SEM RESPOSTAS ------------//
+
             if (respostasSetor.length === 0) {
 
                 return {
+
                     idSetor: setor.idSetor,
                     nomeSetor: setor.nomeSetor,
+
                     quantidadeParticipantes: 0,
+
                     media: null,
+
                     disponivel: false,
                     semRespostas: true
+
                 };
 
             }
 
-            // Proteção de anonimato por setor.
+
+            //----------------- PROTEÇÃO DO ANONIMATO ----------//
+
             if (quantidadeParticipantes < quantidadeMinima) {
 
                 return {
+
                     idSetor: setor.idSetor,
                     nomeSetor: setor.nomeSetor,
+
                     quantidadeParticipantes,
+
                     media: null,
+
                     disponivel: false,
                     semRespostas: false
+
                 };
 
             }
 
-            // Calcula a média somente com as respostas daquele setor.
+
+            //----------------- CALCULAR MÉDIA DO SETOR --------//
+
             const somaSetor = respostasSetor.reduce(
                 (total, resposta) => total + resposta.valor,
                 0
@@ -96,19 +135,26 @@ function calcularMedias(
                 (somaSetor / respostasSetor.length).toFixed(2)
             );
 
+
             return {
+
                 idSetor: setor.idSetor,
                 nomeSetor: setor.nomeSetor,
+
                 quantidadeParticipantes,
+
                 media: mediaSetor,
+
                 disponivel: true,
                 semRespostas: false
+
             };
 
         });
 
 
-        // Armazena os resultados do fator.
+        //----------------- ARMAZENAR RESULTADO ----------------//
+
         resultados.push({
 
             idFator: fator.id,
@@ -125,8 +171,12 @@ function calcularMedias(
 
     });
 
+
     return resultados;
 
 }
+
+
+//----------------- EXPORTAÇÃO ------------------------------//
 
 export default calcularMedias;

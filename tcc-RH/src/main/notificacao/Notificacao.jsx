@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../../componentes/cardNomePag/nomePag.css';
 import './css-notificacao/notificacao.css';
 import {
@@ -6,12 +7,25 @@ import {
   marcarNotificacaoComoLida,
 } from './servicos/notificacaoService';
 
+const ROTAS_MODULO = [
+  { match: ['plano'], rota: '/planos-acao', rotulo: 'Acompanhar Plano de ação' },
+  { match: ['férias', 'ferias'], rota: '/ferias', rotulo: 'Acompanhar Férias' },
+  { match: ['doc'], rota: '/documentos', rotulo: 'Acompanhar Documentos' },
+  { match: ['benef'], rota: '/beneficios', rotulo: 'Acompanhar Benefícios' },
+  { match: ['avalia', 'psico'], rota: '/avaliacao-psicossocial', rotulo: 'Acompanhar Avaliação' },
+  { match: ['pesquisa'], rota: '/pesquisas', rotulo: 'Acompanhar Pesquisa' },
+  { match: ['regra'], rota: '/motor-regras', rotulo: 'Acompanhar Motor de Regras' },
+  { match: ['indicador'], rota: '/indicadores', rotulo: 'Acompanhar Indicadores' },
+];
+
 function Notificacao() {
+  const navigate = useNavigate();
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState('');
   const [abaAtiva, setAbaAtiva] = useState('todas');
   const [paginaAtual, setPaginaAtual] = useState(1);
   const [notificacoes, setNotificacoes] = useState([]);
+  const [notificacaoSelecionada, setNotificacaoSelecionada] = useState(null);
 
   const itensPorPagina = 10;
 
@@ -20,7 +34,6 @@ function Notificacao() {
       try {
         setCarregando(true);
         setErro('');
-
         const lista = await buscarNotificacoes();
         setNotificacoes(lista);
       } catch (err) {
@@ -34,7 +47,6 @@ function Notificacao() {
     carregar();
   }, []);
 
-  // Identifica o módulo pela coluna tipo_origem do DAO ou pelo texto do título
   const identificarModulo = (item) => {
     if (item.tipo_origem && String(item.tipo_origem).trim() !== '') {
       return item.tipo_origem;
@@ -52,10 +64,8 @@ function Notificacao() {
     return 'Sistema';
   };
 
-  // Identifica qual ícone exibir com base no módulo
   const obterTipoIcone = (modulo = '') => {
     const mod = String(modulo).toLowerCase();
-    if (mod.includes('plano') || mod.includes('férias') || mod.includes('ferias')) return 'prancheta';
     if (mod.includes('regra') || mod.includes('indicador')) return 'raio';
     if (mod.includes('doc')) return 'pasta';
     if (mod.includes('benef')) return 'cartao';
@@ -63,20 +73,22 @@ function Notificacao() {
     return 'prancheta';
   };
 
-  // Formata data e hora da notificação
+  const obterDestinoModulo = (modulo = '') => {
+    const mod = String(modulo).toLowerCase();
+    const encontrado = ROTAS_MODULO.find((item) =>
+      item.match.some((termo) => mod.includes(termo))
+    );
+    return encontrado || { rota: '/dashboard', rotulo: 'Acompanhar' };
+  };
+
   const formatarDataHora = (dataBruta) => {
     if (!dataBruta) return '';
-
     const texto = String(dataBruta).trim();
+    if (texto.includes('/') || texto.toLowerCase().includes('hoje')) return texto;
 
-    if (texto.includes('/') || texto.toLowerCase().includes('hoje')) {
-      return texto;
-    }
-
-    const normalizada =
-      texto.includes(' ') && !texto.includes('T')
-        ? texto.replace(' ', 'T')
-        : texto;
+    const normalizada = texto.includes(' ') && !texto.includes('T')
+      ? texto.replace(' ', 'T')
+      : texto;
 
     const dataObj = new Date(normalizada);
     if (isNaN(dataObj.getTime())) return texto;
@@ -92,25 +104,16 @@ function Notificacao() {
       minute: '2-digit',
     });
 
-    if (mesmoDia) {
-      return `Hoje, ${hora}`;
-    }
-
-    const data = dataObj.toLocaleDateString('pt-BR');
-    return `${data}, ${hora}`;
+    return mesmoDia ? `Hoje, ${hora}` : `${dataObj.toLocaleDateString('pt-BR')}, ${hora}`;
   };
 
-  // Normaliza os campos retornados por select('*') de tbl_notificacao
   const notificacoesFormatadas = notificacoes.map((item) => {
-    const id = item.id;
     const estaLida =
       item.lida === true ||
       Number(item.lida) === 1 ||
       String(item.status ?? '').toLowerCase() === 'lida';
 
     const modulo = identificarModulo(item);
-
-    // Procura automaticamente qualquer coluna de data retornada pelo MySQL
     const chaveData = Object.keys(item).find(
       (k) =>
         (k.toLowerCase().includes('data') ||
@@ -121,13 +124,11 @@ function Notificacao() {
         item[k] !== ''
     );
 
-    const dataCampo = chaveData ? item[chaveData] : null;
-
     return {
       original: item,
-      id,
+      id: item.id,
       modulo,
-      dataHora: formatarDataHora(dataCampo),
+      dataHora: formatarDataHora(chaveData ? item[chaveData] : null),
       lida: estaLida,
       icone: obterTipoIcone(modulo),
       titulo: item.titulo ?? 'Notificação do sistema',
@@ -148,10 +149,11 @@ function Notificacao() {
   const indiceFim = Math.min(indiceInicio + itensPorPagina, listaFiltrada.length);
   const itensExibidos = listaFiltrada.slice(indiceInicio, indiceFim);
 
-  const handleMarcarComoLida = async (itemFormatado) => {
+  const handleCliqueNotificacao = async (itemFormatado) => {
+    setNotificacaoSelecionada({ ...itemFormatado, lida: true });
+
     if (itemFormatado.lida) return;
 
-    // Atualiza visualmente na hora
     setNotificacoes((prev) =>
       prev.map((n) =>
         String(n.id) === String(itemFormatado.id)
@@ -160,7 +162,6 @@ function Notificacao() {
       )
     );
 
-    // Chama o PUT /notificacao/:id enviando os campos exigidos pelo controller
     try {
       await marcarNotificacaoComoLida(itemFormatado.original);
     } catch (err) {
@@ -170,15 +171,6 @@ function Notificacao() {
 
   const renderIcone = (tipo) => {
     switch (tipo) {
-      case 'prancheta':
-        return (
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
-            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
-            <line x1="12" y1="11" x2="12" y2="15" />
-            <line x1="12" y1="18" x2="12.01" y2="18" />
-          </svg>
-        );
       case 'raio':
         return (
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -207,9 +199,20 @@ function Notificacao() {
           </svg>
         );
       default:
-        return null;
+        return (
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
+            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
+            <line x1="12" y1="11" x2="12" y2="15" />
+            <line x1="12" y1="18" x2="12.01" y2="18" />
+          </svg>
+        );
     }
   };
+
+  const destino = notificacaoSelecionada
+    ? obterDestinoModulo(notificacaoSelecionada.modulo)
+    : null;
 
   return (
     <div className="notificacao-wrapper">
@@ -272,7 +275,7 @@ function Notificacao() {
                 <div
                   key={item.id}
                   className={`notif-item ${!item.lida ? 'nao-lida' : 'lida'}`}
-                  onClick={() => handleMarcarComoLida(item)}
+                  onClick={() => handleCliqueNotificacao(item)}
                 >
                   <div className="notif-indicador-coluna">
                     {!item.lida && <span className="notif-ponto-azul"></span>}
@@ -350,6 +353,65 @@ function Notificacao() {
           </div>
         </div>
       </div>
+
+      {notificacaoSelecionada && (
+        <div className="notif-fundo-alerta" onClick={() => setNotificacaoSelecionada(null)}>
+          <div
+            className="notif-card-alerta"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="titulo-notificacao-alerta"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="notif-cabecalho-alerta">
+              <div className="notif-icone-box icone-azul">
+                {renderIcone(notificacaoSelecionada.icone)}
+              </div>
+
+              <div className="notif-titulo-alerta">
+                <h2 id="titulo-notificacao-alerta">{notificacaoSelecionada.titulo}</h2>
+              </div>
+
+              <button
+                type="button"
+                className="notif-fechar-alerta"
+                onClick={() => setNotificacaoSelecionada(null)}
+                aria-label="Fechar alerta"
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="notif-corpo-alerta">
+              <span className="notif-label-descricao">Descrição</span>
+              <p className="notif-mensagem-alerta">{notificacaoSelecionada.descricao}</p>
+            </div>
+
+            <div className="notif-botoes-alerta">
+              <button
+                type="button"
+                className="notif-botao-voltar"
+                onClick={() => setNotificacaoSelecionada(null)}
+              >
+                Voltar
+              </button>
+
+              <button
+                type="button"
+                className="notif-botao-acompanhar"
+                onClick={() => {
+                  const rotaDestino = destino?.rota || '/dashboard';
+                  const dadosNotificacao = notificacaoSelecionada.original;
+                  setNotificacaoSelecionada(null);
+                  navigate(rotaDestino, { state: { notificacao: dadosNotificacao } });
+                }}
+              >
+                {destino?.rotulo || 'Acompanhar'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

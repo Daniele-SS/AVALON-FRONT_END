@@ -1,4 +1,13 @@
 
+/********************************************************************************
+ * Objetivo: Classificar os resultados dos fatores psicossociais utilizando
+ *           as regras cadastradas no Motor de Regras.
+ *           Quando nenhuma condição de risco for atingida, classifica como Normal.
+ ********************************************************************************/
+
+
+//----------------- COMPARAR VALORES ------------------------//
+
 function compararValor(media, operador, referencia) {
 
     switch (operador) {
@@ -29,7 +38,8 @@ function compararValor(media, operador, referencia) {
 }
 
 
-// Padroniza a classificação recebida pela API.
+//----------------- NORMALIZAR CLASSIFICAÇÃO ----------------//
+
 function normalizarClassificacao(classificacao) {
 
     const valor = String(classificacao || '')
@@ -56,8 +66,11 @@ function normalizarClassificacao(classificacao) {
 }
 
 
+//----------------- CLASSIFICAR RESULTADOS ------------------//
+
 function classificarResultados(media, idFator, regras) {
 
+    // Verifica se existe uma média disponível.
     if (media === null || media === undefined) {
 
         return {
@@ -67,7 +80,8 @@ function classificarResultados(media, idFator, regras) {
 
     }
 
-    // Considera somente as regras vinculadas ao fator.
+
+    // Considera somente as regras ativas vinculadas ao fator.
     const regrasFator = regras.filter((regra) => {
 
         return (
@@ -76,6 +90,18 @@ function classificarResultados(media, idFator, regras) {
         );
 
     });
+
+
+    // Não classifica automaticamente quando não existem regras cadastradas.
+    if (regrasFator.length === 0) {
+
+        return {
+            classificacao: 'Não classificado',
+            acao: ''
+        };
+
+    }
+
 
     // Verifica quais regras correspondem à média calculada.
     const regrasCorrespondentes = regrasFator.filter((regra) => {
@@ -88,14 +114,18 @@ function classificarResultados(media, idFator, regras) {
 
     });
 
+
+    // Nenhuma condição de risco foi atingida.
+    // Nesse caso, considera o resultado como Normal.
     if (regrasCorrespondentes.length === 0) {
 
         return {
-            classificacao: 'Não classificado',
+            classificacao: 'Normal',
             acao: ''
         };
 
     }
+
 
     // Prioriza a classificação de maior gravidade.
     const prioridade = {
@@ -103,6 +133,7 @@ function classificarResultados(media, idFator, regras) {
         'Atenção': 2,
         'Prioridade': 3
     };
+
 
     regrasCorrespondentes.sort((a, b) => {
 
@@ -116,15 +147,24 @@ function classificarResultados(media, idFator, regras) {
 
     });
 
+
+    // Seleciona a regra de maior gravidade.
     const regraSelecionada = regrasCorrespondentes[0];
 
+
     return {
+
         classificacao: normalizarClassificacao(
             regraSelecionada.classificacao
         ),
+
         acao: regraSelecionada.acao ?? ''
+
     };
 
 }
+
+
+//----------------- EXPORTAÇÃO ------------------------------//
 
 export default classificarResultados;

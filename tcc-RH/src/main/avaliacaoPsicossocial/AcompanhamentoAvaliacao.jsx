@@ -15,7 +15,13 @@ import montarResultadosFatores from './funcoes/acompanhamento/montarResultadosFa
 import './css-avaliacaoPsicossocial/acompanhamentoAvaliacao.css';
 
 
-//----------------- COMPONENTE PRINCIPAL ---------------------//
+//----------------- CONFIGURAÇÕES ---------------------------//
+
+const QUANTIDADE_MINIMA_PARTICIPANTES = 1;
+const INTERVALO_ATUALIZACAO = 30000;
+
+
+//----------------- COMPONENTE PRINCIPAL --------------------//
 
 function AcompanhamentoAvaliacao({ avaliacao, onVoltar }) {
 
@@ -29,14 +35,16 @@ function AcompanhamentoAvaliacao({ avaliacao, onVoltar }) {
 
     //----------------- CARREGAR DADOS ------------------------//
 
-    async function carregarAcompanhamento() {
+    async function carregarAcompanhamento(exibirCarregamento = false) {
 
         try {
 
-            setCarregando(true);
+            if (exibirCarregamento) {
+                setCarregando(true);
+            }
+
             setErro('');
 
-            // Busca os dados da avaliação e seus parâmetros vinculados.
             const [
                 participacoes,
                 respostas,
@@ -46,28 +54,37 @@ function AcompanhamentoAvaliacao({ avaliacao, onVoltar }) {
 
                 buscarParticipacoesAvaliacao(avaliacao.id),
                 buscarRespostasAvaliacao(avaliacao.id),
-                buscarFatoresAvaliacao(),
+
+                // Busca somente os fatores desta avaliação.
+                buscarFatoresAvaliacao(avaliacao.id),
+
                 buscarRegrasAvaliacao(avaliacao.id)
 
             ]);
 
             setRegras(regrasVinculadas);
 
-            // Relaciona respostas, participações e setores.
+
+            //----------------- AGRUPAR RESPOSTAS ---------------//
+
             const dadosAgrupados = agruparRespostas(
                 participacoes,
                 respostas
             );
 
-            // Calcula as médias dos fatores.
+
+            //----------------- CALCULAR MÉDIAS -----------------//
+
             const medias = calcularMedias(
                 dadosAgrupados.respostasValidas,
                 fatores,
                 dadosAgrupados.setoresAvaliacao,
-                1
+                QUANTIDADE_MINIMA_PARTICIPANTES
             );
 
-            // Monta os resultados usando somente as regras vinculadas.
+
+            //----------------- MONTAR CLASSIFICAÇÕES ------------//
+
             const resultadosMontados = montarResultadosFatores(
                 fatores,
                 medias,
@@ -86,29 +103,48 @@ function AcompanhamentoAvaliacao({ avaliacao, onVoltar }) {
 
         } finally {
 
-            setCarregando(false);
+            if (exibirCarregamento) {
+                setCarregando(false);
+            }
 
         }
 
     }
 
 
-    //----------------- CARREGAMENTO INICIAL ------------------//
+    //----------------- ATUALIZAÇÃO AUTOMÁTICA ----------------//
 
     useEffect(() => {
 
-        if (avaliacao?.id) {
-            carregarAcompanhamento();
+        if (!avaliacao?.id) {
+            return;
         }
 
-    }, [avaliacao?.id]);
+        carregarAcompanhamento(true);
+
+        // Não atualiza automaticamente quando a avaliação estiver encerrada.
+        if (Number(avaliacao.status) === 1) {
+            return;
+        }
+
+        const intervalo = setInterval(() => {
+            carregarAcompanhamento(false);
+        }, INTERVALO_ATUALIZACAO);
+
+        return () => {
+            clearInterval(intervalo);
+        };
+
+    }, [avaliacao?.id, avaliacao?.status]);
 
 
     //----------------- CLASSIFICAÇÃO VISUAL ------------------//
 
     function obterClasseClassificacao(classificacao) {
 
-        const valor = String(classificacao || '').toUpperCase();
+        const valor = String(classificacao || '')
+            .trim()
+            .toUpperCase();
 
         switch (valor) {
 
@@ -143,26 +179,29 @@ function AcompanhamentoAvaliacao({ avaliacao, onVoltar }) {
     }
 
 
-    //----------------- PARÂMETRO DAS REGRAS ------------------//
+    //----------------- BUSCAR REGRAS DO FATOR ----------------//
 
-    function obterParametro(fator) {
+    function obterRegrasFator(fator) {
 
-        // Busca as regras vinculadas ao fator atual.
-        const regrasFator = regras.filter((regra) => {
+        return regras.filter((regra) => {
 
             return (
-                Number(regra.id_psicossocial_fator) === Number(fator.id)
+                Number(regra.id_psicossocial_fator) === Number(fator.id) &&
+                Number(regra.ativo) === 1
             );
 
         });
 
-        if (regrasFator.length === 0) {
-            return null;
-        }
+    }
 
-        // Se houver uma regra de Atenção ou Prioridade,
-        // utiliza seu valor como referência visual.
-        const regraLimite = regrasFator.find((regra) => {
+
+    //----------------- BUSCAR REGRA DE ATENÇÃO ----------------//
+
+    function obterRegraAtencao(fator) {
+
+        const regrasFator = obterRegrasFator(fator);
+
+        return regrasFator.find((regra) => {
 
             const classificacao = String(regra.classificacao || '')
                 .trim()
@@ -170,17 +209,74 @@ function AcompanhamentoAvaliacao({ avaliacao, onVoltar }) {
 
             return (
                 classificacao === 'ATENÇÃO' ||
-                classificacao === 'ATENCAO' ||
-                classificacao === 'PRIORIDADE'
+                classificacao === 'ATENCAO'
             );
 
-        });
+        }) || null;
 
-        // Se houver somente uma regra, utiliza seu valor.
-        // Isso permite exibir o parâmetro do exemplo > 2.50.
-        const regraReferencia = regraLimite || regrasFator[0];
+    }
 
-        return Number(regraReferencia.valor_referencial);
+
+    //----------------- BUSCAR PARÂMETRO VISUAL ---------------//
+
+    function obterParametro(fator) {
+
+        const regrasFator = obterRegrasFator(fator);
+
+        if (regrasFator.length === 0) {
+            return null;
+        }
+
+        const regraAtencao = obterRegraAtencao(fator);
+
+        const regraReferencia = regraAtencao || regrasFator[0];
+
+        const valor = Number(regraReferencia.valor_referencial);
+
+        return Number.isFinite(valor) ? valor : null;
+
+    }
+
+
+    //----------------- TEXTO DO GATILHO ----------------------//
+
+    function obterTextoGatilho(fator) {
+
+        const regra = obterRegraAtencao(fator);
+
+        if (!regra) {
+            return 'Parâmetro não definido';
+        }
+
+        const valor = formatarMedia(regra.valor_referencial);
+
+        return `Gatilho de Atenção (${regra.operador} ${valor})`;
+
+    }
+
+
+    //----------------- LARGURA DA BARRA ----------------------//
+
+    function obterLargura(media) {
+
+        if (media === null || media === undefined) {
+            return '0%';
+        }
+
+        const valor = Math.min(Math.max(Number(media), 0), 5);
+
+        return `${(valor / 5) * 100}%`;
+
+    }
+
+
+    //----------------- POSIÇÃO DO PARÂMETRO ------------------//
+
+    function obterPosicaoParametro(parametro) {
+
+        const valor = Math.min(Math.max(Number(parametro), 0), 5);
+
+        return `${(valor / 5) * 100}%`;
 
     }
 
@@ -206,7 +302,7 @@ function AcompanhamentoAvaliacao({ avaliacao, onVoltar }) {
 
     //----------------- TELA DE ERRO --------------------------//
 
-    if (erro) {
+    if (erro && resultados.length === 0) {
 
         return (
 
@@ -235,9 +331,9 @@ function AcompanhamentoAvaliacao({ avaliacao, onVoltar }) {
 
     return (
 
-        <div className="pagina-acompanhamento-avaliacao">
+        <main className="pagina-acompanhamento-avaliacao">
 
-            {/* CABEÇALHO */}
+            {/* CABEÇALHO DA AVALIAÇÃO */}
 
             <header className="cabecalho-acompanhamento">
 
@@ -250,8 +346,7 @@ function AcompanhamentoAvaliacao({ avaliacao, onVoltar }) {
 
                     <p>
                         Acompanhe os resultados dos fatores psicossociais
-                        e identifique situações que necessitam de atenção
-                        no ambiente de trabalho.
+                        e identifique situações de risco no ambiente de trabalho.
                     </p>
 
                 </div>
@@ -260,15 +355,27 @@ function AcompanhamentoAvaliacao({ avaliacao, onVoltar }) {
                     type="button"
                     className="botao-encerrar-acompanhamento"
                     disabled
-                    title="A integração para encerrar a avaliação será adicionada após confirmar a rota de atualização."
+                    title="A funcionalidade de encerramento será integrada posteriormente."
                 >
+                    <span className="indicador-botao-encerrar"></span>
                     Encerrar Avaliação
                 </button>
 
             </header>
 
 
-            {/* RESULTADOS DOS FATORES */}
+            {/* AVISO DE ATUALIZAÇÃO */}
+
+            {erro && (
+
+                <p className="erro-atualizacao-acompanhamento">
+                    Não foi possível atualizar os resultados: {erro}
+                </p>
+
+            )}
+
+
+            {/* LISTA DE FATORES */}
 
             {resultados.length === 0 ? (
 
@@ -295,7 +402,7 @@ function AcompanhamentoAvaliacao({ avaliacao, onVoltar }) {
                                 key={fator.id}
                             >
 
-                                {/* IDENTIFICAÇÃO DO FATOR */}
+                                {/* CABEÇALHO DO FATOR */}
 
                                 <div className="cabecalho-fator-acompanhamento">
 
@@ -312,11 +419,11 @@ function AcompanhamentoAvaliacao({ avaliacao, onVoltar }) {
                                     </div>
 
 
-                                    {/* MÉDIA GERAL */}
+                                    {/* ÍNDICE CONSOLIDADO */}
 
-                                    <div className="indicador-fator-acompanhamento">
+                                    <div className={`indicador-fator-acompanhamento ${classe}`}>
 
-                                        <span>
+                                        <span className="titulo-indice-acompanhamento">
                                             ÍNDICE CONSOLIDADO
                                         </span>
 
@@ -325,8 +432,23 @@ function AcompanhamentoAvaliacao({ avaliacao, onVoltar }) {
                                             <small> / 5,0</small>
                                         </strong>
 
+                                        <div className="trilho-indice-acompanhamento">
+
+                                            <div
+                                                className="barra-indice-acompanhamento"
+                                                style={{
+                                                    width: obterLargura(fator.mediaGeral)
+                                                }}
+                                            />
+
+                                        </div>
+
                                         <span className={`classificacao-acompanhamento ${classe}`}>
                                             {fator.classificacao}
+                                        </span>
+
+                                        <span className="gatilho-indice-acompanhamento">
+                                            {obterTextoGatilho(fator)}
                                         </span>
 
                                     </div>
@@ -353,6 +475,9 @@ function AcompanhamentoAvaliacao({ avaliacao, onVoltar }) {
 
                                         </div>
 
+
+                                        {/* LEGENDA */}
+
                                         <div className="legenda-grafico-acompanhamento">
 
                                             <span className="legenda-media">
@@ -362,19 +487,21 @@ function AcompanhamentoAvaliacao({ avaliacao, onVoltar }) {
                                             {parametro !== null && (
 
                                                 <span className="legenda-parametro">
-                                                    Parâmetro ({formatarMedia(parametro)})
+                                                    Limite de Atenção ({formatarMedia(parametro)})
                                                 </span>
 
                                             )}
 
                                             <span className="legenda-escala">
-                                                Escala de 1,0 a 5,0
+                                                Faixa Adequada: 1,0 a 5,0
                                             </span>
 
                                         </div>
 
                                     </div>
 
+
+                                    {/* SETORES */}
 
                                     {fator.setores.length === 0 ? (
 
@@ -385,48 +512,62 @@ function AcompanhamentoAvaliacao({ avaliacao, onVoltar }) {
 
                                     ) : (
 
-                                        <div className="lista-setores-acompanhamento">
+                                        <div className="area-setores-acompanhamento">
 
-                                            {fator.setores.map((setor) => {
+                                            {/* MARCADOR VERTICAL DO PARÂMETRO */}
 
-                                                const classeSetor =
-                                                    obterClasseClassificacao(
-                                                        setor.classificacao
-                                                    );
+                                            {parametro !== null && (
 
-                                                const largura = setor.media !== null
-                                                    ? `${(setor.media / 5) * 100}%`
-                                                    : '0%';
+                                                <div
+                                                    className="marcador-parametro-acompanhamento"
+                                                    style={{
+                                                        left: obterPosicaoParametro(parametro)
+                                                    }}
+                                                >
 
-                                                return (
+                                                    <div className="etiqueta-parametro-acompanhamento">
 
-                                                    <div
-                                                        className="linha-setor-acompanhamento"
-                                                        key={setor.idSetor}
-                                                    >
+                                                        <span>
+                                                            PARÂMETRO
+                                                        </span>
 
-                                                        <div className="informacoes-setor-acompanhamento">
+                                                        <strong>
+                                                            {formatarMedia(parametro)}
+                                                        </strong>
 
-                                                            <span className="nome-setor-acompanhamento">
-                                                                {setor.nomeSetor}
-                                                            </span>
+                                                    </div>
 
-                                                            {setor.semRespostas ? (
+                                                </div>
 
-                                                                <div className="resultado-setor-acompanhamento">
+                                            )}
 
-                                                                    <strong>
-                                                                        {formatarMedia(setor.media)}
-                                                                        {' / 5,0'}
-                                                                    </strong>
 
-                                                                    <span className="classificacao-acompanhamento indisponivel">
-                                                                        Sem respostas
-                                                                    </span>
+                                            <div className="lista-setores-acompanhamento">
 
-                                                                </div>
+                                                {fator.setores.map((setor) => {
 
-                                                            ) : setor.disponivel ? (
+                                                    const classeSetor =
+                                                        obterClasseClassificacao(
+                                                            setor.classificacao
+                                                        );
+
+                                                    const possuiPrioridade =
+                                                        classeSetor === 'prioridade';
+
+                                                    return (
+
+                                                        <div
+                                                            className={`linha-setor-acompanhamento ${possuiPrioridade ? 'setor-em-prioridade' : ''}`}
+                                                            key={setor.idSetor}
+                                                        >
+
+                                                            {/* INFORMAÇÕES DO SETOR */}
+
+                                                            <div className="informacoes-setor-acompanhamento">
+
+                                                                <span className="nome-setor-acompanhamento">
+                                                                    {setor.nomeSetor}
+                                                                </span>
 
                                                                 <div className="resultado-setor-acompanhamento">
 
@@ -441,48 +582,48 @@ function AcompanhamentoAvaliacao({ avaliacao, onVoltar }) {
 
                                                                 </div>
 
-                                                            ) : (
-
-                                                                <span className="dados-ocultos-acompanhamento">
-                                                                    Dados indisponíveis
-                                                                </span>
-
-                                                            )}
-
-                                                        </div>
+                                                            </div>
 
 
-                                                        {/* BARRA DE MÉDIA */}
+                                                            {/* BARRA DE RESULTADO */}
 
-                                                        <div className="trilho-grafico-acompanhamento">
-
-                                                            <div
-                                                                className={`barra-grafico-acompanhamento ${classeSetor}`}
-                                                                style={{
-                                                                    width: largura
-                                                                }}
-                                                            />
-
-                                                            {/* MARCADOR DO PARÂMETRO */}
-
-                                                            {parametro !== null && (
+                                                            <div className="trilho-grafico-acompanhamento">
 
                                                                 <div
-                                                                    className="linha-parametro-acompanhamento"
+                                                                    className={`barra-grafico-acompanhamento ${classeSetor}`}
                                                                     style={{
-                                                                        left: `${(parametro / 5) * 100}%`
+                                                                        width: obterLargura(setor.media)
                                                                     }}
                                                                 />
 
+                                                            </div>
+
+
+                                                            {/* AÇÃO DA REGRA */}
+
+                                                            {possuiPrioridade && setor.acao && (
+
+                                                                <div className="acao-setor-acompanhamento">
+
+                                                                    <span className="icone-alerta-acompanhamento">
+                                                                        !
+                                                                    </span>
+
+                                                                    <p>
+                                                                        {setor.acao}
+                                                                    </p>
+
+                                                                </div>
+
                                                             )}
 
                                                         </div>
 
-                                                    </div>
+                                                    );
 
-                                                );
+                                                })}
 
-                                            })}
+                                            </div>
 
                                         </div>
 
@@ -501,9 +642,9 @@ function AcompanhamentoAvaliacao({ avaliacao, onVoltar }) {
             )}
 
 
-            {/* BOTÃO VOLTAR */}
+            {/* RODAPÉ */}
 
-            <div className="rodape-acompanhamento">
+            <footer className="rodape-acompanhamento">
 
                 <button
                     type="button"
@@ -513,9 +654,9 @@ function AcompanhamentoAvaliacao({ avaliacao, onVoltar }) {
                     Voltar
                 </button>
 
-            </div>
+            </footer>
 
-        </div>
+        </main>
 
     );
 

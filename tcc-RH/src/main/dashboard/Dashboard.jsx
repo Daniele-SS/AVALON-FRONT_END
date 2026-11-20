@@ -1,31 +1,42 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../../componentes/cardNomePag/nomePag.css';
 import './css-dashboard/dashboard.css';
 import buscarDadosDashboard from './servico/dashboardService';
 
+const ESTADO_INICIAL = {
+  colaboradores: [],
+  setores: [],
+  avaliacoes: [],
+  participacoes: [],
+  avaliacoesSetores: [],
+  avaliacoesCargos: [],
+  documentos: [],
+  ferias: [],
+  planosAcao: [],
+};
+
+const DIMENSOES_AVALIACAO = [
+  { nome: 'Satisfação', chaves: ['satisfacao', 'nota_satisfacao', 'media_satisfacao'] },
+  { nome: 'Ambiente', chaves: ['ambiente', 'nota_ambiente', 'media_ambiente'] },
+  { nome: 'Comunicação', chaves: ['comunicacao', 'comunicação', 'nota_comunicacao', 'media_comunicacao'] },
+  { nome: 'Reconhecimento', chaves: ['reconhecimento', 'nota_reconhecimento', 'media_reconhecimento'] },
+  { nome: 'Carga de trabalho', chaves: ['carga_trabalho', 'carga de trabalho', 'nota_carga', 'media_carga'] },
+];
+
 function Dashboard() {
+  const navigate = useNavigate();
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState('');
-  const [dadosDashboard, setDadosDashboard] = useState({
-    colaboradores: [],
-    setores: [],
-    avaliacoes: [],
-    participacoes: [],
-    avaliacoesSetores: [],
-    avaliacoesCargos: [],
-    documentos: [],
-    ferias: [],
-    planosAcao: [],
-  });
+  const [dados, setDados] = useState(ESTADO_INICIAL);
 
   useEffect(() => {
     async function carregar() {
       try {
         setCarregando(true);
         setErro('');
-
         const resultado = await buscarDadosDashboard();
-        setDadosDashboard(resultado);
+        setDados({ ...ESTADO_INICIAL, ...resultado });
       } catch (err) {
         console.error('Erro ao buscar dados do dashboard:', err);
         setErro(err.message || 'Erro ao carregar o dashboard.');
@@ -37,109 +48,284 @@ function Dashboard() {
     carregar();
   }, []);
 
-  // --- CÁLCULOS E EXTRAÇÃO DOS DADOS DO BANCO / API ---
-  const totalColaboradores = dadosDashboard.colaboradores?.length ?? 248;
-  const totalPendencias = (dadosDashboard.documentos?.length ?? 0) + (dadosDashboard.ferias?.length ?? 0);
-  const totalPesquisas = dadosDashboard.avaliacoes?.length ?? 3;
-  const totalPlanos = dadosDashboard.planosAcao?.length ?? 5;
+  const isRegistroPendente = (item) => {
+    const bruto = item?.status ?? item?.situacao ?? item?.estado;
+    if (typeof bruto === 'number') return bruto === 0;
+    if (typeof bruto === 'boolean') return !bruto;
+
+    const texto = String(bruto ?? '').trim().toLowerCase();
+    if (!texto) return false;
+
+    return [
+      'pendente',
+      'pendencia',
+      'pendência',
+      'aguardando',
+      'em analise',
+      'em análise',
+      'aberto',
+      'aberta',
+      '0',
+    ].includes(texto);
+  };
+
+  const formatarStatusAtivoInativo = (valor) => {
+    if (typeof valor === 'boolean') return valor ? 'Ativo' : 'Inativo';
+    if (typeof valor === 'number') return valor === 1 ? 'Ativo' : 'Inativo';
+
+    const texto = String(valor ?? '').trim().toLowerCase();
+    if (['1', 'true', 'ativo', 'ativa'].includes(texto)) return 'Ativo';
+    if (['0', 'false', 'inativo', 'inativa'].includes(texto)) return 'Inativo';
+    return 'Inativo';
+  };
+
+  const obterIdAvaliacao = (avaliacao) => Number(avaliacao?.id ?? avaliacao?.id_avaliacao);
+
+  const obterSetorAvaliacao = (avaliacao) => {
+    const idAvaliacao = obterIdAvaliacao(avaliacao);
+    const vinculosSetor = Array.isArray(dados.avaliacoesSetores) ? dados.avaliacoesSetores : [];
+    const listaSetores = Array.isArray(dados.setores) ? dados.setores : [];
+
+    const vinculo = vinculosSetor.find(
+      (item) => Number(item.id_avaliacao ?? item.avaliacao?.id) === idAvaliacao
+    );
+
+    const idSetor =
+      vinculo?.id_setor ??
+      vinculo?.setor?.id ??
+      vinculo?.setor?.id_setor ??
+      avaliacao?.id_setor ??
+      avaliacao?.setor?.id;
+
+    if (idSetor != null) {
+      const setorEncontrado = listaSetores.find(
+        (s) => Number(s.id ?? s.id_setor) === Number(idSetor)
+      );
+      if (setorEncontrado?.nome || setorEncontrado?.descricao) {
+        return setorEncontrado.nome ?? setorEncontrado.descricao;
+      }
+      if (vinculo?.setor?.nome || vinculo?.nome_setor) {
+        return vinculo.setor?.nome ?? vinculo.nome_setor;
+      }
+    }
+
+    if (String(avaliacao?.publico_selecionado ?? '').toUpperCase() === 'TODOS') {
+      return 'Todos os setores';
+    }
+
+    if (String(avaliacao?.publico_selecionado ?? '').toUpperCase() === 'CARGO') {
+      return 'Por cargo';
+    }
+
+    return 'Não informado';
+  };
+
+  const calcularParticipacaoAvaliacao = (avaliacao) => {
+    const idAvaliacao = obterIdAvaliacao(avaliacao);
+    const participacoes = Array.isArray(dados.participacoes) ? dados.participacoes : [];
+
+    if (!idAvaliacao || participacoes.length === 0) return 0;
+
+    const daAvaliacao = participacoes.filter(
+      (p) => Number(p.avaliacao?.id ?? p.id_avaliacao) === idAvaliacao
+    );
+
+    if (daAvaliacao.length === 0) return 0;
+
+    const concluidos = daAvaliacao.filter((p) => {
+      if (typeof p.status === 'number') return p.status === 1;
+      if (typeof p.status === 'boolean') return p.status;
+      const st = String(p.status ?? '').trim().toLowerCase();
+      return ['1', 'true', 'concluido', 'concluída', 'respondido', 'respondida'].includes(st);
+    }).length;
+
+    return Math.min(100, Math.round((concluidos / daAvaliacao.length) * 100));
+  };
+
+  const calcularIndicadorDaAvaliacao = (dimensao) => {
+    const fontes = [
+      ...(Array.isArray(dados.avaliacoes) ? dados.avaliacoes : []),
+      ...(Array.isArray(dados.avaliacoesSetores) ? dados.avaliacoesSetores : []),
+      ...(Array.isArray(dados.avaliacoesCargos) ? dados.avaliacoesCargos : []),
+    ];
+
+    const notas = [];
+    for (const item of fontes) {
+      for (const chave of dimensao.chaves) {
+        const valor = item?.[chave];
+        if (valor !== undefined && valor !== null && valor !== '') {
+          const numero = Number(String(valor).replace(',', '.'));
+          if (!Number.isNaN(numero)) {
+            notas.push(numero);
+            break;
+          }
+        }
+      }
+    }
+
+    if (notas.length === 0) {
+      return {
+        nota: '0,0 / 5',
+        percentual: 0,
+        status: 'Inativo',
+        tipo: 'normal',
+      };
+    }
+
+    const media = notas.reduce((acc, n) => acc + n, 0) / notas.length;
+    const notaFinal = Math.max(0, Math.min(5, media));
+    const percentual = Math.round((notaFinal / 5) * 100);
+
+    if (notaFinal < 3) {
+      return {
+        nota: `${notaFinal.toFixed(1).replace('.', ',')} / 5`,
+        percentual,
+        status: 'Prioridade',
+        tipo: 'prioridade',
+      };
+    }
+
+    if (notaFinal < 3.7) {
+      return {
+        nota: `${notaFinal.toFixed(1).replace('.', ',')} / 5`,
+        percentual,
+        status: 'Atenção',
+        tipo: 'atencao',
+      };
+    }
+
+    return {
+      nota: `${notaFinal.toFixed(1).replace('.', ',')} / 5`,
+      percentual,
+      status: 'Normal',
+      tipo: 'normal',
+    };
+  };
+
+  const totalFeriasPendentes = (Array.isArray(dados.ferias) ? dados.ferias : []).filter(
+    isRegistroPendente
+  ).length;
+
+  const totalDocumentosPendentes = (Array.isArray(dados.documentos) ? dados.documentos : []).filter(
+    isRegistroPendente
+  ).length;
 
   const kpis = [
     {
       id: 1,
       titulo: 'Total de colaboradores',
-      valor: String(totalColaboradores),
-      statusTexto: 'Ativos na organização',
+      valor: String(dados.colaboradores.length),
+      statusTexto: 'Cadastrados no sistema',
       statusCor: 'verde',
       iconeBg: '#dcfce7',
       iconeCor: '#16a34a',
       linkTexto: 'Ver todos os colaboradores',
+      rota: '/colaboradores',
       iconeTipo: 'usuarios',
       statusIcone: 'seta-cima',
     },
     {
       id: 2,
-      titulo: 'Pendências',
-      valor: String(totalPendencias),
-      statusTexto: 'Documentos e férias pendentes',
+      titulo: 'Pendências de férias',
+      valor: String(totalFeriasPendentes),
+      statusTexto: 'Solicitações pendentes',
       statusCor: 'amarelo',
       iconeBg: '#fef9c3',
       iconeCor: '#ca8a04',
-      linkTexto: 'Ver todas as pendências',
+      linkTexto: 'Ver férias',
+      rota: '/ferias',
       iconeTipo: 'relogio',
       statusIcone: 'exclamacao',
     },
     {
       id: 3,
+      titulo: 'Pendências de documentos',
+      valor: String(totalDocumentosPendentes),
+      statusTexto: 'Documentos pendentes',
+      statusCor: 'amarelo',
+      iconeBg: '#fef9c3',
+      iconeCor: '#ca8a04',
+      linkTexto: 'Ver documentos',
+      rota: '/documentos',
+      iconeTipo: 'documento',
+      statusIcone: 'alerta',
+    },
+    {
+      id: 4,
       titulo: 'Pesquisas e avaliações',
-      valor: String(totalPesquisas),
-      statusTexto: 'Em andamento',
+      valor: String(dados.avaliacoes.length),
+      statusTexto: 'Avaliações psicossociais',
       statusCor: 'azul',
       iconeBg: '#dbeafe',
       iconeCor: '#2563eb',
       linkTexto: 'Ver todas as pesquisas',
+      rota: '/avaliacao-psicossocial',
       iconeTipo: 'documento',
       statusIcone: 'pulso',
     },
     {
-      id: 4,
+      id: 5,
       titulo: 'Planos de ação',
-      valor: String(totalPlanos),
+      valor: String(dados.planosAcao.length),
       statusTexto: 'Registrados no sistema',
       statusCor: 'amarelo',
       iconeBg: '#fef9c3',
       iconeCor: '#ca8a04',
       linkTexto: 'Ver todos os planos de ação',
+      rota: '/planos-acao',
       iconeTipo: 'check-circulo',
       statusIcone: 'alerta',
     },
   ];
 
-  const indicadores = [
-    { nome: 'Satisfação', nota: '4,2 / 5', percentual: 84, status: 'Normal', tipo: 'normal' },
-    { nome: 'Ambiente', nota: '4,0 / 5', percentual: 80, status: 'Normal', tipo: 'normal' },
-    { nome: 'Comunicação', nota: '3,8 / 5', percentual: 76, status: 'Normal', tipo: 'normal' },
-    { nome: 'Reconhecimento', nota: '3,5 / 5', percentual: 70, status: 'Atenção', tipo: 'atencao' },
-    { nome: 'Carga de trabalho', nota: '2,9 / 5', percentual: 58, status: 'Prioridade', tipo: 'prioridade' },
-  ];
-
-  const pesquisasFormatadas = (dadosDashboard.avaliacoes?.length > 0
-    ? dadosDashboard.avaliacoes.slice(0, 3)
-    : [
-        { titulo: 'Pesquisa de Clima Organizacional', setor: 'Produção', participacao: 27, status: 'Em andamento' },
-        { titulo: 'Experiência do Colaborador', setor: 'Tecnologia', participacao: 55, status: 'Em andamento' },
-        { titulo: 'Avaliação Psicossocial', setor: 'Administrativo', participacao: 42, status: 'Em andamento' },
-      ]
-  ).map((pesq, idx) => ({
-    nome: pesq.titulo ?? pesq.nome ?? `Pesquisa ${idx + 1}`,
-    setor: pesq.setor ?? pesq.nome_setor ?? 'Geral',
-    participacao: pesq.participacao ?? 50,
-    metaTexto: idx === 0 ? '< meta' : '',
-    corBarra: idx === 0 ? '#e69500' : '#0b5ed7',
-    corTexto: idx === 0 ? '#d97706' : '#1e293b',
-    status: pesq.status ?? 'Em andamento',
+  const indicadores = DIMENSOES_AVALIACAO.map((dim) => ({
+    nome: dim.nome,
+    ...calcularIndicadorDaAvaliacao(dim),
   }));
 
-  const planosFormatados = (dadosDashboard.planosAcao?.length > 0
-    ? dadosDashboard.planosAcao.slice(0, 4)
-    : [
-        { titulo: 'Carga de trabalho', origem: 'Indicador', responsavel: 'Gestor Produção', prazo: '15/09/2026', status: 'Em andamento' },
-        { titulo: 'Comunicação interna', origem: 'Pesquisa', responsavel: 'RH', prazo: '20/09/2026', status: 'Não iniciada' },
-        { titulo: 'Ambiente', origem: 'Avaliação', responsavel: 'Gestor', prazo: '05/09/2026', status: 'Atrasada' },
-      ]
-  ).map((plano) => {
-    const statusStr = String(plano.status ?? plano.situacao ?? 'Em andamento');
-    const atrasado = statusStr.toLowerCase().includes('atrasada') || statusStr.toLowerCase().includes('atrasado');
+  const avaliacoesFormatadas = dados.avaliacoes.slice(0, 5).map((av, idx) => {
+    const participacao = calcularParticipacaoAvaliacao(av);
+    const status = formatarStatusAtivoInativo(av.status);
+    const abaixoMeta = participacao < 50;
 
     return {
-      plano: plano.titulo ?? plano.descricao ?? 'Plano de Ação',
-      origem: plano.origem ?? 'Sistema',
-      responsavel: plano.responsavel ?? plano.nome_responsavel ?? 'RH',
-      prazo: plano.prazo ?? plano.data_termino ?? '20/09/2026',
-      status: statusStr,
-      atrasado,
-      statusTipo: atrasado ? 'atrasada' : statusStr.toLowerCase().includes('não') ? 'nao-iniciada' : 'andamento',
+      id: obterIdAvaliacao(av) || idx,
+      original: av,
+      nome: av.titulo ?? av.nome ?? `Avaliação Psicossocial ${idx + 1}`,
+      setor: obterSetorAvaliacao(av),
+      participacao,
+      metaTexto: abaixoMeta ? '< meta' : '',
+      corBarra: abaixoMeta ? '#e69500' : '#0b5ed7',
+      corTexto: abaixoMeta ? '#d97706' : '#1e293b',
+      status,
     };
   });
+
+  const planosFormatados = dados.planosAcao.slice(0, 5).map((plano, idx) => {
+    const status = formatarStatusAtivoInativo(plano.status);
+    const atrasado = String(plano.status ?? '').toLowerCase().includes('atrasad');
+
+    return {
+      id: plano.id ?? plano.id_plano_acao ?? idx,
+      plano: plano.titulo ?? plano.descricao ?? `Plano de ação ${idx + 1}`,
+      origem: plano.origem ?? 'Avaliação Psicossocial',
+      responsavel: plano.responsavel ?? plano.nome_responsavel ?? 'RH',
+      prazo: plano.prazo ?? plano.data_termino ?? '-',
+      status,
+      atrasado,
+      statusTipo: atrasado ? 'atrasada' : status === 'Ativo' ? 'andamento' : 'nao-iniciada',
+    };
+  });
+
+  const handleAbrirAvaliacao = (item) => {
+    navigate(`/avaliacao-psicossocial?avaliacaoId=${item.id}`, {
+      state: {
+        avaliacaoId: item.id,
+        avaliacao: item.original,
+        abrirAvaliacao: true,
+      },
+    });
+  };
 
   const renderKpiIcone = (tipo, cor) => {
     switch (tipo) {
@@ -238,16 +424,15 @@ function Dashboard() {
           </div>
         ) : (
           <>
-            {/* Linha 1: 4 Cards de Resumo */}
-            <section className="kpi-grid">
+            <section
+              className="kpi-grid"
+              style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))' }}
+            >
               {kpis.map((item) => (
                 <div key={item.id} className="dash-card kpi-card">
                   <div className="kpi-topo">
                     <span className="kpi-titulo">{item.titulo}</span>
-                    <span
-                      className="kpi-icone-box"
-                      style={{ backgroundColor: item.iconeBg }}
-                    >
+                    <span className="kpi-icone-box" style={{ backgroundColor: item.iconeBg }}>
                       {renderKpiIcone(item.iconeTipo, item.iconeCor)}
                     </span>
                   </div>
@@ -259,57 +444,66 @@ function Dashboard() {
                     <span>{item.statusTexto}</span>
                   </div>
 
-                  <a href="#/" className="dash-link" onClick={(e) => e.preventDefault()}>
+                  <a
+                    href={item.rota}
+                    className="dash-link"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      navigate(item.rota);
+                    }}
+                  >
                     {item.linkTexto}
                   </a>
                 </div>
               ))}
             </section>
 
-            {/* Linha 2: Indicadores (esquerda) + Pesquisas em andamento (direita) */}
             <section className="meio-grid">
               <div className="dash-card card-indicadores">
                 <h3 className="card-titulo-secao">Indicadores</h3>
 
                 <div className="indicadores-lista">
-                  {indicadores.map((ind, idx) => (
-                    <div key={idx} className="indicador-item">
+                  {indicadores.map((ind) => (
+                    <div key={ind.nome} className="indicador-item">
                       <div className="indicador-linha-info">
                         <span className="indicador-nome">{ind.nome}</span>
                         <div className="indicador-direita">
-                          <span className={`indicador-nota nota-${ind.tipo}`}>
-                            {ind.nota}
-                          </span>
-                          <span className={`badge-indicador badge-${ind.tipo}`}>
-                            {ind.status}
-                          </span>
+                          <span className={`indicador-nota nota-${ind.tipo}`}>{ind.nota}</span>
+                          <span className={`badge-indicador badge-${ind.tipo}`}>{ind.status}</span>
                         </div>
                       </div>
                       <div className="indicador-barra-bg">
                         <div
                           className={`indicador-barra-fill fill-${ind.tipo}`}
                           style={{ width: `${ind.percentual}%` }}
-                        ></div>
+                        />
                       </div>
                     </div>
                   ))}
                 </div>
 
                 <div className="card-rodape-link">
-                  <a href="#/" className="dash-link" onClick={(e) => e.preventDefault()}>
+                  <a
+                    href="/indicadores"
+                    className="dash-link"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      navigate('/indicadores');
+                    }}
+                  >
                     Ver Mais
                   </a>
                 </div>
               </div>
 
               <div className="dash-card card-pesquisas">
-                <h3 className="card-titulo-secao">Pesquisas em andamento</h3>
+                <h3 className="card-titulo-secao">Avaliações psicossociais</h3>
 
                 <div className="tabela-responsiva">
                   <table className="dash-tabela tabela-pesquisas">
                     <thead>
                       <tr>
-                        <th>PESQUISA</th>
+                        <th>AVALIAÇÃO</th>
                         <th>SETOR</th>
                         <th>PARTICIPAÇÃO</th>
                         <th>STATUS</th>
@@ -317,52 +511,68 @@ function Dashboard() {
                       </tr>
                     </thead>
                     <tbody>
-                      {pesquisasFormatadas.map((pesq, idx) => (
-                        <tr key={idx}>
-                          <td className="celula-pesquisa-nome">{pesq.nome}</td>
-                          <td className="celula-setor">{pesq.setor}</td>
-                          <td className="celula-participacao">
-                            <div className="part-topo">
-                              <span style={{ color: pesq.corTexto, fontWeight: 700 }}>
-                                {pesq.participacao}%
-                              </span>
-                              {pesq.metaTexto && (
-                                <span className="part-meta">{pesq.metaTexto}</span>
-                              )}
-                            </div>
-                            <div className="part-barra-bg">
-                              <div
-                                className="part-barra-fill"
-                                style={{
-                                  width: `${pesq.participacao}%`,
-                                  backgroundColor: pesq.corBarra,
-                                }}
-                              ></div>
-                            </div>
-                          </td>
-                          <td>
-                            <span className="pill-status pill-azul">{pesq.status}</span>
-                          </td>
-                          <td>
-                            <button type="button" className="btn-ver">
-                              Ver
-                            </button>
+                      {avaliacoesFormatadas.length === 0 ? (
+                        <tr>
+                          <td colSpan="5" style={{ textAlign: 'center', color: '#64748b' }}>
+                            Nenhuma avaliação psicossocial encontrada.
                           </td>
                         </tr>
-                      ))}
+                      ) : (
+                        avaliacoesFormatadas.map((item) => (
+                          <tr key={item.id}>
+                            <td className="celula-pesquisa-nome">{item.nome}</td>
+                            <td className="celula-setor">{item.setor}</td>
+                            <td className="celula-participacao">
+                              <div className="part-topo">
+                                <span style={{ color: item.corTexto, fontWeight: 700 }}>
+                                  {item.participacao}%
+                                </span>
+                                {item.metaTexto && <span className="part-meta">{item.metaTexto}</span>}
+                              </div>
+                              <div className="part-barra-bg">
+                                <div
+                                  className="part-barra-fill"
+                                  style={{
+                                    width: `${item.participacao}%`,
+                                    backgroundColor: item.corBarra,
+                                  }}
+                                />
+                              </div>
+                            </td>
+                            <td>
+                              <span className="pill-status pill-azul">{item.status}</span>
+                            </td>
+                            <td>
+                              <button
+                                type="button"
+                                className="btn-ver"
+                                onClick={() => handleAbrirAvaliacao(item)}
+                              >
+                                Ver
+                              </button>
+                            </td>
+                          </tr>
+                        ))
+                      )}
                     </tbody>
                   </table>
                 </div>
 
                 <div className="card-rodape-link">
-                  <a href="#/" className="dash-link" onClick={(e) => e.preventDefault()}>
+                  <a
+                    href="/avaliacao-psicossocial"
+                    className="dash-link"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      navigate('/avaliacao-psicossocial');
+                    }}
+                  >
                     Ver Mais
                   </a>
                 </div>
               </div>
             </section>
 
-            {/* Linha 3: Planos de ação (centralizado embaixo) */}
             <section className="planos-wrapper">
               <div className="dash-card card-planos">
                 <h3 className="card-titulo-secao">Planos de ação</h3>
@@ -376,64 +586,79 @@ function Dashboard() {
                         <th>RESPONSÁVEL</th>
                         <th>PRAZO</th>
                         <th>STATUS</th>
-                        <th></th>
+                        <th />
                       </tr>
                     </thead>
                     <tbody>
-                      {planosFormatados.map((plano, idx) => (
-                        <tr
-                          key={idx}
-                          className={plano.atrasado ? 'linha-atrasada' : ''}
-                        >
-                          <td className="celula-plano-nome">
-                            {plano.atrasado && <span className="ponto-vermelho"></span>}
-                            {plano.plano}
-                          </td>
-                          <td>
-                            <span className="tag-origem">{plano.origem}</span>
-                          </td>
-                          <td className="celula-responsavel">{plano.responsavel}</td>
-                          <td className={plano.atrasado ? 'celula-prazo-atrasado' : 'celula-prazo'}>
-                            {plano.atrasado && (
-                              <svg
-                                width="14"
-                                height="14"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2.2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                style={{ marginRight: '5px', verticalAlign: '-2px' }}
-                              >
-                                <circle cx="12" cy="12" r="10" />
-                                <polyline points="12 6 12 12 16 14" />
-                              </svg>
-                            )}
-                            {plano.prazo}
-                          </td>
-                          <td>
-                            <span className={`pill-status pill-${plano.statusTipo}`}>
-                              {plano.status}
-                            </span>
-                          </td>
-                          <td className="celula-detalhes">
-                            <a
-                              href="#/"
-                              className={plano.atrasado ? 'link-detalhes-vermelho' : 'link-detalhes'}
-                              onClick={(e) => e.preventDefault()}
-                            >
-                              Detalhes
-                            </a>
+                      {planosFormatados.length === 0 ? (
+                        <tr>
+                          <td colSpan="6" style={{ textAlign: 'center', color: '#64748b' }}>
+                            Nenhum plano de ação encontrado.
                           </td>
                         </tr>
-                      ))}
+                      ) : (
+                        planosFormatados.map((plano) => (
+                          <tr key={plano.id} className={plano.atrasado ? 'linha-atrasada' : ''}>
+                            <td className="celula-plano-nome">
+                              {plano.atrasado && <span className="ponto-vermelho" />}
+                              {plano.plano}
+                            </td>
+                            <td>
+                              <span className="tag-origem">{plano.origem}</span>
+                            </td>
+                            <td className="celula-responsavel">{plano.responsavel}</td>
+                            <td className={plano.atrasado ? 'celula-prazo-atrasado' : 'celula-prazo'}>
+                              {plano.atrasado && (
+                                <svg
+                                  width="14"
+                                  height="14"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="2.2"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  style={{ marginRight: '5px', verticalAlign: '-2px' }}
+                                >
+                                  <circle cx="12" cy="12" r="10" />
+                                  <polyline points="12 6 12 12 16 14" />
+                                </svg>
+                              )}
+                              {plano.prazo}
+                            </td>
+                            <td>
+                              <span className={`pill-status pill-${plano.statusTipo}`}>
+                                {plano.status}
+                              </span>
+                            </td>
+                            <td className="celula-detalhes">
+                              <a
+                                href="/planos-acao"
+                                className={plano.atrasado ? 'link-detalhes-vermelho' : 'link-detalhes'}
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  navigate('/planos-acao', { state: { planoId: plano.id } });
+                                }}
+                              >
+                                Detalhes
+                              </a>
+                            </td>
+                          </tr>
+                        ))
+                      )}
                     </tbody>
                   </table>
                 </div>
 
                 <div className="card-rodape-link">
-                  <a href="#/" className="dash-link" onClick={(e) => e.preventDefault()}>
+                  <a
+                    href="/planos-acao"
+                    className="dash-link"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      navigate('/planos-acao');
+                    }}
+                  >
                     Ver Mais
                   </a>
                 </div>
