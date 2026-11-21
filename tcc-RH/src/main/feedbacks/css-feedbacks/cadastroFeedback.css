@@ -1,208 +1,666 @@
 
-/********************************************************************************
- * Objetivo: Estilização da tela de cadastro de Feedback.
- ********************************************************************************/
+/* =========================================================
+   CABEÇALHO E CAMINHO DA PÁGINA
+========================================================= */
 
-.pagina-cadastro-feedback {
+.cabecalho-novo-feedback {
+    box-sizing: border-box;
     width: 100%;
-    min-height: 100vh;
-    padding-bottom: 40px;
-    background-color: #F8F9FF;
+}
+
+.caminho-cadastro-feedback {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    margin-top: 12px;
+}
+
+.caminho-cadastro-feedback button {
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: auto;
+    min-width: 0;
+    height: auto;
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    color: #777D90;
     font-family: 'Geist', sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    cursor: pointer;
+}
+
+.caminho-cadastro-feedback button:hover {
+    color: #1E40AF;
+}
+
+.caminho-cadastro-feedback .seta {
+    color: #A0A5B5;
+    font-size: 12px;
+}
+
+.pagina-atual-feedback {
+    color: #202A40;
+    font-family: 'Geist', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
 }
 
 
-/*----------------- FORMULÁRIO PRINCIPAL -----------------*/
+/* =========================================================
+   FORMULÁRIO
+========================================================= */
 
 .formulario-feedback {
-    width: 87%;
-    margin: 45px auto 0;
-    padding: 30px;
+    box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    gap: 25px;
-
-    background-color: #FFFFFF;
-    border: 1px solid #E6E8EF;
-    border-radius: 12px;
-
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    gap: 0;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
 }
 
 
-/*----------------- CABEÇALHO ----------------------------*/
+/* =========================================================
+   CARDS DAS ETAPAS
+========================================================= */
 
-.cabecalho-formulario-feedback {
+.etapa-feedback {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    width: 100%;
+    margin-top: 23px;
+    padding: 22px 19px;
+    background: #FFFFFF;
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.cabecalho-etapa-feedback {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
     gap: 20px;
-
-    padding-bottom: 22px;
-    border-bottom: 1px solid #E6E8EF;
+    width: 100%;
+    margin-bottom: 0;
 }
 
-.cabecalho-formulario-feedback h2 {
-    margin: 0 0 8px;
-    color: #25283A;
-    font-size: 20px;
+.cabecalho-etapa-feedback h2 {
+    margin: 0;
+    color: #172033;
+    font-size: 16px;
     font-weight: 600;
 }
 
-.cabecalho-formulario-feedback p {
-    margin: 0;
-    color: #777D8C;
-    font-size: 14px;
+.numero-etapa-feedback {
+    display: block;
+    margin-bottom: 6px;
+    color: #1E40AF;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
 }
 
-.campo-obrigatorio-feedback {
-    color: #777D8C;
+.descricao-etapa-feedback {
+    color: #52586B;
     font-size: 12px;
+    line-height: 18px;
+    text-align: right;
+}
+
+
+/* =========================================================
+   STATUS DA ETAPA
+========================================================= */
+
+.etiqueta-etapa-feedback {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    height: 22px;
+    padding: 0 8px;
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: 600;
     white-space: nowrap;
 }
 
-
-/*----------------- CAMPOS -------------------------------*/
-
-.campo-feedback {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 9px;
+.etiqueta-ativa-feedback {
+    color: #14705C;
+    background: #E8F5EF;
 }
 
-.campo-feedback label {
-    color: #25283A;
-    font-size: 14px;
+.ponto-etiqueta-feedback {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #14705C;
+}
+
+
+/* =========================================================
+   CAMPOS E LABELS
+========================================================= */
+
+.campo-feedback {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    min-width: 0;
+}
+
+.campo-feedback label,
+.campo-data-feedback label {
+    display: block;
+    margin-bottom: 0;
+    color: #202A40;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.linha-label-feedback {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+}
+
+.linha-label-feedback label {
+    margin: 0;
+    color: #202A40;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.linha-label-feedback small {
+    color: #777D90;
+    font-size: 11px;
+    font-weight: 500;
+    text-align: right;
+}
+
+
+/* =========================================================
+   PESQUISA DO COLABORADOR
+========================================================= */
+
+.dropdown-colaborador-feedback {
+    position: relative;
+    width: 100%;
+}
+
+.input-colaborador-feedback {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    width: 100%;
+    height: 36px;
+    min-height: 36px;
+    padding: 0 10px;
+    background: #F1F2FF;
+    border: 1px solid transparent;
+    border-radius: 5px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.input-colaborador-feedback:focus-within {
+    border-color: #2452E8;
+    box-shadow: 0 0 0 2px rgba(36, 82, 232, 0.10);
+}
+
+.icone-select-feedback {
+    flex-shrink: 0;
+    color: #777D90;
+    font-size: 17px;
+}
+
+.input-colaborador-feedback input {
+    box-sizing: border-box;
+    flex: 1;
+    width: 100%;
+    min-width: 0;
+    height: 34px;
+    min-height: 34px;
+    padding: 0;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: #202A40;
+    font-family: 'Geist', sans-serif;
+    font-size: 12px;
+}
+
+.input-colaborador-feedback input::placeholder {
+    color: #777D90;
+    opacity: 1;
+}
+
+.seta-dropdown-feedback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    color: #777D90;
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   LISTA DO DROPDOWN
+========================================================= */
+
+.lista-dropdown-feedback {
+    position: absolute;
+    z-index: 100;
+    top: calc(100% + 5px);
+    left: 0;
+    box-sizing: border-box;
+    width: 100%;
+    max-height: 260px;
+    overflow-y: auto;
+    padding: 4px 0;
+    background: #FFFFFF;
+    border: 1px solid #E1E4ED;
+    border-radius: 6px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.10);
+}
+
+.opcao-colaborador-feedback {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    min-height: 56px;
+    margin: 0;
+    padding: 9px 12px;
+    border: none;
+    border-bottom: 1px solid #EEF0F5;
+    border-radius: 0;
+    background: #FFFFFF;
+    text-align: left;
+    font-family: 'Geist', sans-serif;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.opcao-colaborador-feedback:last-child {
+    border-bottom: none;
+}
+
+.opcao-colaborador-feedback:hover {
+    background: #F5F6FF;
+}
+
+.icone-opcao-colaborador-feedback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #E8F0FE;
+    color: #1967D2;
+    font-size: 11px;
     font-weight: 600;
 }
 
-.campo-feedback input,
-.campo-feedback select,
-.campo-feedback textarea {
+.dados-opcao-colaborador-feedback {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+    min-width: 0;
+    text-align: left;
+}
+
+.dados-opcao-colaborador-feedback strong,
+.dados-opcao-colaborador-feedback span {
     width: 100%;
-    min-height: 46px;
-    padding: 12px 14px;
-
-    border: 1px solid #E0E3EB;
-    border-radius: 8px;
-
-    outline: none;
-    background-color: #FFFFFF;
-
-    color: #25283A;
-    font-family: 'Geist', sans-serif;
-    font-size: 14px;
-
-    transition: border-color 0.2s, box-shadow 0.2s;
+    overflow: hidden;
+    text-align: left;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
-.campo-feedback textarea {
-    min-height: 145px;
-    resize: vertical;
+.dados-opcao-colaborador-feedback strong {
+    color: #202A40;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 17px;
 }
 
-.campo-feedback input:focus,
-.campo-feedback select:focus,
-.campo-feedback textarea:focus {
-    border-color: #0050CB;
-    box-shadow: 0 0 0 3px rgba(0, 80, 203, 0.08);
+.dados-opcao-colaborador-feedback span {
+    color: #777D90;
+    font-size: 11px;
+    line-height: 15px;
 }
 
-.campo-feedback input:disabled,
-.campo-feedback select:disabled,
-.campo-feedback textarea:disabled {
-    background-color: #F4F5F8;
-    cursor: not-allowed;
-}
-
-.campo-feedback small {
-    color: #858B99;
+.dropdown-vazio-feedback {
+    display: flex;
+    align-items: center;
+    min-height: 50px;
+    padding: 12px;
+    color: #777D90;
     font-size: 12px;
 }
 
 
-/*----------------- CAMPOS DUPLOS ------------------------*/
+/* =========================================================
+   COLABORADOR SELECIONADO
+========================================================= */
 
-.campos-duplos-feedback {
+.cartao-colaborador-feedback {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
     width: 100%;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 22px;
+    min-width: 0;
+    margin-top: 0;
+    padding: 14px;
+    background: #F1F2FF;
+    border-radius: 6px;
+}
+
+.informacoes-colaborador-feedback {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+}
+
+.avatar-colaborador-feedback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 42px;
+    height: 42px;
+    border-radius: 6px;
+    background: #E8F0FE;
+    color: #1967D2;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.dados-colaborador-feedback {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+    min-width: 0;
+}
+
+.dados-colaborador-feedback h3 {
+    margin: 0;
+    color: #202A40;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.dados-colaborador-feedback p {
+    margin: 0;
+    color: #777D90;
+    font-size: 11px;
+}
+
+.status-colaborador-feedback {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex-shrink: 0;
+    color: #14705C;
+    font-size: 10px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.status-colaborador-feedback span {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #14705C;
+}
+
+.aviso-vinculo-feedback {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    width: fit-content;
+    margin-top: 0;
+    padding: 6px 10px;
+    border-radius: 12px;
+    background: #E8F5EF;
+    color: #14705C;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.aviso-vinculo-feedback span {
+    font-size: 13px;
+}
+
+.aviso-sem-colaborador-feedback {
+    color: #777D90;
+    font-size: 11px;
 }
 
 
-/*----------------- MENSAGENS ----------------------------*/
+/* =========================================================
+   TIPOS DE FEEDBACK
+========================================================= */
+
+.opcoes-tipo-feedback {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    width: 100%;
+}
+
+.cartao-tipo-feedback {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    min-height: 88px;
+    padding: 12px;
+    border: 1px solid #E8EAF2;
+    border-radius: 6px;
+    background: #F1F2FF;
+    text-align: left;
+    font-family: 'Geist', sans-serif;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.cartao-tipo-feedback:hover {
+    border-color: #2452E8;
+}
+
+.cartao-tipo-selecionado-feedback {
+    background: #FFFFFF;
+    border-color: #2452E8;
+}
+
+.titulo-cartao-tipo-feedback {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+}
+
+.icone-tipo-feedback {
+    color: #1E40AF;
+    font-size: 17px;
+    font-weight: 600;
+}
+
+.titulo-cartao-tipo-feedback strong {
+    color: #202A40;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.cartao-tipo-selecionado-feedback .titulo-cartao-tipo-feedback strong {
+    color: #1E40AF;
+}
+
+.seletor-tipo-feedback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 15px;
+    height: 15px;
+    min-width: 15px;
+    margin-left: auto;
+    border: 1px solid #D7DDF5;
+    border-radius: 50%;
+    background: #E3E8FF;
+    color: #FFFFFF;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.cartao-tipo-selecionado-feedback .seletor-tipo-feedback {
+    border-color: #1E40AF;
+    background: #1E40AF;
+}
+
+.cartao-tipo-feedback p {
+    margin: 0;
+    color: #626B80;
+    font-size: 11px;
+    line-height: 16px;
+}
+
+
+/* =========================================================
+   DATA DO FEEDBACK
+========================================================= */
+
+.campo-data-feedback {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    min-width: 0;
+    margin-left: 0;
+}
+
+.campo-data-feedback input {
+    box-sizing: border-box;
+    width: 100%;
+    height: 36px;
+    min-height: 36px;
+    padding: 0 10px;
+    border: 1px solid transparent;
+    border-radius: 5px;
+    outline: none;
+    background: #F1F2FF;
+    color: #202A40;
+    font-family: 'Geist', sans-serif;
+    font-size: 12px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.campo-data-feedback input:focus {
+    border-color: #2452E8;
+    box-shadow: 0 0 0 2px rgba(36, 82, 232, 0.10);
+}
+
+
+/* =========================================================
+   DESCRIÇÃO E CONTADOR
+========================================================= */
+
+.campo-feedback textarea {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 100px;
+    padding: 10px;
+    resize: vertical;
+    border: 1px solid transparent;
+    border-radius: 5px;
+    outline: none;
+    background: #F1F2FF;
+    color: #202A40;
+    font-family: 'Geist', sans-serif;
+    font-size: 12px;
+    line-height: 18px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.campo-feedback textarea:focus {
+    background: #FFFFFF;
+    border-color: #2452E8;
+    box-shadow: 0 0 0 2px rgba(36, 82, 232, 0.10);
+}
+
+.campo-feedback textarea::placeholder {
+    color: #777D90;
+}
+
+.contador-feedback {
+    color: #777D90;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.dica-descricao-feedback {
+    color: #777D90;
+    font-size: 11px;
+    line-height: 16px;
+}
+
+
+/* =========================================================
+   MENSAGENS
+========================================================= */
 
 .mensagem-formulario-feedback {
+    box-sizing: border-box;
     width: 100%;
+    margin-top: 23px;
     padding: 13px 15px;
-    border-radius: 8px;
-    font-size: 14px;
+    border-radius: 6px;
+    font-size: 12px;
+    line-height: 17px;
 }
 
 .erro-feedback {
-    color: #B42318;
-    background-color: #FEF3F2;
-    border: 1px solid #FECACA;
+    color: #DC2626;
+    background: #FFF5F5;
+    border: 1px solid #F0C7CC;
 }
 
 .sucesso-feedback {
-    color: #067647;
-    background-color: #ECFDF3;
-    border: 1px solid #ABEFC6;
+    color: #14705C;
+    background: #E8F5EF;
+    border: 1px solid #B7E4D1;
 }
-
-
-/*----------------- RODAPÉ E BOTÕES ----------------------*/
-
-.rodape-formulario-feedback {
-    width: 100%;
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    gap: 12px;
-
-    padding-top: 22px;
-    border-top: 1px solid #E6E8EF;
-}
-
-.rodape-formulario-feedback button {
-    min-width: 145px;
-    height: 44px;
-    padding: 0 20px;
-
-    border-radius: 8px;
-    font-family: 'Geist', sans-serif;
-    font-size: 14px;
-    font-weight: 600;
-
-    cursor: pointer;
-    transition: 0.2s;
-}
-
-.botao-cancelar-feedback {
-    color: #424656;
-    background-color: #FFFFFF;
-    border: 1px solid #D9DDE7;
-}
-
-.botao-cancelar-feedback:hover {
-    background-color: #F4F5F8;
-}
-
-.botao-salvar-feedback {
-    color: #FFFFFF;
-    background-color: #0050CB;
-    border: 1px solid #0050CB;
-}
-
-.botao-salvar-feedback:hover {
-    background-color: #003FA3;
-}
-
-.rodape-formulario-feedback button:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
-

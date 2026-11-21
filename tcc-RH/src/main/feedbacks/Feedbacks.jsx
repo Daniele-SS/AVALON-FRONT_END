@@ -11,7 +11,7 @@ import Minicards from '../../componentes/minicard/minicard.jsx';
 
 import LinhaTempoFeedback from './componentes/LinhaTempoFeedback';
 import DetalhesFeedback from './componentes/DetalhesFeedback';
-import CadastroFeedback from './cadastroFeedback';
+import CadastroFeedback from './CadastroFeedback.jsx';
 
 import buscarFeedbacks from './servicos/feedbacksApi';
 import buscarRespostasFeedback from './servicos/respostasFeedbackApi';
