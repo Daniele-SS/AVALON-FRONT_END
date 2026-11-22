@@ -1,0 +1,107 @@
+
+.card-indicador {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    min-height: 118px;
+    padding: 16px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: #FFFFFF;
+    border: 1px solid #E8EDF5;
+    border-radius: 8px;
+}
+
+/* TOPO DO CARD */
+
+.card-indicador-topo {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.card-indicador-cabecalho {
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.card-indicador-icone {
+    flex-shrink: 0;
+    color: #64748B;
+    font-size: 12px;
+}
+
+.card-indicador-titulo {
+    color: #566176;
+    font-size: 9px;
+    font-weight: 700;
+    line-height: 1.5;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+/* STATUS */
+
+.card-indicador-status {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 7px;
+    border-radius: 20px;
+    font-size: 9px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.card-indicador-status-ponto {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.card-indicador-status.normal {
+    color: #008F6B;
+    background: #E7F9F2;
+}
+
+.card-indicador-status.atencao {
+    color: #C77700;
+    background: #FFF4DF;
+}
+
+.card-indicador-status.abaixo-da-meta {
+    color: #C62828;
+    background: #FDEAEA;
+}
+
+.card-indicador-status.sem-dados {
+    color: #64748B;
+    background: #F1F5F9;
+}
+
+/* NOME DO INDICADOR */
+
+.card-indicador-descricao {
+    margin: 0;
+    color: #152238;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+/* VALOR */
+
+.card-indicador-valor {
+    margin-top: auto;
+    color: #101D32;
+    font-size: 27px;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.04em;
+}

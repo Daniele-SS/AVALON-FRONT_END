@@ -1,0 +1,175 @@
+
+.grafico-evolucao {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    min-height: 380px;
+    padding: 24px 18px 22px;
+    background: #FFFFFF;
+    border: 1px solid #E6EAF0;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+/* CABEÇALHO */
+
+.grafico-evolucao-cabecalho {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+}
+
+.grafico-evolucao-cabecalho h2 {
+    margin: 0;
+    color: #152238;
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+.grafico-evolucao-cabecalho p {
+    margin: 7px 0 0;
+    color: #8795AD;
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+.grafico-evolucao-setor {
+    flex-shrink: 0;
+    padding: 7px 10px;
+    background: #F1F5FF;
+    border-radius: 5px;
+    color: #64748B;
+    font-size: 10px;
+}
+
+/* LEGENDA */
+
+.grafico-evolucao-legenda {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.grafico-evolucao-legenda-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 8px;
+    background: #F1F5FF;
+    border-radius: 4px;
+    color: #152238;
+    font-size: 9px;
+}
+
+.grafico-evolucao-legenda-cor {
+    width: 7px;
+    height: 7px;
+    flex-shrink: 0;
+    border-radius: 50%;
+}
+
+/* GRÁFICO */
+
+.grafico-evolucao-area {
+    width: 100%;
+    min-width: 0;
+    margin-top: 4px;
+    overflow: hidden;
+}
+
+.grafico-evolucao-svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+}
+
+.grafico-evolucao-grade {
+    stroke: #E7EDF5;
+    stroke-width: 1;
+    stroke-dasharray: 2 4;
+}
+
+.grafico-evolucao-eixo-y {
+    fill: #4B556B;
+    font-size: 15px;
+}
+
+.grafico-evolucao-eixo-x {
+    fill: #26364D;
+    font-size: 13px;
+}
+
+.grafico-evolucao-meta {
+    stroke: #F05252;
+    stroke-width: 1.5;
+    stroke-dasharray: 4 4;
+}
+
+.grafico-evolucao-linha {
+    fill: none;
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.grafico-evolucao-ponto {
+    stroke: #FFFFFF;
+    stroke-width: 1.5;
+}
+
+/* SEM DADOS */
+
+.grafico-evolucao-vazio {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 240px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    color: #8795AD;
+    font-size: 12px;
+    text-align: center;
+    line-height: 1.6;
+}
+
+/* RODAPÉ */
+
+.grafico-evolucao-rodape {
+    padding-top: 12px;
+    border-top: 1px solid #E6EAF0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+}
+
+.grafico-evolucao-parametro {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.grafico-evolucao-parametro span {
+    width: 7px;
+    height: 7px;
+    flex-shrink: 0;
+    background: #F05252;
+    border-radius: 2px;
+}
+
+.grafico-evolucao-parametro p,
+.grafico-evolucao-escala {
+    margin: 0;
+    color: #8795AD;
+    font-size: 10px;
+}
+
+/* RESPONSIVIDADE */

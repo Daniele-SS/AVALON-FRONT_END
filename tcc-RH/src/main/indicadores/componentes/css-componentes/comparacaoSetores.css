@@ -1,0 +1,281 @@
+
+.comparacao-setores {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    padding: 22px;
+    background: #FFFFFF;
+    border: 1px solid #E8EDF5;
+    border-radius: 10px;
+}
+
+/* CABEÇALHO */
+
+.comparacao-setores-topo {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.comparacao-setores-titulo p {
+    margin: 0 0 6px;
+    color: #526B91;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.comparacao-setores-titulo h2 {
+    margin: 0;
+    color: #152238;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+/* SELETOR */
+
+.comparacao-setores-seletor {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+}
+
+.comparacao-setores-seletor span {
+    color: #566176;
+    font-size: 10px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.comparacao-setores-seletor select {
+    box-sizing: border-box;
+    width: 205px;
+    max-width: 100%;
+    min-height: 34px;
+    padding: 0 10px;
+    color: #26364D;
+    background: #F1F5FF;
+    border: 1px solid #E1E8F5;
+    border-radius: 6px;
+    font-size: 11px;
+    outline: none;
+}
+
+.comparacao-setores-seletor select:focus {
+    border-color: #1E5BFF;
+}
+
+/* LISTA */
+
+.comparacao-setores-lista {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 17px;
+}
+
+.comparacao-setor-item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    padding: 0;
+    border-radius: 4px;
+}
+
+.comparacao-setor-item.abaixo-da-meta {
+    padding: 10px;
+    background: #FFF7F7;
+}
+
+/* NOME E MÉDIA */
+
+.comparacao-setor-informacoes {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.comparacao-setor-nome {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    min-width: 0;
+}
+
+.comparacao-setor-nome strong {
+    overflow: hidden;
+    color: #26364D;
+    font-size: 10px;
+    font-weight: 600;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.comparacao-setor-codigo {
+    flex-shrink: 0;
+    color: #526B91;
+    font-size: 9px;
+}
+
+.comparacao-setor-resultado {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.comparacao-setor-media {
+    color: #26364D;
+    font-size: 10px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.comparacao-setor-media span {
+    color: #8792A5;
+    font-weight: 500;
+}
+
+/* SELO DE CLASSIFICAÇÃO */
+
+.comparacao-setor-status {
+    padding: 3px 7px;
+    border-radius: 12px;
+    font-size: 9px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.comparacao-setor-status.normal {
+    color: #008F6B;
+    background: #E7F9F2;
+}
+
+.comparacao-setor-status.atencao {
+    color: #C77700;
+    background: #FFF4DF;
+}
+
+.comparacao-setor-status.abaixo-da-meta {
+    color: #FFFFFF;
+    background: #C82020;
+}
+
+.comparacao-setor-status.sem-dados {
+    color: #64748B;
+    background: #F1F5F9;
+}
+
+/* BARRAS */
+
+.comparacao-setor-trilho {
+    position: relative;
+    width: 100%;
+    height: 10px;
+    overflow: visible;
+    background: #E7EEFF;
+    border-radius: 20px;
+}
+
+.comparacao-setor-barra {
+    position: relative;
+    z-index: 1;
+    height: 100%;
+    background: #1769FF;
+    border-radius: 20px;
+    transition: width 0.25s ease;
+}
+
+.comparacao-setor-item.abaixo-da-meta .comparacao-setor-barra {
+    background: #C82020;
+}
+
+/* LINHA DO PARÂMETRO */
+
+.comparacao-setor-meta {
+    position: absolute;
+    z-index: 2;
+    top: -35px;
+    bottom: -35px;
+    width: 2px;
+    background: #E45A5A;
+    pointer-events: none;
+}
+
+/* ALERTA DO SETOR */
+
+.comparacao-setor-alerta-mensagem {
+    display: flex;
+    align-items: flex-start;
+    gap: 5px;
+    color: #C82020;
+    font-size: 10px;
+    line-height: 1.5;
+}
+
+.comparacao-setor-alerta-mensagem span:first-child {
+    flex-shrink: 0;
+    font-weight: 700;
+}
+
+/* LEGENDA */
+
+.comparacao-setores-legenda {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 25px;
+    padding-top: 14px;
+    border-top: 1px solid #EDF1F6;
+    color: #8792A5;
+    font-size: 10px;
+}
+
+.comparacao-setores-legenda span {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.comparacao-legenda-meta {
+    width: 8px;
+    height: 8px;
+    background: #E45A5A;
+    border-radius: 2px;
+}
+
+/* SEM DADOS */
+
+.comparacao-setores-vazio {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 35px 15px;
+    text-align: center;
+}
+
+.comparacao-setores-vazio-icone {
+    margin-bottom: 12px;
+    color: #A7B2C2;
+    font-size: 30px;
+}
+
+.comparacao-setores-vazio strong {
+    color: #344258;
+    font-size: 13px;
+}
+
+.comparacao-setores-vazio p {
+    max-width: 360px;
+    margin: 8px 0 0;
+    color: #8792A5;
+    font-size: 12px;
+    line-height: 1.6;
+}

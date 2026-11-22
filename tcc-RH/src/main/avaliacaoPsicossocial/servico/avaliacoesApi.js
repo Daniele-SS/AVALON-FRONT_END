@@ -1,4 +1,6 @@
 
+import verificarSituacaoAvaliacao from '../funcoes/avaliacao/verificarSituacaoAvaliacao.js';
+
 //----------------- API DE AVALIAÇÃO PSICOSSOCIAL -----------------//
 
 const API = 'http://localhost:8080/v1/senai/avalon';
@@ -142,13 +144,17 @@ async function buscarDadosAvaliacaoPsicossocial() {
 
     //----------------- CONVERTER RESPOSTAS -----------------------//
 
-    const dadosAvaliacoes = await converterResposta(respostaAvaliacoes);
+    const dadosAvaliacoes =
+        await converterResposta(respostaAvaliacoes);
 
-    const dadosParticipacoes = await converterResposta(respostaParticipacoes);
+    const dadosParticipacoes =
+        await converterResposta(respostaParticipacoes);
 
-    const dadosSetores = await converterResposta(respostaSetores);
+    const dadosSetores =
+        await converterResposta(respostaSetores);
 
-    const dadosColaboradores = await converterResposta(respostaColaboradores);
+    const dadosColaboradores =
+        await converterResposta(respostaColaboradores);
 
     const dadosCargos = respostaCargos.ok
         ? await converterResposta(respostaCargos)
@@ -157,10 +163,18 @@ async function buscarDadosAvaliacaoPsicossocial() {
 
     //----------------- ORGANIZAR AVALIAÇÕES ----------------------//
 
-    const avaliacoes =
+    const avaliacoesOriginais =
         dadosAvaliacoes.response?.avaliacoes ??
         dadosAvaliacoes.avaliacoes ??
         [];
+
+
+    //----------------- CALCULAR SITUAÇÃO NO FRONTEND -------------//
+
+    const avaliacoes =
+        avaliacoesOriginais.map(
+            verificarSituacaoAvaliacao
+        );
 
 
     //----------------- ORGANIZAR PARTICIPAÇÕES -------------------//
