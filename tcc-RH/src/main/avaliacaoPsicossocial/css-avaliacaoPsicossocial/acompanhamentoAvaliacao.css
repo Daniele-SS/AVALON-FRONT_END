@@ -15,7 +15,7 @@
 
 
 /* --------------------------------------------------------- */
-/* CABEÇALHO DA AVALIAÇÃO                                    */
+/* CABEÇALHO DA AVALIAÇÃO                                   */
 /* --------------------------------------------------------- */
 
 .cabecalho-acompanhamento {
@@ -41,6 +41,9 @@
     display: flex;
     flex-direction: column;
     gap: 5px;
+
+    flex: 1;
+    min-width: 0;
 }
 
 
@@ -66,44 +69,69 @@
 
 
 /* --------------------------------------------------------- */
-/* BOTÃO ENCERRAR                                             */
+/* BOTÃO ENCERRAR AVALIAÇÃO                                 */
 /* --------------------------------------------------------- */
 
 .botao-encerrar-acompanhamento {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 6px;
 
-    padding: 8px 12px;
+    width: auto;
+    min-width: 0;
+    height: 32px;
+    flex-shrink: 0;
 
-    color: #B42318;
-    background-color: #FEE4E2;
+    padding: 0 12px;
+
+    color: #172B4D;
+    background-color: #E4E7FF;
 
     border: none;
-    border-radius: 5px;
+    border-radius: 6px;
 
-    font-size: 9px;
-    font-weight: 600;
+    font-family: 'Geist', sans-serif;
+    font-size: 10px;
+    font-weight: 500;
 
     white-space: nowrap;
 
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+
+.botao-encerrar-acompanhamento:hover:not(:disabled) {
+    background-color: #D5DAFF;
+}
+
+
+.botao-encerrar-acompanhamento:disabled {
     cursor: not-allowed;
-    opacity: 0.85;
+    opacity: 0.65;
 }
 
 
 .indicador-botao-encerrar {
-    width: 6px;
-    height: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-    background-color: #D92D20;
-    border-radius: 50%;
+    width: 12px;
+    height: 12px;
+    flex-shrink: 0;
+
+    color: #D92D20;
+
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1;
 }
 
 
 /* --------------------------------------------------------- */
-/* LISTA DE FATORES                                           */
+/* LISTA DE FATORES                                          */
 /* --------------------------------------------------------- */
 
 .lista-fatores-acompanhamento {
@@ -116,7 +144,7 @@
 
 
 /* --------------------------------------------------------- */
-/* CARD DO FATOR                                              */
+/* CARD DO FATOR                                             */
 /* --------------------------------------------------------- */
 
 .card-fator-acompanhamento {
@@ -131,7 +159,7 @@
 
 
 /* --------------------------------------------------------- */
-/* CABEÇALHO DO FATOR                                         */
+/* CABEÇALHO DO FATOR                                        */
 /* --------------------------------------------------------- */
 
 .cabecalho-fator-acompanhamento {
@@ -175,7 +203,7 @@
 
 
 /* --------------------------------------------------------- */
-/* ÍNDICE CONSOLIDADO                                         */
+/* ÍNDICE CONSOLIDADO                                        */
 /* --------------------------------------------------------- */
 
 .indicador-fator-acompanhamento {
@@ -220,7 +248,7 @@
 
 
 /* --------------------------------------------------------- */
-/* BARRA DO ÍNDICE                                            */
+/* BARRA DO ÍNDICE                                           */
 /* --------------------------------------------------------- */
 
 .trilho-indice-acompanhamento {
@@ -264,7 +292,7 @@
 
 
 /* --------------------------------------------------------- */
-/* CLASSIFICAÇÕES                                             */
+/* CLASSIFICAÇÕES                                            */
 /* --------------------------------------------------------- */
 
 .classificacao-acompanhamento {
@@ -309,7 +337,7 @@
 
 
 /* --------------------------------------------------------- */
-/* CONTEÚDO DO GRÁFICO                                        */
+/* CONTEÚDO DO GRÁFICO                                       */
 /* --------------------------------------------------------- */
 
 .conteudo-grafico-acompanhamento {
@@ -349,7 +377,7 @@
 
 
 /* --------------------------------------------------------- */
-/* LEGENDA                                                    */
+/* LEGENDA                                                   */
 /* --------------------------------------------------------- */
 
 .legenda-grafico-acompanhamento {
@@ -421,7 +449,7 @@
 
 
 /* --------------------------------------------------------- */
-/* MARCADOR VERTICAL DO PARÂMETRO                             */
+/* MARCADOR VERTICAL DO PARÂMETRO                            */
 /* --------------------------------------------------------- */
 
 .marcador-parametro-acompanhamento {
@@ -455,7 +483,7 @@
 
 
 /* --------------------------------------------------------- */
-/* ETIQUETA DO PARÂMETRO                                      */
+/* ETIQUETA DO PARÂMETRO                                     */
 /* --------------------------------------------------------- */
 
 .etiqueta-parametro-acompanhamento {
@@ -501,7 +529,7 @@
 
 
 /* --------------------------------------------------------- */
-/* LISTA DE SETORES                                           */
+/* LISTA DE SETORES                                          */
 /* --------------------------------------------------------- */
 
 .lista-setores-acompanhamento {
@@ -514,7 +542,7 @@
 
 
 /* --------------------------------------------------------- */
-/* LINHA DO SETOR                                             */
+/* LINHA DO SETOR                                            */
 /* --------------------------------------------------------- */
 
 .linha-setor-acompanhamento {
@@ -528,7 +556,7 @@
 
 
 /* --------------------------------------------------------- */
-/* INFORMAÇÕES DO SETOR                                       */
+/* INFORMAÇÕES DO SETOR                                      */
 /* --------------------------------------------------------- */
 
 .informacoes-setor-acompanhamento {
@@ -563,7 +591,7 @@
 
 
 /* --------------------------------------------------------- */
-/* BARRAS DE RESULTADO                                        */
+/* BARRAS DE RESULTADO                                       */
 /* --------------------------------------------------------- */
 
 .trilho-grafico-acompanhamento {
@@ -609,7 +637,7 @@
 
 
 /* --------------------------------------------------------- */
-/* DESTAQUE DE PRIORIDADE                                     */
+/* DESTAQUE DE PRIORIDADE                                    */
 /* --------------------------------------------------------- */
 
 .setor-em-prioridade {
@@ -628,7 +656,7 @@
 
 
 /* --------------------------------------------------------- */
-/* AÇÃO DA REGRA                                              */
+/* AÇÃO DA REGRA                                             */
 /* --------------------------------------------------------- */
 
 .acao-setor-acompanhamento {
@@ -670,7 +698,7 @@
 
 
 /* --------------------------------------------------------- */
-/* MENSAGENS                                                  */
+/* MENSAGENS                                                 */
 /* --------------------------------------------------------- */
 
 .mensagem-acompanhamento {
@@ -703,7 +731,7 @@
 
 
 /* --------------------------------------------------------- */
-/* RODAPÉ                                                     */
+/* RODAPÉ                                                    */
 /* --------------------------------------------------------- */
 
 .rodape-acompanhamento {
@@ -738,3 +766,185 @@
 }
 
 
+/* --------------------------------------------------------- */
+/* FUNDO DO MODAL                                            */
+/* --------------------------------------------------------- */
+
+.fundo-modal-encerrar-acompanhamento {
+    position: fixed;
+    inset: 0;
+
+    z-index: 9999;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    background-color: rgba(16, 24, 40, 0.45);
+}
+
+
+/* --------------------------------------------------------- */
+/* CARD DE CONFIRMAÇÃO                                       */
+/* --------------------------------------------------------- */
+
+.card-modal-encerrar-acompanhamento {
+    width: 100%;
+    max-width: 420px;
+
+    padding: 28px;
+
+    background-color: #FFFFFF;
+
+    border: 1px solid #EAECF0;
+    border-radius: 12px;
+
+    box-shadow: 0 12px 35px rgba(16, 24, 40, 0.18);
+
+    font-family: 'Geist', sans-serif;
+}
+
+
+/* --------------------------------------------------------- */
+/* ÍCONE DE ALERTA                                           */
+/* --------------------------------------------------------- */
+
+.icone-modal-encerrar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 42px;
+    height: 42px;
+
+    margin-bottom: 18px;
+
+    color: #D92D20;
+    background-color: #FEE4E2;
+
+    border-radius: 50%;
+}
+
+
+.icone-modal-encerrar span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 18px;
+    height: 18px;
+
+    border: 2px solid #D92D20;
+    border-radius: 50%;
+
+    font-size: 12px;
+    font-weight: 700;
+}
+
+
+/* --------------------------------------------------------- */
+/* TEXTOS                                                    */
+/* --------------------------------------------------------- */
+
+.card-modal-encerrar-acompanhamento h3 {
+    margin: 0 0 12px;
+
+    color: #172B4D;
+
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+
+.card-modal-encerrar-acompanhamento p {
+    margin: 0 0 12px;
+
+    color: #667085;
+
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+
+.card-modal-encerrar-acompanhamento .aviso-modal-encerrar {
+    color: #B42318;
+    font-weight: 600;
+}
+
+
+/* --------------------------------------------------------- */
+/* MENSAGEM DE ERRO                                           */
+/* --------------------------------------------------------- */
+
+.erro-modal-encerrar {
+    padding: 10px;
+
+    color: #B42318 !important;
+    background-color: #FEF3F2;
+
+    border-radius: 6px;
+
+    font-size: 11px !important;
+}
+
+
+/* --------------------------------------------------------- */
+/* BOTÕES DO MODAL                                            */
+/* --------------------------------------------------------- */
+
+.botoes-modal-encerrar {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+
+    margin-top: 24px;
+}
+
+
+.botoes-modal-encerrar button {
+    width: auto;
+    min-height: 36px;
+
+    padding: 9px 14px;
+
+    border: none;
+    border-radius: 6px;
+
+    font-family: 'Geist', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+
+.botoes-modal-encerrar button:disabled {
+    cursor: not-allowed;
+    opacity: 0.65;
+}
+
+
+.botao-cancelar-modal-encerrar {
+    color: #344054;
+    background-color: #F2F4F7;
+}
+
+
+.botao-cancelar-modal-encerrar:hover:not(:disabled) {
+    background-color: #E4E7EC;
+}
+
+
+.botao-confirmar-modal-encerrar {
+    color: #FFFFFF;
+    background-color: #D92D20;
+}
+
+
+.botao-confirmar-modal-encerrar:hover:not(:disabled) {
+    background-color: #B42318;
+}
