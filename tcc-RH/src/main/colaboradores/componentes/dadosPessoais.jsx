@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 
 import './dadospessoais.css';
 
@@ -11,12 +12,10 @@ function Dadospessoais({
     //----------------- FORMATAR CPF -------------------------//
 
     function formatarCPF(valor) {
-        // Deixa somente os números
         let numeros = String(valor || '')
             .replace(/\D/g, '')
             .slice(0, 11);
 
-        // Adiciona os pontos e o hífen progressivamente
         if (numeros.length > 9) {
             numeros =
                 numeros.slice(0, 3) + '.' +
@@ -40,7 +39,6 @@ function Dadospessoais({
     //----------------- FORMATAR TELEFONE --------------------//
 
     function formatarTelefone(valor) {
-        // Deixa somente os números
         const numeros = String(valor || '')
             .replace(/\D/g, '')
             .slice(0, 11);
@@ -67,6 +65,96 @@ function Dadospessoais({
         return '(' + numeros.slice(0, 2) + ') ' +
             numeros.slice(2, 7) + '-' +
             numeros.slice(7);
+    }
+
+    //----------------- FORMATAR DATA DE NASCIMENTO ----------//
+
+    // Converte AAAA-MM-DD para DD/MM/AAAA.
+    function formatarDataParaTela(data) {
+        if (!data) {
+            return '';
+        }
+
+        const valor = String(data).split('T')[0];
+
+        if (/^\d{4}-\d{2}-\d{2}$/.test(valor)) {
+            const [ano, mes, dia] = valor.split('-');
+
+            return `${dia}/${mes}/${ano}`;
+        }
+
+        return valor;
+    }
+
+    // Insere as barras enquanto o usuário digita.
+    function formatarDataDigitada(valor) {
+        const numeros = String(valor || '')
+            .replace(/\D/g, '')
+            .slice(0, 8);
+
+        if (numeros.length <= 2) {
+            return numeros;
+        }
+
+        if (numeros.length <= 4) {
+            return `${numeros.slice(0, 2)}/${numeros.slice(2)}`;
+        }
+
+        return `${numeros.slice(0, 2)}/${numeros.slice(2, 4)}/${numeros.slice(4, 8)}`;
+    }
+
+    // Converte DD/MM/AAAA para AAAA-MM-DD.
+    // Só retorna a data quando ela é válida.
+    function converterDataParaBanco(valor) {
+        const numeros = String(valor || '').replace(/\D/g, '');
+
+        if (numeros.length !== 8) {
+            return '';
+        }
+
+        const dia = Number(numeros.slice(0, 2));
+        const mes = Number(numeros.slice(2, 4));
+        const ano = Number(numeros.slice(4, 8));
+
+        if (ano < 1000 || ano > 9999 || mes < 1 || mes > 12) {
+            return '';
+        }
+
+        const ultimoDia = new Date(ano, mes, 0).getDate();
+
+        if (dia < 1 || dia > ultimoDia) {
+            return '';
+        }
+
+        return `${ano}-${String(mes).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
+    }
+
+    //----------------- ESTADO DA DATA -----------------------//
+
+    const [dataNascimentoTela, setDataNascimentoTela] = useState(
+        () => formatarDataParaTela(dados.dataNascimento)
+    );
+
+    // Atualiza o campo caso os dados sejam carregados posteriormente.
+    useEffect(() => {
+        if (dados.dataNascimento) {
+            setDataNascimentoTela(
+                formatarDataParaTela(dados.dataNascimento)
+            );
+        }
+    }, [dados.dataNascimento]);
+
+    //----------------- ATUALIZAR DATA DE NASCIMENTO --------//
+
+    function alterarDataNascimento(valor) {
+        const dataFormatada = formatarDataDigitada(valor);
+
+        setDataNascimentoTela(dataFormatada);
+
+        atualizarCampo(
+            'dataNascimento',
+            converterDataParaBanco(dataFormatada)
+        );
     }
 
     //----------------- ATUALIZAR CAMPOS ---------------------//
@@ -250,14 +338,15 @@ function Dadospessoais({
 
                     <input
                         id="nascimento-colaborador"
-                        type="date"
-                        value={dados.dataNascimento || ''}
-                        onChange={(evento) =>
-                            atualizarCampo(
-                                'dataNascimento',
-                                evento.target.value
-                            )
-                        }
+                        type="text"
+                        inputMode="numeric"
+                        autoComplete="off"
+                        placeholder="EX: 01/01/2000"
+                        maxLength={10}
+                        value={dataNascimentoTela}
+                        onChange={(evento) => {
+                            alterarDataNascimento(evento.target.value);
+                        }}
                     />
                 </div>
 

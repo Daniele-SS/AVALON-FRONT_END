@@ -1,5 +1,69 @@
+import { useState } from 'react';
 
 import './css-componentes/identificacaoAvaliacao.css';
+
+//----------------- FUNÇÕES DE DATA --------------------------//
+
+// Formata a data para aparecer na tela como DD/MM/AAAA.
+function formatarDataParaTela(data) {
+    if (!data) return '';
+
+    const valor = String(data).split('T')[0];
+
+    if (/^\d{4}-\d{2}-\d{2}$/.test(valor)) {
+        const [ano, mes, dia] = valor.split('-');
+
+        return `${dia}/${mes}/${ano}`;
+    }
+
+    return valor;
+}
+
+
+// Insere as barras automaticamente enquanto o usuário digita.
+function formatarDataDigitada(valor) {
+    const numeros = String(valor || '')
+        .replace(/\D/g, '')
+        .slice(0, 8);
+
+    if (numeros.length <= 2) {
+        return numeros;
+    }
+
+    if (numeros.length <= 4) {
+        return `${numeros.slice(0, 2)}/${numeros.slice(2)}`;
+    }
+
+    return `${numeros.slice(0, 2)}/${numeros.slice(2, 4)}/${numeros.slice(4, 8)}`;
+}
+
+
+// Converte DD/MM/AAAA para AAAA-MM-DD.
+// Também verifica se a data realmente existe.
+function converterDataParaBanco(valor) {
+    const numeros = String(valor || '').replace(/\D/g, '');
+
+    if (numeros.length !== 8) {
+        return '';
+    }
+
+    const dia = Number(numeros.slice(0, 2));
+    const mes = Number(numeros.slice(2, 4));
+    const ano = Number(numeros.slice(4, 8));
+
+    if (ano < 1000 || ano > 9999 || mes < 1 || mes > 12) {
+        return '';
+    }
+
+    const ultimoDia = new Date(ano, mes, 0).getDate();
+
+    if (dia < 1 || dia > ultimoDia) {
+        return '';
+    }
+
+    return `${ano}-${String(mes).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
+}
+
 
 //----------------- IDENTIFICAÇÃO DA AVALIAÇÃO ---------------//
 
@@ -17,6 +81,42 @@ function IdentificacaoAvaliacao({
     erros,
     limparErro
 }) {
+
+    // Datas exibidas no formato DD/MM/AAAA.
+    const [dataInicioTela, setDataInicioTela] = useState(
+        () => formatarDataParaTela(dataInicio)
+    );
+
+    const [dataFimTela, setDataFimTela] = useState(
+        () => formatarDataParaTela(dataFim)
+    );
+
+
+    // Atualiza a data de início.
+    function alterarDataInicio(valor) {
+        const dataFormatada = formatarDataDigitada(valor);
+
+        setDataInicioTela(dataFormatada);
+
+        // O componente pai recebe a data no formato AAAA-MM-DD.
+        setDataInicio(converterDataParaBanco(dataFormatada));
+
+        limparErro('dataInicio');
+    }
+
+
+    // Atualiza a data de encerramento.
+    function alterarDataFim(valor) {
+        const dataFormatada = formatarDataDigitada(valor);
+
+        setDataFimTela(dataFormatada);
+
+        // O componente pai recebe a data no formato AAAA-MM-DD.
+        setDataFim(converterDataParaBanco(dataFormatada));
+
+        limparErro('dataFim');
+    }
+
 
     return (
 
@@ -98,6 +198,8 @@ function IdentificacaoAvaliacao({
 
             <div className="campos-periodo-avaliacao">
 
+                {/* DATA DE INÍCIO */}
+
                 <div className="campo-avaliacao">
 
                     <label htmlFor="data-inicio-avaliacao">
@@ -106,11 +208,14 @@ function IdentificacaoAvaliacao({
 
                     <input
                         id="data-inicio-avaliacao"
-                        type="date"
-                        value={dataInicio}
+                        type="text"
+                        inputMode="numeric"
+                        autoComplete="off"
+                        placeholder="DD/MM/AAAA"
+                        maxLength={10}
+                        value={dataInicioTela}
                         onChange={(evento) => {
-                            setDataInicio(evento.target.value);
-                            limparErro('dataInicio');
+                            alterarDataInicio(evento.target.value);
                         }}
                         className={erros.dataInicio ? 'campo-avaliacao-erro' : ''}
                     />
@@ -124,6 +229,8 @@ function IdentificacaoAvaliacao({
                 </div>
 
 
+                {/* DATA DE ENCERRAMENTO */}
+
                 <div className="campo-avaliacao">
 
                     <label htmlFor="data-fim-avaliacao">
@@ -132,12 +239,14 @@ function IdentificacaoAvaliacao({
 
                     <input
                         id="data-fim-avaliacao"
-                        type="date"
-                        min={dataInicio || undefined}
-                        value={dataFim}
+                        type="text"
+                        inputMode="numeric"
+                        autoComplete="off"
+                        placeholder="DD/MM/AAAA"
+                        maxLength={10}
+                        value={dataFimTela}
                         onChange={(evento) => {
-                            setDataFim(evento.target.value);
-                            limparErro('dataFim');
+                            alterarDataFim(evento.target.value);
                         }}
                         className={erros.dataFim ? 'campo-avaliacao-erro' : ''}
                     />

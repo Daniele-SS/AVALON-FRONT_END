@@ -1,3 +1,8 @@
+
+/********************************************************************************
+ * Objetivo: Validar os dados do cadastro de férias.
+ ********************************************************************************/
+
 //----------------- VALIDAR CADASTRO DE FÉRIAS -------------//
 
 function validarFerias({
@@ -55,15 +60,8 @@ function validarFerias({
         const fim =
             new Date(`${dataFim}T00:00:00`);
 
-        const hoje = new Date();
 
-        hoje.setHours(
-            0,
-            0,
-            0,
-            0
-        );
-
+        //----------------- DATA INICIAL VÁLIDA --------------//
 
         if (
             Number.isNaN(inicio.getTime())
@@ -75,6 +73,8 @@ function validarFerias({
         }
 
 
+        //----------------- DATA FINAL VÁLIDA ----------------//
+
         if (
             Number.isNaN(fim.getTime())
         ) {
@@ -85,16 +85,7 @@ function validarFerias({
         }
 
 
-        if (
-            !Number.isNaN(inicio.getTime()) &&
-            inicio < hoje
-        ) {
-
-            erros.dataInicio =
-                'A data de início não pode ser anterior a hoje.';
-
-        }
-
+        //----------------- VALIDAR ORDEM DAS DATAS ----------//
 
         if (
             !Number.isNaN(inicio.getTime()) &&
@@ -124,6 +115,8 @@ function validarFerias({
 
     }
 
+
+    //----------------- SALDO DISPONÍVEL --------------------//
 
     if (
         quantidadeDias > 0 &&
