@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 
 import BotaoCadastro from '../../componentes/cardNomePag/nomePag.jsx';
@@ -8,6 +7,7 @@ import Filtro from '../../componentes/cardFiltros/filtros.jsx';
 import CardPlanoAcao from './componentes/CardPlanoAcao.jsx';
 
 import CadastroPlanoAcao from './cadastroPlanoAcao.jsx';
+import AcompanhamentoPlanoAcao from './AcompanhamentoPlanoAcao.jsx';
 
 import './css-planoAcao/planoAcao.css';
 
@@ -39,8 +39,11 @@ function PlanoAcao() {
     const [carregando, setCarregando] = useState(true);
     const [erro, setErro] = useState('');
 
-    // Controla a tela atual.
+    // Controla somente a listagem ou o cadastro.
     const [telaAtual, setTelaAtual] = useState('lista');
+
+    // Guarda o plano selecionado para abrir o modal.
+    const [planoSelecionado, setPlanoSelecionado] = useState(null);
 
     const [filtros, setFiltros] = useState({
         pesquisa: '',
@@ -97,6 +100,26 @@ function PlanoAcao() {
     function novoPlano() {
 
         setTelaAtual('cadastro');
+
+    }
+
+
+    //----------------- ABRIR ACOMPANHAMENTO ------------------//
+
+    function abrirAcompanhamento(plano) {
+
+        // Apenas seleciona o plano.
+        // A listagem continua montada atrás do modal.
+        setPlanoSelecionado(plano);
+
+    }
+
+
+    //----------------- FECHAR ACOMPANHAMENTO -----------------//
+
+    function fecharAcompanhamento() {
+
+        setPlanoSelecionado(null);
 
     }
 
@@ -256,6 +279,7 @@ function PlanoAcao() {
                         <CardPlanoAcao
                             key={plano.id}
                             plano={plano}
+                            onClick={() => abrirAcompanhamento(plano)}
                         />
 
                     ))
@@ -276,6 +300,18 @@ function PlanoAcao() {
                 )}
 
             </div>
+
+
+            {/* MODAL DE ACOMPANHAMENTO */}
+
+            {planoSelecionado && (
+
+                <AcompanhamentoPlanoAcao
+                    plano={planoSelecionado}
+                    onFechar={fecharAcompanhamento}
+                />
+
+            )}
 
         </div>
 

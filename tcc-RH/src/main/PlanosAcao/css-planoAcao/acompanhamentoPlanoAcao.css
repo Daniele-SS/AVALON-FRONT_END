@@ -1,0 +1,629 @@
+/*----------------------------------------------------------
+    FUNDO DO MODAL
+----------------------------------------------------------*/
+
+.fundo-acompanhamento-plano {
+    position: fixed;
+    inset: 0;
+
+    z-index: 9999;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    box-sizing: border-box;
+    padding: 20px;
+
+    background-color: rgba(20, 27, 43, 0.50);
+
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+}
+
+
+/*----------------------------------------------------------
+    JANELA DO MODAL
+----------------------------------------------------------*/
+
+.janela-acompanhamento-plano {
+    display: flex;
+    flex-direction: column;
+
+    width: 100%;
+    max-width: 680px;
+    max-height: 90vh;
+
+    overflow: hidden;
+
+    background-color: #FFFFFF;
+
+    border: 1px solid #E2E8F0;
+    border-radius: 14px;
+
+    box-shadow: 0 20px 60px rgba(0, 15, 40, 0.25);
+
+    animation: aparecer-modal-acompanhamento 0.2s ease;
+}
+
+
+/*----------------------------------------------------------
+    ANIMAÇÃO
+----------------------------------------------------------*/
+
+@keyframes aparecer-modal-acompanhamento {
+    from {
+        opacity: 0;
+        transform: translateY(12px) scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+
+/*----------------------------------------------------------
+    CABEÇALHO
+----------------------------------------------------------*/
+
+.cabecalho-modal-acompanhamento {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+
+    gap: 20px;
+
+    padding: 24px 26px 20px;
+
+    border-bottom: 1px solid #E9EDF5;
+}
+
+
+.texto-cabecalho-modal-acompanhamento {
+    min-width: 0;
+}
+
+
+.subtitulo-modal-acompanhamento {
+    display: block;
+
+    margin-bottom: 8px;
+
+    color: #3478D4;
+
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+
+.texto-cabecalho-modal-acompanhamento h1 {
+    margin: 0;
+
+    color: #001F3F;
+
+    font-size: 21px;
+    font-weight: 700;
+    line-height: 1.4;
+
+    overflow-wrap: anywhere;
+}
+
+
+.texto-cabecalho-modal-acompanhamento p {
+    margin: 8px 0 0;
+
+    color: #667085;
+
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+
+/*----------------------------------------------------------
+    BOTÃO FECHAR
+----------------------------------------------------------*/
+
+.botao-fechar-modal-acompanhamento {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    width: 32px;
+    height: 32px;
+
+    padding: 0;
+
+    background-color: #F3F6FA;
+
+    border: 1px solid #E3E9F1;
+    border-radius: 8px;
+
+    color: #52627A;
+
+    font-size: 23px;
+    line-height: 1;
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease;
+}
+
+
+.botao-fechar-modal-acompanhamento:hover {
+    background-color: #E8EDF5;
+    color: #001F3F;
+}
+
+
+/*----------------------------------------------------------
+    CONTEÚDO COM ROLAGEM
+----------------------------------------------------------*/
+
+.conteudo-modal-acompanhamento {
+    display: flex;
+    flex-direction: column;
+
+    gap: 20px;
+
+    padding: 22px 26px;
+
+    overflow-y: auto;
+}
+
+
+/*----------------------------------------------------------
+    PROGRESSO
+----------------------------------------------------------*/
+
+.progresso-acompanhamento-plano {
+    box-sizing: border-box;
+
+    width: 100%;
+
+    padding: 18px 20px;
+
+    background-color: #F8FAFD;
+
+    border: 1px solid #E3EAF3;
+    border-radius: 10px;
+}
+
+
+.informacoes-progresso-modal {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 16px;
+
+    margin-bottom: 14px;
+}
+
+
+.informacoes-progresso-modal h2 {
+    margin: 0;
+
+    color: #14233A;
+
+    font-size: 15px;
+    font-weight: 700;
+}
+
+
+.informacoes-progresso-modal p {
+    margin: 6px 0 0;
+
+    color: #7B8498;
+
+    font-size: 12px;
+}
+
+
+.porcentagem-progresso-modal {
+    flex-shrink: 0;
+
+    color: #0866FF;
+
+    font-size: 25px;
+    font-weight: 700;
+}
+
+
+/*----------------------------------------------------------
+    BARRA DE PROGRESSO
+----------------------------------------------------------*/
+
+.barra-progresso-modal {
+    width: 100%;
+    height: 8px;
+
+    overflow: hidden;
+
+    background-color: #E5EBF4;
+
+    border-radius: 20px;
+}
+
+
+.preenchimento-progresso-modal {
+    height: 100%;
+
+    background-color: #0866FF;
+
+    border-radius: 20px;
+
+    transition: width 0.3s ease;
+}
+
+
+/*----------------------------------------------------------
+    TAREFAS
+----------------------------------------------------------*/
+
+.tarefas-acompanhamento-plano {
+    display: flex;
+    flex-direction: column;
+
+    gap: 14px;
+}
+
+
+.titulo-tarefas-modal {
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+}
+
+
+.titulo-tarefas-modal h2 {
+    margin: 0;
+
+    color: #14233A;
+
+    font-size: 16px;
+    font-weight: 700;
+}
+
+
+.titulo-tarefas-modal span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 24px;
+    height: 24px;
+
+    padding: 0 6px;
+
+    box-sizing: border-box;
+
+    background-color: #EAF2FF;
+
+    border-radius: 20px;
+
+    color: #0866FF;
+
+    font-size: 11px;
+    font-weight: 700;
+}
+
+
+/*----------------------------------------------------------
+    LISTA DE TAREFAS
+----------------------------------------------------------*/
+
+.lista-tarefas-modal {
+    display: flex;
+    flex-direction: column;
+
+    gap: 10px;
+}
+
+
+.tarefa-modal-plano {
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    box-sizing: border-box;
+    width: 100%;
+
+    padding: 14px 15px;
+
+    background-color: #FFFFFF;
+
+    border: 1px solid #E3EAF3;
+    border-radius: 9px;
+}
+
+
+.tarefa-modal-concluida {
+    background-color: #FAFCFB;
+
+    border-color: #D5EBDD;
+}
+
+
+/*----------------------------------------------------------
+    NÚMERO DA TAREFA
+----------------------------------------------------------*/
+
+.numero-tarefa-modal {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    width: 30px;
+    height: 30px;
+
+    background-color: #EAF2FF;
+
+    border-radius: 8px;
+
+    color: #0866FF;
+
+    font-size: 12px;
+    font-weight: 700;
+}
+
+
+/*----------------------------------------------------------
+    TEXTO DA TAREFA
+----------------------------------------------------------*/
+
+.conteudo-tarefa-modal {
+    flex: 1;
+    min-width: 0;
+}
+
+
+.conteudo-tarefa-modal h3 {
+    margin: 0;
+
+    color: #14233A;
+
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.5;
+
+    overflow-wrap: anywhere;
+}
+
+
+.conteudo-tarefa-modal p {
+    margin: 5px 0 0;
+
+    color: #667085;
+
+    font-size: 12px;
+    line-height: 1.5;
+
+    overflow-wrap: anywhere;
+}
+
+
+/*----------------------------------------------------------
+    STATUS DA TAREFA
+----------------------------------------------------------*/
+
+.status-tarefa-modal {
+    flex-shrink: 0;
+
+    padding: 6px 10px;
+
+    border-radius: 20px;
+
+    font-size: 10px;
+    font-weight: 600;
+
+    white-space: nowrap;
+}
+
+
+.status-modal-andamento {
+    background-color: #FFF3D6;
+    color: #946200;
+}
+
+
+.status-modal-concluida {
+    background-color: #E1F5E9;
+    color: #247A45;
+}
+
+
+/*----------------------------------------------------------
+    ESTADO VAZIO
+----------------------------------------------------------*/
+
+.mensagem-sem-tarefas-modal {
+    padding: 22px;
+
+    background-color: #F8FAFD;
+
+    border: 1px dashed #D7DFEA;
+    border-radius: 9px;
+
+    color: #667085;
+
+    font-size: 13px;
+    text-align: center;
+}
+
+
+/*----------------------------------------------------------
+    RODAPÉ
+----------------------------------------------------------*/
+
+.rodape-modal-acompanhamento {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    gap: 10px;
+
+    padding: 18px 26px 22px;
+
+    border-top: 1px solid #E9EDF5;
+}
+
+
+/*----------------------------------------------------------
+    BOTÃO VOLTAR
+----------------------------------------------------------*/
+
+.botao-voltar-modal-acompanhamento {
+    padding: 10px 22px;
+
+    background-color: #FFFFFF;
+
+    border: 1px solid #D7DFEA;
+    border-radius: 8px;
+
+    color: #001F3F;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: background-color 0.2s ease;
+}
+
+
+.botao-voltar-modal-acompanhamento:hover {
+    background-color: #F2F5FA;
+}
+
+
+/*----------------------------------------------------------
+    BOTÃO ENCERRAR
+----------------------------------------------------------*/
+
+.botao-encerrar-modal-acompanhamento {
+    padding: 10px 24px;
+
+    background-color: #001F3F;
+
+    border: 1px solid #001F3F;
+    border-radius: 8px;
+
+    color: #FFFFFF;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: background-color 0.2s ease;
+}
+
+
+.botao-encerrar-modal-acompanhamento:hover {
+    background-color: #07345D;
+}
+/*----------------------------------------------------------
+    CORREÇÃO DEFINITIVA DO CABEÇALHO DO MODAL
+----------------------------------------------------------*/
+
+.janela-acompanhamento-plano {
+    display: flex;
+    flex-direction: column;
+
+    height: min(760px, calc(100vh - 40px));
+    max-height: calc(100vh - 40px);
+
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+/* Cabeçalho: não pode ser comprimido nem coberto */
+
+.janela-acompanhamento-plano
+.cabecalho-modal-acompanhamento {
+    display: flex;
+
+    flex: 0 0 auto !important;
+
+    height: auto !important;
+    min-height: 140px !important;
+    max-height: none !important;
+
+    box-sizing: border-box;
+
+    position: relative;
+    z-index: 2;
+
+    overflow: visible;
+
+    background-color: #FFFFFF;
+}
+
+/* Garante que a descrição fique dentro do cabeçalho */
+
+.janela-acompanhamento-plano
+.texto-cabecalho-modal-acompanhamento {
+    flex: 1 1 auto;
+
+    min-width: 0;
+    height: auto;
+
+    overflow: visible;
+}
+
+.janela-acompanhamento-plano
+.texto-cabecalho-modal-acompanhamento p {
+    display: block;
+
+    position: static;
+
+    height: auto;
+    max-height: none;
+
+    margin: 8px 0 0;
+
+    white-space: normal;
+    overflow: visible;
+}
+
+/* A área rolável começa depois do cabeçalho */
+
+.janela-acompanhamento-plano
+.conteudo-modal-acompanhamento {
+    display: flex;
+
+    flex: 1 1 0;
+
+    min-height: 0;
+
+    position: relative;
+    z-index: 1;
+
+    margin: 0;
+
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+/* Rodapé permanece no lugar */
+
+.janela-acompanhamento-plano
+.rodape-modal-acompanhamento {
+    flex: 0 0 auto;
+
+    position: relative;
+    z-index: 2;
+
+    background-color: #FFFFFF;
+}

@@ -27,7 +27,7 @@ function formatarData(data) {
 
 //----------------- COMPONENTE -----------------------------//
 
-function CardPlanoAcao({ plano }) {
+function CardPlanoAcao({ plano, onClick }) {
 
     const setor = Array.isArray(plano.setor)
         ? plano.setor[0]
@@ -91,11 +91,38 @@ function CardPlanoAcao({ plano }) {
         : 0;
 
 
+    //----------------- ACESSIBILIDADE DO CARD ---------------//
+
+    function lidarComTeclado(evento) {
+
+        if (
+            evento.key === 'Enter' ||
+            evento.key === ' '
+        ) {
+
+            evento.preventDefault();
+
+            if (onClick) {
+                onClick();
+            }
+
+        }
+
+    }
+
+
     //----------------- CARD -------------------------------//
 
     return (
 
-        <div className="card-plano-acao">
+        <div
+            className="card-plano-acao"
+            role="button"
+            tabIndex={0}
+            onClick={onClick}
+            onKeyDown={lidarComTeclado}
+            aria-label={`Abrir acompanhamento do plano ${plano.titulo || 'sem título'}`}
+        >
 
             {/* CLASSIFICAÇÃO E SETOR */}
 
