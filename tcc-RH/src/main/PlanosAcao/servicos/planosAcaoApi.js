@@ -189,7 +189,29 @@ const excluirPlanoAcao = async function (id) {
 };
 
 
-//----------------- EXPORTAÇÃO -------------------------------//
+
+ //----------------- ENCERRAR PLANO --------------------------//
+
+
+ //----------------- ENCERRAR PLANO --------------------------//
+
+const encerrarPlanoAcao = async function (id) {
+
+    const configuracao = obterConfiguracao();
+
+    const resposta = await fetch(
+        `${API}/plano_acao/encerrar/${id}`,
+        {
+            method: 'POST',
+            ...configuracao,
+            body: JSON.stringify({})
+        }
+    );
+
+    return await verificarResposta(resposta);
+
+};
+
 
 export {
     listarPlanosAcao,
@@ -197,5 +219,6 @@ export {
     listarFatoresPsicossociais,
     cadastrarPlanoAcao,
     atualizarPlanoAcao,
-    excluirPlanoAcao
+    excluirPlanoAcao,
+    encerrarPlanoAcao
 };

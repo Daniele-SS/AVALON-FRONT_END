@@ -80,6 +80,18 @@ function CadastroPlanoAcao({ voltar }) {
     }
 
 
+    //----------------- TRATAR STATUS -----------------------//
+
+    function colaboradorAtivo(colaborador) {
+
+        return (
+            colaborador?.status === 'Ativo' ||
+            Number(colaborador?.status) === 1
+        );
+
+    }
+
+
     //----------------- CARREGAR DADOS ---------------------//
 
     useEffect(() => {
@@ -95,7 +107,7 @@ function CadastroPlanoAcao({ voltar }) {
 
                 const [
                     respostaSetores,
-                    respostaColaboradores,
+                    respostaUsuarios,
                     listaFatores
                 ] = await Promise.all([
 
@@ -104,7 +116,7 @@ function CadastroPlanoAcao({ voltar }) {
                         ...configuracao
                     }),
 
-                    fetch(`${API}/colaborador`, {
+                    fetch(`${API}/usuario`, {
                         method: 'GET',
                         ...configuracao
                     }),
@@ -116,12 +128,15 @@ function CadastroPlanoAcao({ voltar }) {
                 const dadosSetores =
                     await respostaSetores.json();
 
-                const dadosColaboradores =
-                    await respostaColaboradores.json();
+                const dadosUsuarios =
+                    await respostaUsuarios.json();
+
+
+                //----------------- VALIDAR SESSÃO -------------//
 
                 if (
                     respostaSetores.status === 401 ||
-                    respostaColaboradores.status === 401
+                    respostaUsuarios.status === 401
                 ) {
 
                     localStorage.removeItem('access_token');
@@ -132,37 +147,97 @@ function CadastroPlanoAcao({ voltar }) {
 
                 }
 
+
+                //----------------- VALIDAR RESPOSTAS ----------//
+
                 if (
                     !respostaSetores.ok ||
-                    !respostaColaboradores.ok
+                    !respostaUsuarios.ok
                 ) {
 
                     throw new Error(
-                        'Não foi possível carregar os setores e colaboradores.'
+                        'Não foi possível carregar os setores e usuários.'
                     );
 
                 }
+
+
+                //----------------- SETORES --------------------//
 
                 setSetores(
                     dadosSetores.response?.setor || []
                 );
 
-                const listaColaboradores =
-                    dadosColaboradores.response?.colaborador || [];
 
-                // Exibe somente colaboradores ativos.
-                setColaboradores(
-                    listaColaboradores.filter((colaborador) => {
+                //----------------- USUÁRIOS -------------------//
 
-                        return (
-                            colaborador.status === 'Ativo' ||
-                            Number(colaborador.status) === 1
-                        );
+                const listaUsuarios =
+                    dadosUsuarios.response?.usuario || [];
 
-                    })
+                const gestoresAtivos = listaUsuarios.flatMap(
+                    (usuario) => {
+
+                        // Obtém o nível de acesso do usuário.
+                        const nivelAcesso =
+                            usuario?.nivel_acesso
+                                ?.nivel_acesso?.[0]?.nome;
+
+                        // Só considera usuários Gestor.
+                        if (nivelAcesso !== 'Gestor') {
+                            return [];
+                        }
+
+                        // A API retorna o colaborador dentro de um array.
+                        // Também aceita objeto para manter compatibilidade.
+                        const colaboradoresUsuario =
+                            Array.isArray(usuario.colaborador)
+                                ? usuario.colaborador
+                                : usuario.colaborador
+                                    ? [usuario.colaborador]
+                                    : [];
+
+                        return colaboradoresUsuario
+                            .filter((colaborador) => {
+
+                                // Só considera colaboradores ativos.
+                                return colaboradorAtivo(colaborador);
+
+                            })
+                            .map((colaborador) => {
+
+                                // Mantém o ID do colaborador,
+                                // que é o ID utilizado no plano de ação.
+                                return {
+
+                                    ...colaborador,
+
+                                    id: colaborador.id,
+
+                                    email:
+                                        colaborador.email ||
+                                        usuario.email ||
+                                        '',
+
+                                    usuario: {
+                                        ...usuario,
+                                        email:
+                                            usuario.email ||
+                                            colaborador.email ||
+                                            ''
+                                    }
+
+                                };
+
+                            });
+
+                    }
                 );
 
-                // Carrega os fatores psicossociais.
+                setColaboradores(gestoresAtivos);
+
+
+                //----------------- FATORES --------------------//
+
                 setFatores(listaFatores);
 
             } catch (error) {
@@ -183,6 +258,20 @@ function CadastroPlanoAcao({ voltar }) {
         carregarDados();
 
     }, []);
+
+
+    //----------------- ALTERAR SETOR -----------------------//
+
+    function alterarSetor(novoIdSetor) {
+
+        setIdSetor(novoIdSetor);
+
+        // Ao trocar o setor, remove o responsável anterior.
+        setIdColaborador('');
+
+        setErro('');
+
+    }
 
 
     //----------------- ADICIONAR TAREFA --------------------//
@@ -213,6 +302,9 @@ function CadastroPlanoAcao({ voltar }) {
         setErro('');
 
     }
+
+
+    //----------------- MOVER TAREFA ------------------------//
 
     function moverTarefa(indice, direcao) {
 
@@ -552,7 +644,7 @@ function CadastroPlanoAcao({ voltar }) {
                     setObjetivo={setObjetivo}
 
                     idSetor={idSetor}
-                    setIdSetor={setIdSetor}
+                    setIdSetor={alterarSetor}
                     setores={setores}
 
                     idFator={idFator}
@@ -589,7 +681,10 @@ function CadastroPlanoAcao({ voltar }) {
 
 
                 {/* RESPONSÁVEL */}
+
                 <ResponsavelPlano
+
+                    idSetor={idSetor}
 
                     idColaborador={idColaborador}
                     setIdColaborador={setIdColaborador}
@@ -605,9 +700,6 @@ function CadastroPlanoAcao({ voltar }) {
                     desabilitado={Boolean(idPlanoCriado)}
 
                 />
-
-
-
 
 
                 {/* MENSAGENS */}

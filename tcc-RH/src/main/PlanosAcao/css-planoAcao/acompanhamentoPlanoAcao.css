@@ -627,3 +627,315 @@
 
     background-color: #FFFFFF;
 }
+
+
+/*----------------------------------------------------------
+    BOTÃO DE CONCLUSÃO DA TAREFA
+----------------------------------------------------------*/
+
+.botao-status-tarefa-modal {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    width: 30px;
+    height: 30px;
+
+    padding: 0;
+
+    background-color: #FFFFFF;
+
+    border: 2px solid #CBD5E1;
+    border-radius: 8px;
+
+    color: #FFFFFF;
+
+    font-size: 16px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.botao-status-tarefa-modal:hover {
+    border-color: #247A45;
+    background-color: #F0FDF4;
+}
+
+.botao-status-tarefa-modal:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+
+/*----------------------------------------------------------
+    TAREFA CONCLUÍDA
+----------------------------------------------------------*/
+
+.botao-status-tarefa-concluida {
+    background-color: #247A45;
+    border-color: #247A45;
+}
+
+.botao-status-tarefa-concluida:hover {
+    background-color: #1B6337;
+    border-color: #1B6337;
+}
+
+.tarefa-modal-concluida {
+    background-color: #F0FDF4;
+    border-color: #B7E4C7;
+}
+
+.tarefa-modal-concluida
+.conteudo-tarefa-modal h3 {
+    color: #247A45;
+}
+
+
+/*----------------------------------------------------------
+    AVISO DE PLANO ENCERRADO
+----------------------------------------------------------*/
+
+.aviso-plano-encerrado-modal {
+    padding: 12px 15px;
+
+    background-color: #F0FDF4;
+
+    border: 1px solid #B7E4C7;
+    border-radius: 9px;
+
+    color: #247A45;
+
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+
+/*----------------------------------------------------------
+    MENSAGEM DE ERRO
+----------------------------------------------------------*/
+
+.erro-acompanhamento-modal {
+    padding: 12px 15px;
+
+    background-color: #FFF1F2;
+
+    border: 1px solid #FECDD3;
+    border-radius: 9px;
+
+    color: #BE123C;
+
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+
+/*----------------------------------------------------------
+    BOTÃO ENCERRAR DESABILITADO
+----------------------------------------------------------*/
+
+.botao-encerrar-modal-acompanhamento:disabled {
+    background-color: #A0AAB8;
+    border-color: #A0AAB8;
+
+    cursor: not-allowed;
+    opacity: 0.75;
+}
+
+.botao-encerrar-modal-acompanhamento:disabled:hover {
+    background-color: #A0AAB8;
+}
+
+/*----------------------------------------------------------
+    MODAL DE CONFIRMAÇÃO DE ENCERRAMENTO
+----------------------------------------------------------*/
+
+.janela-acompanhamento-plano {
+    position: relative;
+}
+
+
+/* Fundo da confirmação */
+
+.fundo-confirmacao-encerramento {
+    position: absolute;
+    inset: 0;
+
+    z-index: 20;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    box-sizing: border-box;
+    padding: 20px;
+
+    background-color: rgba(20, 27, 43, 0.60);
+
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+
+    animation: aparecer-confirmacao-encerramento 0.18s ease;
+}
+
+
+/* Janela de confirmação */
+
+.janela-confirmacao-encerramento {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    box-sizing: border-box;
+
+    width: 100%;
+    max-width: 420px;
+
+    padding: 30px 28px;
+
+    background-color: #FFFFFF;
+
+    border: 1px solid #E2E8F0;
+    border-radius: 14px;
+
+    box-shadow: 0 20px 60px rgba(0, 15, 40, 0.25);
+
+    text-align: center;
+}
+
+
+/* Ícone de atenção */
+
+.icone-confirmacao-encerramento {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 48px;
+    height: 48px;
+
+    margin-bottom: 18px;
+
+    background-color: #FFF3D6;
+
+    border: 1px solid #F5D78E;
+    border-radius: 50%;
+
+    color: #946200;
+
+    font-size: 25px;
+    font-weight: 700;
+}
+
+
+/* Título */
+
+.janela-confirmacao-encerramento h2 {
+    margin: 0;
+
+    color: #001F3F;
+
+    font-size: 19px;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+
+/* Descrição */
+
+.janela-confirmacao-encerramento p {
+    margin: 12px 0 24px;
+
+    color: #667085;
+
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+
+/* Área dos botões */
+
+.botoes-confirmacao-encerramento {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 10px;
+
+    width: 100%;
+}
+
+
+/* Botão cancelar */
+
+.botao-cancelar-confirmacao-encerramento {
+    width: auto !important;
+    flex: 1;
+
+    padding: 11px 16px;
+
+    background-color: #FFFFFF;
+
+    border: 1px solid #D7DFEA;
+    border-radius: 8px;
+
+    color: #001F3F;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: background-color 0.2s ease;
+}
+
+.botao-cancelar-confirmacao-encerramento:hover {
+    background-color: #F2F5FA;
+}
+
+
+/* Botão confirmar */
+
+.botao-confirmar-encerramento {
+    width: auto !important;
+    flex: 1;
+
+    padding: 11px 16px;
+
+    background-color: #B42318;
+
+    border: 1px solid #B42318;
+    border-radius: 8px;
+
+    color: #FFFFFF;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.botao-confirmar-encerramento:hover {
+    background-color: #912018;
+    border-color: #912018;
+}
+
+
+/* Botões durante o encerramento */
+
+.botao-cancelar-confirmacao-encerramento:disabled,
+.botao-confirmar-encerramento:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+

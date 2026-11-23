@@ -1,3 +1,4 @@
+//----------------- IMPORTAÇÕES -----------------------------//
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 
@@ -168,6 +169,7 @@ function useDataDigitada(dataBanco, alterarData) {
 //----------------- COMPONENTE ------------------------------//
 
 function ResponsavelPlano({
+    idSetor,
     idColaborador,
     setIdColaborador,
     colaboradores,
@@ -203,12 +205,49 @@ function ResponsavelPlano({
     );
 
 
+    //----------------- FILTRAR POR SETOR -------------------//
+
+    const colaboradoresDoSetor = useMemo(() => {
+
+        // Sem setor selecionado, não exibe gestores.
+        if (!idSetor) {
+            return [];
+        }
+
+        return colaboradores.filter((colaborador) => {
+
+            const setoresColaborador =
+                Array.isArray(colaborador.setor)
+                    ? colaborador.setor
+                    : colaborador.setor
+                        ? [colaborador.setor]
+                        : [];
+
+            // O colaborador precisa pertencer ao setor selecionado.
+            return setoresColaborador.some((setor) => {
+
+                return (
+                    String(setor.id) === String(idSetor)
+                );
+
+            });
+
+        });
+
+    }, [colaboradores, idSetor]);
+
+
     //----------------- RESPONSÁVEL SELECIONADO -------------//
 
-    const responsavel = colaboradores.find((colaborador) =>
+    const responsavel = colaboradoresDoSetor.find(
+        (colaborador) => {
 
-        String(colaborador.id) === String(idColaborador)
+            return (
+                String(colaborador.id) ===
+                String(idColaborador)
+            );
 
+        }
     );
 
 
@@ -218,7 +257,9 @@ function ResponsavelPlano({
 
         if (responsavel) {
 
-            setPesquisaColaborador(responsavel.nome || '');
+            setPesquisaColaborador(
+                responsavel.nome || ''
+            );
 
         } else {
 
@@ -246,7 +287,10 @@ function ResponsavelPlano({
 
         }
 
-        document.addEventListener('mousedown', fecharDropdown);
+        document.addEventListener(
+            'mousedown',
+            fecharDropdown
+        );
 
         return () => {
 
@@ -273,6 +317,20 @@ function ResponsavelPlano({
     }
 
 
+    //----------------- OBTER MATRÍCULA ---------------------//
+
+    function obterMatricula(colaborador) {
+
+        return (
+            colaborador?.matricula ||
+            colaborador?.numero_matricula ||
+            colaborador?.codigo ||
+            'Não informada'
+        );
+
+    }
+
+
     //----------------- FILTRAR COLABORADORES ---------------//
 
     const colaboradoresFiltrados = useMemo(() => {
@@ -280,11 +338,12 @@ function ResponsavelPlano({
         const pesquisa =
             normalizarTexto(pesquisaColaborador);
 
+        // A lista já está filtrada pelo setor.
         if (!pesquisa) {
-            return colaboradores;
+            return colaboradoresDoSetor;
         }
 
-        return colaboradores.filter((colaborador) => {
+        return colaboradoresDoSetor.filter((colaborador) => {
 
             const nome =
                 normalizarTexto(colaborador.nome);
@@ -299,21 +358,10 @@ function ResponsavelPlano({
 
         });
 
-    }, [colaboradores, pesquisaColaborador]);
-
-
-    //----------------- OBTER MATRÍCULA ---------------------//
-
-    function obterMatricula(colaborador) {
-
-        return (
-            colaborador?.matricula ||
-            colaborador?.numero_matricula ||
-            colaborador?.codigo ||
-            'Não informada'
-        );
-
-    }
+    }, [
+        colaboradoresDoSetor,
+        pesquisaColaborador
+    ]);
 
 
     //----------------- OBTER SETOR --------------------------//
@@ -426,7 +474,9 @@ function ResponsavelPlano({
 
         setIdColaborador(String(colaborador.id));
 
-        setPesquisaColaborador(colaborador.nome || '');
+        setPesquisaColaborador(
+            colaborador.nome || ''
+        );
 
         setDropdownAberto(false);
 
@@ -610,7 +660,12 @@ function ResponsavelPlano({
                             ) : (
 
                                 <div className="lista-vazia-responsavel-plano">
-                                    Nenhum colaborador encontrado.
+
+                                    {!idSetor
+                                        ? 'Selecione um setor para visualizar os gestores.'
+                                        : 'Nenhum gestor ativo encontrado neste setor.'
+                                    }
+
                                 </div>
 
                             )}

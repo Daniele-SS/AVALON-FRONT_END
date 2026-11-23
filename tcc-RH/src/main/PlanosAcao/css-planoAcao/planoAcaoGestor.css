@@ -1,0 +1,199 @@
+
+/*----------------------------------------------------------
+    TELA PRINCIPAL DO GESTOR
+----------------------------------------------------------*/
+
+.tela-plano-acao-gestor {
+    width: 100%;
+    min-height: 100%;
+    box-sizing: border-box;
+
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+
+    padding-bottom: 24px;
+}
+
+
+/*----------------------------------------------------------
+    CABEÇALHO
+----------------------------------------------------------*/
+
+.cabecalho-plano-acao-gestor {
+    width: 100%;
+    box-sizing: border-box;
+
+    padding: 24px 28px;
+
+    background: linear-gradient(
+        135deg,
+        #FFFFFF 0%,
+        #F1F6FF 100%
+    );
+
+    border: 1px solid #E1EAF7;
+    border-radius: 16px;
+}
+
+.texto-cabecalho-plano-gestor {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.subtitulo-plano-gestor {
+    color: #4775B8;
+
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+}
+
+.texto-cabecalho-plano-gestor h1 {
+    margin: 0;
+
+    color: #001F3F;
+
+    font-size: 26px;
+    font-weight: 700;
+}
+
+.texto-cabecalho-plano-gestor p {
+    margin: 0;
+
+    color: #65758B;
+
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+
+/*----------------------------------------------------------
+    RESUMO DOS PLANOS
+----------------------------------------------------------*/
+
+.resumo-plano-acao-gestor {
+    width: 100%;
+    box-sizing: border-box;
+
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.resumo-plano-gestor-item {
+    min-height: 100px;
+    box-sizing: border-box;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 8px;
+
+    padding: 20px 24px;
+
+    background-color: #FFFFFF;
+
+    border: 1px solid #E5EAF2;
+    border-radius: 14px;
+}
+
+.resumo-plano-gestor-numero {
+    color: #001F3F;
+
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.resumo-plano-gestor-texto {
+    color: #6B778A;
+
+    font-size: 13px;
+    font-weight: 500;
+}
+
+
+/*----------------------------------------------------------
+    FILTROS
+----------------------------------------------------------*/
+
+.filtro-plano-acao-gestor {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+
+/*----------------------------------------------------------
+    LISTAGEM DOS PLANOS
+----------------------------------------------------------*/
+
+.lista-plano-acao-gestor {
+    width: 100%;
+    box-sizing: border-box;
+
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+
+    gap: 18px;
+}
+
+/* Os cards ocupam a largura disponível */
+
+.lista-plano-acao-gestor > * {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+
+    flex: 0 0 auto;
+}
+
+
+/*----------------------------------------------------------
+    MENSAGENS
+----------------------------------------------------------*/
+
+.mensagem-plano-gestor {
+    width: 100%;
+    box-sizing: border-box;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    padding: 36px 24px;
+
+    background-color: #FFFFFF;
+
+    border: 1px solid #E5EAF2;
+    border-radius: 14px;
+
+    text-align: center;
+}
+
+.mensagem-plano-gestor h3 {
+    margin: 0;
+
+    color: #001F3F;
+
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.mensagem-plano-gestor p {
+    margin: 0;
+
+    color: #718096;
+
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.mensagem-plano-gestor-erro {
+    border-color: #F2D0D0;
+}
+

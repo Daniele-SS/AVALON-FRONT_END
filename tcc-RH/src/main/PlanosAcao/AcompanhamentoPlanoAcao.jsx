@@ -1,4 +1,13 @@
-import { useEffect } from 'react';
+
+import { useEffect, useState } from 'react';
+
+import {
+    atualizarTarefaPlano
+} from './servicos/tarefasPlanoApi.js';
+
+import {
+    encerrarPlanoAcao
+} from './servicos/planosAcaoApi.js';
 
 import './css-planoAcao/acompanhamentoPlanoAcao.css';
 
@@ -9,8 +18,6 @@ function interpretarTarefa(tarefa) {
 
     const descricaoOriginal = tarefa?.descricao;
 
-    // A API pode retornar os dados da tarefa como JSON
-    // dentro do campo descricao.
     if (typeof descricaoOriginal === 'string') {
 
         try {
@@ -36,12 +43,11 @@ function interpretarTarefa(tarefa) {
             }
 
         } catch {
-            // Se não for JSON, trata como texto simples.
+            // A descrição pode ser um texto simples.
         }
 
     }
 
-    // Compatibilidade com tarefas antigas.
     return {
         titulo:
             tarefa?.titulo ||
@@ -59,15 +65,50 @@ function interpretarTarefa(tarefa) {
 
 //----------------- COMPONENTE -----------------------------//
 
-function AcompanhamentoPlanoAcao({ plano, onFechar }) {
+function AcompanhamentoPlanoAcao({
+    plano,
+    onFechar,
+    perfil = 'RH',
+    onPlanoAtualizado
+}) {
 
-    //----------------- TAREFAS ------------------------------//
+    const [tarefas, setTarefas] = useState([]);
 
-    const tarefas = Array.isArray(plano?.tarefasPlano)
-        ? [...plano.tarefasPlano].sort(
-            (a, b) => Number(a.ordem) - Number(b.ordem)
-        )
-        : [];
+    const [carregandoTarefa, setCarregandoTarefa] = useState(null);
+
+    const [encerrando, setEncerrando] = useState(false);
+
+    const [confirmarEncerramento, setConfirmarEncerramento] = useState(false);
+
+    const [erro, setErro] = useState('');
+
+    const [planoEncerrado, setPlanoEncerrado] = useState(
+        Number(plano?.status) === 1
+    );
+
+
+    //----------------- CARREGAR TAREFAS --------------------//
+
+    useEffect(() => {
+
+        const tarefasPlano = Array.isArray(plano?.tarefasPlano)
+            ? [...plano.tarefasPlano].sort(
+                (a, b) => Number(a.ordem) - Number(b.ordem)
+            )
+            : [];
+
+        setTarefas(tarefasPlano);
+
+        setPlanoEncerrado(Number(plano?.status) === 1);
+
+        setConfirmarEncerramento(false);
+
+        setErro('');
+
+    }, [plano]);
+
+
+    //----------------- PROGRESSO ----------------------------//
 
     const totalTarefas = tarefas.length;
 
@@ -81,6 +122,177 @@ function AcompanhamentoPlanoAcao({ plano, onFechar }) {
         )
         : 0;
 
+    const todasTarefasConcluidas =
+        totalTarefas > 0 &&
+        tarefasConcluidas === totalTarefas;
+
+
+    //----------------- PERMISSÕES DA TELA ------------------//
+
+    const usuarioEhGestor = perfil === 'Gestor';
+
+    const podeAlterarTarefas =
+        usuarioEhGestor &&
+        !planoEncerrado;
+
+
+    //----------------- ATUALIZAR TAREFA --------------------//
+
+    async function alterarStatusTarefa(tarefa) {
+
+        if (
+            !podeAlterarTarefas ||
+            carregandoTarefa !== null
+        ) {
+            return;
+        }
+
+        if (!tarefa?.id) {
+
+            setErro(
+                'Não foi possível identificar a tarefa para atualização.'
+            );
+
+            return;
+
+        }
+
+        const novoStatus =
+            Number(tarefa.status) === 1 ? 0 : 1;
+
+        const tarefaAtualizada = {
+            ...tarefa,
+            status: novoStatus
+        };
+
+        try {
+
+            setErro('');
+            setCarregandoTarefa(tarefa.id);
+
+            await atualizarTarefaPlano(
+                tarefa.id,
+                tarefaAtualizada
+            );
+
+            const tarefasAtualizadas = tarefas.map((item) =>
+                String(item.id) === String(tarefa.id)
+                    ? tarefaAtualizada
+                    : item
+            );
+
+            setTarefas(tarefasAtualizadas);
+
+            if (onPlanoAtualizado) {
+                onPlanoAtualizado({
+                    ...plano,
+                    tarefasPlano: tarefasAtualizadas
+                });
+            }
+
+        } catch (error) {
+
+            setErro(
+                error.message ||
+                'Não foi possível atualizar a tarefa.'
+            );
+
+        } finally {
+
+            setCarregandoTarefa(null);
+
+        }
+
+    }
+
+
+    //----------------- ABRIR CONFIRMAÇÃO -------------------//
+
+    function abrirConfirmacaoEncerramento() {
+
+        if (
+            planoEncerrado ||
+            encerrando ||
+            (
+                usuarioEhGestor &&
+                !todasTarefasConcluidas
+            )
+        ) {
+            return;
+        }
+
+        setErro('');
+        setConfirmarEncerramento(true);
+
+    }
+
+
+    //----------------- CANCELAR CONFIRMAÇÃO ----------------//
+
+    function cancelarEncerramento() {
+
+        if (encerrando) {
+            return;
+        }
+
+        setConfirmarEncerramento(false);
+
+    }
+
+
+    //----------------- CONFIRMAR ENCERRAMENTO --------------//
+
+    async function confirmarEncerramentoPlano() {
+
+        if (planoEncerrado || encerrando) {
+            return;
+        }
+
+        // O Gestor só pode encerrar quando todas
+        // as tarefas estiverem concluídas.
+        if (
+            usuarioEhGestor &&
+            !todasTarefasConcluidas
+        ) {
+            setConfirmarEncerramento(false);
+            return;
+        }
+
+        try {
+
+            setErro('');
+            setEncerrando(true);
+
+            await encerrarPlanoAcao(plano.id);
+
+            setPlanoEncerrado(true);
+            setConfirmarEncerramento(false);
+
+            if (onPlanoAtualizado) {
+                onPlanoAtualizado({
+                    ...plano,
+                    status: 1,
+                    tarefasPlano: tarefas
+                });
+            }
+
+            onFechar();
+
+        } catch (error) {
+
+            setErro(
+                error.message ||
+                'Não foi possível encerrar o plano.'
+            );
+
+        } finally {
+
+            setEncerrando(false);
+
+        }
+
+    }
+
 
     //----------------- FECHAR COM ESC ----------------------//
 
@@ -89,7 +301,14 @@ function AcompanhamentoPlanoAcao({ plano, onFechar }) {
         function fecharComEsc(evento) {
 
             if (evento.key === 'Escape') {
+
+                if (confirmarEncerramento) {
+                    cancelarEncerramento();
+                    return;
+                }
+
                 onFechar();
+
             }
 
         }
@@ -103,7 +322,7 @@ function AcompanhamentoPlanoAcao({ plano, onFechar }) {
             );
         };
 
-    }, [onFechar]);
+    }, [onFechar, confirmarEncerramento, encerrando]);
 
 
     //----------------- MODAL -------------------------------//
@@ -200,6 +419,28 @@ function AcompanhamentoPlanoAcao({ plano, onFechar }) {
                     </section>
 
 
+                    {/* SITUAÇÃO DO PLANO */}
+
+                    {planoEncerrado && (
+
+                        <div className="aviso-plano-encerrado-modal">
+                            Este plano de ação foi encerrado. As tarefas estão disponíveis somente para consulta.
+                        </div>
+
+                    )}
+
+
+                    {/* MENSAGEM DE ERRO */}
+
+                    {erro && (
+
+                        <div className="erro-acompanhamento-modal">
+                            {erro}
+                        </div>
+
+                    )}
+
+
                     {/* TAREFAS */}
 
                     <section className="tarefas-acompanhamento-plano">
@@ -232,6 +473,10 @@ function AcompanhamentoPlanoAcao({ plano, onFechar }) {
                                     const concluida =
                                         Number(tarefa.status) === 1;
 
+                                    const atualizando =
+                                        carregandoTarefa !== null &&
+                                        String(carregandoTarefa) === String(tarefa.id);
+
                                     return (
 
                                         <article
@@ -243,9 +488,42 @@ function AcompanhamentoPlanoAcao({ plano, onFechar }) {
                                             key={tarefa.id ?? indice}
                                         >
 
-                                            <div className="numero-tarefa-modal">
-                                                {indice + 1}
-                                            </div>
+                                            {podeAlterarTarefas ? (
+
+                                                <button
+                                                    type="button"
+                                                    className={`botao-status-tarefa-modal ${
+                                                        concluida
+                                                            ? 'botao-status-tarefa-concluida'
+                                                            : ''
+                                                    }`}
+                                                    onClick={() =>
+                                                        alterarStatusTarefa(tarefa)
+                                                    }
+                                                    disabled={
+                                                        carregandoTarefa !== null ||
+                                                        planoEncerrado
+                                                    }
+                                                    aria-label={
+                                                        concluida
+                                                            ? 'Marcar tarefa como em andamento'
+                                                            : 'Marcar tarefa como concluída'
+                                                    }
+                                                >
+                                                    {atualizando
+                                                        ? '...'
+                                                        : concluida
+                                                            ? '✓'
+                                                            : ''}
+                                                </button>
+
+                                            ) : (
+
+                                                <div className="numero-tarefa-modal">
+                                                    {indice + 1}
+                                                </div>
+
+                                            )}
 
                                             <div className="conteudo-tarefa-modal">
 
@@ -302,16 +580,88 @@ function AcompanhamentoPlanoAcao({ plano, onFechar }) {
                         Voltar
                     </button>
 
-                    {/* Botão visual por enquanto, sem ação. */}
-
                     <button
                         type="button"
                         className="botao-encerrar-modal-acompanhamento"
+                        onClick={abrirConfirmacaoEncerramento}
+                        disabled={
+                            planoEncerrado ||
+                            encerrando ||
+                            (
+                                usuarioEhGestor &&
+                                !todasTarefasConcluidas
+                            )
+                        }
                     >
-                        Encerrar
+                        {planoEncerrado
+                            ? 'Plano encerrado'
+                            : 'Encerrar'}
                     </button>
 
                 </footer>
+
+
+                {/* MODAL DE CONFIRMAÇÃO DE ENCERRAMENTO */}
+
+                {confirmarEncerramento && (
+
+                    <div
+                        className="fundo-confirmacao-encerramento"
+                        onClick={cancelarEncerramento}
+                    >
+
+                        <section
+                            className="janela-confirmacao-encerramento"
+                            role="alertdialog"
+                            aria-modal="true"
+                            aria-labelledby="titulo-confirmacao-encerramento"
+                            aria-describedby="descricao-confirmacao-encerramento"
+                            onClick={(evento) => evento.stopPropagation()}
+                        >
+
+                            <div className="icone-confirmacao-encerramento">
+                                !
+                            </div>
+
+                            <h2 id="titulo-confirmacao-encerramento">
+                                Encerrar Plano de Ação?
+                            </h2>
+
+                            <p id="descricao-confirmacao-encerramento">
+                                Tem certeza de que deseja encerrar este plano de ação?
+                                Após o encerramento, não será possível alterar o status
+                                das tarefas.
+                            </p>
+
+                            <div className="botoes-confirmacao-encerramento">
+
+                                <button
+                                    type="button"
+                                    className="botao-cancelar-confirmacao-encerramento"
+                                    onClick={cancelarEncerramento}
+                                    disabled={encerrando}
+                                >
+                                    Cancelar
+                                </button>
+
+                                <button
+                                    type="button"
+                                    className="botao-confirmar-encerramento"
+                                    onClick={confirmarEncerramentoPlano}
+                                    disabled={encerrando}
+                                >
+                                    {encerrando
+                                        ? 'Encerrando...'
+                                        : 'Sim, encerrar'}
+                                </button>
+
+                            </div>
+
+                        </section>
+
+                    </div>
+
+                )}
 
             </section>
 

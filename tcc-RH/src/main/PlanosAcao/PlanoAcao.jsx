@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 
 import BotaoCadastro from '../../componentes/cardNomePag/nomePag.jsx';
@@ -8,6 +9,7 @@ import CardPlanoAcao from './componentes/CardPlanoAcao.jsx';
 
 import CadastroPlanoAcao from './cadastroPlanoAcao.jsx';
 import AcompanhamentoPlanoAcao from './AcompanhamentoPlanoAcao.jsx';
+import PlanoAcaoGestor from './PlanoAcaoGestor.jsx';
 
 import './css-planoAcao/planoAcao.css';
 
@@ -22,27 +24,120 @@ import {
 import { listarPlanosAcao } from './servicos/planosAcaoApi.js';
 import { listarTarefasPlano } from './servicos/tarefasPlanoApi.js';
 
-// Ícones dos indicadores
 import PlanosAtivosIcone from './img/planosAtivos-icon.svg';
 import AcoesAndamentoIcone from './img/acoesAndamento-icon.svg';
 import ProximosPrazosIcone from './img/proximosPrazos-icon.svg';
 import AcoesAtrasadasIcone from './img/acoesAtrasadas-icon.svg';
 
 
+//----------------- IDENTIFICAR USUÁRIO --------------------//
+
+function obterUsuarioLogado() {
+
+    try {
+
+        const usuarioSalvo =
+            localStorage.getItem('usuario') ||
+            localStorage.getItem('usuarioLogin');
+
+        if (!usuarioSalvo) {
+            return null;
+        }
+
+        const dadosUsuario = JSON.parse(usuarioSalvo);
+
+        let usuario =
+            dadosUsuario?.usuario ||
+            dadosUsuario?.response?.usuario ||
+            dadosUsuario;
+
+        if (Array.isArray(usuario)) {
+            usuario = usuario[0];
+        }
+
+        return usuario || null;
+
+    } catch (erro) {
+
+        console.error(
+            'Erro ao identificar usuário logado:',
+            erro
+        );
+
+        return null;
+
+    }
+
+}
+
+
+//----------------- IDENTIFICAR PERFIL ---------------------//
+
+function usuarioEhGestor(usuario) {
+
+    const nivelAcesso = usuario?.nivel_acesso;
+
+    // Formato atual do usuário:
+    // nivel_acesso: { id: 2, nome: 'Gestor', status: true }
+
+    if (
+        nivelAcesso?.nome?.toLowerCase() === 'gestor'
+    ) {
+        return true;
+    }
+
+    // Compatibilidade com outros formatos
+    // que podem retornar o nível em uma lista.
+
+    const niveis = Array.isArray(nivelAcesso)
+        ? nivelAcesso
+        : Array.isArray(nivelAcesso?.nivel_acesso)
+            ? nivelAcesso.nivel_acesso
+            : [];
+
+    return niveis.some((nivel) => {
+
+        return (
+            nivel?.nome?.toLowerCase() === 'gestor' &&
+            (
+                nivel.status === 1 ||
+                nivel.status === '1' ||
+                nivel.status === true
+            )
+        );
+
+    });
+
+}
+
+
 //----------------- COMPONENTE PRINCIPAL -------------------//
 
 function PlanoAcao() {
 
-    //----------------- ESTADOS ------------------------------//
+    const usuario = obterUsuarioLogado();
+
+    // Gestor acessa sua tela exclusiva.
+    if (usuarioEhGestor(usuario)) {
+        return <PlanoAcaoGestor />;
+    }
+
+    // RH continua acessando a tela administrativa.
+    return <PlanoAcaoRH />;
+
+}
+
+
+//----------------- TELA DO RH -----------------------------//
+
+function PlanoAcaoRH() {
 
     const [planos, setPlanos] = useState([]);
     const [carregando, setCarregando] = useState(true);
     const [erro, setErro] = useState('');
 
-    // Controla somente a listagem ou o cadastro.
     const [telaAtual, setTelaAtual] = useState('lista');
 
-    // Guarda o plano selecionado para abrir o modal.
     const [planoSelecionado, setPlanoSelecionado] = useState(null);
 
     const [filtros, setFiltros] = useState({
@@ -50,6 +145,41 @@ function PlanoAcao() {
         status: 'Todos',
         opcao: ''
     });
+
+
+    //----------------- ATUALIZAR PLANO NA LISTA ------------//
+
+    function atualizarPlanoNaLista(planoAtualizado) {
+
+        setPlanos((planosAtuais) =>
+            planosAtuais.map((plano) =>
+                String(plano.id) === String(planoAtualizado.id)
+                    ? {
+                        ...plano,
+                        ...planoAtualizado
+                    }
+                    : plano
+            )
+        );
+
+        // Também atualiza o plano que está aberto no modal.
+        setPlanoSelecionado((planoAtual) => {
+
+            if (
+                planoAtual &&
+                String(planoAtual.id) === String(planoAtualizado.id)
+            ) {
+                return {
+                    ...planoAtual,
+                    ...planoAtualizado
+                };
+            }
+
+            return planoAtual;
+
+        });
+
+    }
 
 
     //----------------- CARREGAR PLANOS E TAREFAS ------------//
@@ -88,6 +218,7 @@ function PlanoAcao() {
                 setCarregando(false);
 
             }
+
         }
 
         carregarDados();
@@ -98,42 +229,26 @@ function PlanoAcao() {
     //----------------- ABRIR CADASTRO -----------------------//
 
     function novoPlano() {
-
         setTelaAtual('cadastro');
-
     }
 
 
-    //----------------- ABRIR ACOMPANHAMENTO ------------------//
+    //----------------- ACOMPANHAMENTO ------------------------//
 
     function abrirAcompanhamento(plano) {
-
-        // Apenas seleciona o plano.
-        // A listagem continua montada atrás do modal.
         setPlanoSelecionado(plano);
-
     }
-
-
-    //----------------- FECHAR ACOMPANHAMENTO -----------------//
 
     function fecharAcompanhamento() {
-
         setPlanoSelecionado(null);
-
     }
-
-
-    //----------------- VOLTAR PARA LISTAGEM -----------------//
 
     function voltarParaLista() {
-
         setTelaAtual('lista');
-
     }
 
 
-    //----------------- FILTRAR PLANOS ------------------------//
+    //----------------- FILTROS -------------------------------//
 
     const planosFiltrados = filtrarPlanosAcao(
         planos,
@@ -141,7 +256,7 @@ function PlanoAcao() {
     );
 
 
-    //----------------- SETORES DO DROPDOWN -------------------//
+    //----------------- SETORES -------------------------------//
 
     const setores = [
         ...new Map(
@@ -172,7 +287,7 @@ function PlanoAcao() {
     const indicadores = calcularIndicadoresPlanosAcao(planos);
 
 
-    //----------------- TELA DE CADASTRO ---------------------//
+    //----------------- CADASTRO ------------------------------//
 
     if (telaAtual === 'cadastro') {
 
@@ -185,13 +300,11 @@ function PlanoAcao() {
     }
 
 
-    //----------------- TELA PRINCIPAL ------------------------//
+    //----------------- TELA DO RH -----------------------------//
 
     return (
 
         <div className="tela-plano-acao">
-
-            {/* CABEÇALHO */}
 
             <BotaoCadastro
                 titulo="Plano de Ação"
@@ -200,8 +313,6 @@ function PlanoAcao() {
                 onClick={novoPlano}
             />
 
-
-            {/* MINICARDS */}
 
             <div className="indicadores-plano-acao">
 
@@ -240,8 +351,6 @@ function PlanoAcao() {
             </div>
 
 
-            {/* FILTROS */}
-
             <div className="filtro-plano-acao">
 
                 <Filtro
@@ -254,8 +363,6 @@ function PlanoAcao() {
 
             </div>
 
-
-            {/* LISTA DE PLANOS */}
 
             <div className="lista-planos-acao">
 
@@ -302,13 +409,13 @@ function PlanoAcao() {
             </div>
 
 
-            {/* MODAL DE ACOMPANHAMENTO */}
-
             {planoSelecionado && (
 
                 <AcompanhamentoPlanoAcao
                     plano={planoSelecionado}
+                    perfil="RH"
                     onFechar={fecharAcompanhamento}
+                    onPlanoAtualizado={atualizarPlanoNaLista}
                 />
 
             )}
