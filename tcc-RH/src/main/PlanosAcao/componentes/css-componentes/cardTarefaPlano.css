@@ -1,0 +1,130 @@
+
+/*----------------------------------------------------------
+    CARD DA AÇÃO
+----------------------------------------------------------*/
+
+.card-acao-operacional {
+    width: 100%;
+    min-height: 88px;
+
+    box-sizing: border-box;
+
+    padding: 16px;
+
+    background-color: #F5F7FC;
+
+    border: 1px solid #E8EDF6;
+    border-radius: 5px;
+
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+
+    gap: 12px;
+}
+
+
+/*----------------------------------------------------------
+    CONTEÚDO
+----------------------------------------------------------*/
+
+.conteudo-card-acao {
+    min-width: 0;
+
+    display: flex;
+    align-items: flex-start;
+
+    gap: 10px;
+}
+
+.marcador-acao {
+    flex-shrink: 0;
+
+    color: #A8B4C8;
+
+    font-size: 14px;
+    line-height: 1.2;
+}
+
+.texto-card-acao {
+    min-width: 0;
+}
+
+.texto-card-acao h3 {
+    margin: 0 0 6px;
+
+    color: #17243A;
+
+    font-size: 12px;
+    font-weight: 600;
+
+    line-height: 1.4;
+}
+
+.texto-card-acao p {
+    margin: 0;
+
+    max-width: 500px;
+
+    color: #7B8495;
+
+    font-size: 11px;
+    font-weight: 400;
+
+    line-height: 1.5;
+
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+
+/*----------------------------------------------------------
+    CONTROLES
+----------------------------------------------------------*/
+
+.controles-card-acao {
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+
+    gap: 4px;
+}
+
+.controles-card-acao button {
+    width: 20px;
+    height: 20px;
+
+    padding: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: transparent;
+
+    border: none;
+
+    color: #8491A7;
+
+    font-size: 10px;
+
+    cursor: pointer;
+}
+
+.controles-card-acao button:hover:not(:disabled) {
+    color: #416FC7;
+}
+
+.controles-card-acao button:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.controles-card-acao .botao-remover-acao {
+    margin-left: 3px;
+
+    font-size: 13px;
+}
+
+

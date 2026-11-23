@@ -1,0 +1,379 @@
+
+/*----------------- CARD ---------------------------*/
+
+.card-plano-acao {
+    display: flex;
+    flex-direction: column;
+
+    min-width: 0;
+    min-height: 188px;
+
+    padding: 16px 18px 14px;
+
+    background-color: #FFFFFF;
+
+    border: 1px solid #DDE5F0;
+    border-radius: 8px;
+
+    box-shadow: 0 1px 2px rgba(15, 35, 65, 0.04);
+
+    transition:
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+.card-plano-acao:hover {
+    box-shadow: 0 4px 12px rgba(15, 35, 65, 0.08);
+
+    transform: translateY(-2px);
+}
+
+
+/*----------------- IDENTIFICAÇÃO ------------------*/
+
+.identificacao-plano {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+
+    gap: 6px;
+
+    margin-bottom: 10px;
+}
+
+
+/*----------------- CLASSIFICAÇÃO ------------------*/
+
+.classificacao-plano {
+    display: inline-flex;
+    align-items: center;
+
+    gap: 5px;
+
+    padding: 4px 8px;
+
+    border-radius: 20px;
+
+    font-size: 10px;
+    font-weight: 600;
+}
+
+
+.ponto-classificacao {
+    width: 6px;
+    height: 6px;
+
+    border-radius: 50%;
+}
+
+
+/* ATENÇÃO */
+
+.classificacao-plano.atencao {
+    color: #B76A00;
+
+    background-color: #FFF8E8;
+
+    border: 1px solid #FFE1A3;
+}
+
+.classificacao-plano.atencao .ponto-classificacao {
+    background-color: #F59E0B;
+}
+
+
+/* PRIORIDADE */
+
+.classificacao-plano.prioridade {
+    color: #D92D20;
+
+    background-color: #FFF1F0;
+
+    border: 1px solid #FFD0CC;
+}
+
+.classificacao-plano.prioridade .ponto-classificacao {
+    background-color: #F04438;
+}
+
+
+/* CONCLUÍDO */
+
+.classificacao-plano.concluido {
+    color: #16803C;
+
+    background-color: #ECFDF3;
+
+    border: 1px solid #B7F0C8;
+}
+
+.classificacao-plano.concluido .ponto-classificacao {
+    background-color: #22C55E;
+}
+
+
+/*----------------- SETOR -------------------------*/
+
+.setor-plano {
+    padding: 4px 8px;
+
+    background-color: #F0F3F8;
+
+    border-radius: 5px;
+
+    color: #53627A;
+
+    font-size: 10px;
+    font-weight: 600;
+}
+
+
+/*----------------- TÍTULO ------------------------*/
+
+.titulo-plano-acao {
+    display: -webkit-box;
+
+    overflow: hidden;
+
+    margin: 0 0 7px;
+
+    color: #14233A;
+
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.4;
+
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+
+/*----------------- ORIGEM ------------------------*/
+
+.origem-plano-acao {
+    overflow: hidden;
+
+    margin: 0;
+
+    color: #7B8498;
+
+    font-size: 10px;
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+
+/*----------------- RESPONSÁVEL -------------------*/
+
+.informacoes-responsavel-plano {
+    display: flex;
+    align-items: center;
+
+    gap: 7px;
+
+    margin-top: 13px;
+    padding-top: 10px;
+
+    border-top: 1px solid #EDF1F7;
+
+    min-width: 0;
+}
+
+
+.avatar-responsavel-plano {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    width: 22px;
+    height: 22px;
+
+    border-radius: 50%;
+
+    background-color: #DCE8FF;
+
+    color: #0758D6;
+
+    font-size: 9px;
+    font-weight: 700;
+}
+
+
+.nome-responsavel-plano {
+    overflow: hidden;
+
+    color: #667085;
+
+    font-size: 10px;
+    font-weight: 600;
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+
+.data-prazo-plano {
+    display: flex;
+    align-items: center;
+
+    gap: 4px;
+
+    margin-left: auto;
+
+    color: #667085;
+
+    font-size: 10px;
+
+    white-space: nowrap;
+}
+
+
+.icone-calendario {
+    font-size: 12px;
+}
+
+
+/*----------------- PROGRESSO ---------------------*/
+
+.progresso-plano-acao {
+    margin-top: auto;
+    padding-top: 12px;
+}
+
+
+.informacoes-progresso {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 6px;
+
+    color: #7B8498;
+
+    font-size: 10px;
+}
+
+
+/*----------------- BARRA ------------------------*/
+
+.barra-progresso-plano {
+    overflow: hidden;
+
+    width: 100%;
+    height: 5px;
+
+    background-color: #EDF1F7;
+
+    border-radius: 10px;
+}
+
+
+.barra-progresso-preenchida {
+    height: 100%;
+
+    background-color: #0866FF;
+
+    border-radius: 10px;
+
+    transition: width 0.3s ease;
+}
+
+
+/*----------------- STATUS DO PLANO -----------------*/
+
+.classificacao-plano.andamento {
+    background-color: #EAF2FF;
+    color: #245DA8;
+}
+
+/*----------------- BARRA DE PROGRESSO --------------*/
+
+.progresso-plano-acao {
+    width: 100%;
+    margin-top: 18px;
+}
+
+.informacoes-progresso {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+
+    margin-bottom: 8px;
+
+    color: #52627A;
+    font-size: 13px;
+}
+
+.informacoes-progresso strong {
+    color: #10233D;
+    font-size: 14px;
+}
+
+.barra-progresso-plano {
+    width: 100%;
+    height: 8px;
+
+    overflow: hidden;
+
+    background-color: #E8EDF5;
+    border-radius: 10px;
+}
+
+.barra-progresso-preenchida {
+    height: 100%;
+
+    background-color: #3478D4;
+    border-radius: 10px;
+
+    transition: width 0.3s ease;
+}
+
+.quantidade-tarefas-plano {
+    margin-top: 8px;
+
+    color: #7B8498;
+    font-size: 12px;
+}
+
+/*----------------- PROGRESSO DO PLANO -----------------*/
+
+.progresso-plano-acao {
+    width: 100%;
+    margin-top: 16px;
+}
+
+.informacoes-progresso-plano {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+
+    margin-bottom: 8px;
+
+    font-size: 12px;
+    color: #7b8499;
+}
+
+.barra-progresso-plano {
+    width: 100%;
+    height: 6px;
+
+    overflow: hidden;
+
+    background-color: #edf1f8;
+    border-radius: 10px;
+}
+
+.preenchimento-progresso-plano {
+    height: 100%;
+
+    background-color: #0866ff;
+    border-radius: 10px;
+
+    transition: width 0.3s ease;
+}

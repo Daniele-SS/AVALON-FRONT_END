@@ -1,0 +1,222 @@
+
+/*----------------------------------------------------------
+    SEÇÃO PRINCIPAL
+----------------------------------------------------------*/
+
+.secao-acoes-operacionais {
+    width: 100%;
+    box-sizing: border-box;
+
+    padding: 20px 16px 16px;
+
+    background-color: #FFFFFF;
+
+    border: 1px solid #E9EDF5;
+    border-radius: 6px;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 16px;
+}
+
+
+/*----------------------------------------------------------
+    CABEÇALHO
+----------------------------------------------------------*/
+
+.cabecalho-acoes-operacionais {
+    width: 100%;
+    box-sizing: border-box;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 12px;
+}
+
+.titulo-acoes-operacionais {
+    display: flex;
+    align-items: flex-start;
+
+    gap: 10px;
+}
+
+.icone-acoes-operacionais {
+    color: #416FC7;
+
+    font-size: 15px;
+
+    margin-top: 2px;
+}
+
+.titulo-acoes-operacionais h2 {
+    margin: 0 0 5px;
+
+    color: #17243A;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    line-height: 1.4;
+}
+
+.titulo-acoes-operacionais p {
+    max-width: 420px;
+
+    margin: 0;
+
+    color: #7B8495;
+
+    font-size: 11px;
+    font-weight: 400;
+
+    line-height: 1.5;
+}
+
+
+/*----------------------------------------------------------
+    BOTÃO ADICIONAR
+----------------------------------------------------------*/
+
+.botao-adicionar-acao {
+    width: auto;
+    min-height: 30px;
+    height: 30px;
+
+    padding: 0 10px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 5px;
+
+    background-color: #EEF3FF;
+
+    border: 1px solid #E1E9FA;
+    border-radius: 5px;
+
+    color: #416FC7;
+
+    font-family: inherit;
+    font-size: 10px;
+    font-weight: 500;
+
+    white-space: nowrap;
+
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.botao-adicionar-acao span {
+    font-size: 13px;
+    line-height: 1;
+}
+
+.botao-adicionar-acao:hover {
+    background-color: #E3ECFF;
+}
+
+.botao-adicionar-acao:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+
+/*----------------------------------------------------------
+    FORMULÁRIO DA NOVA AÇÃO
+----------------------------------------------------------*/
+
+.formulario-nova-acao {
+    display: flex;
+    flex-direction: column;
+
+    gap: 8px;
+}
+
+.formulario-nova-acao input,
+.formulario-nova-acao textarea {
+    width: 100%;
+    box-sizing: border-box;
+
+    padding: 10px;
+
+    background-color: #EEF3FF;
+
+    border: 1px solid transparent;
+    border-radius: 4px;
+
+    color: #26364F;
+
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 400;
+
+    outline: none;
+
+    transition:
+        border-color 0.2s ease,
+        background-color 0.2s ease;
+}
+
+.formulario-nova-acao input {
+    min-height: 36px;
+}
+
+.formulario-nova-acao textarea {
+    min-height: 65px;
+
+    resize: vertical;
+
+    line-height: 1.5;
+}
+
+.formulario-nova-acao input::placeholder,
+.formulario-nova-acao textarea::placeholder {
+    color: #8994A8;
+}
+
+.formulario-nova-acao input:focus,
+.formulario-nova-acao textarea:focus {
+    border-color: #A9BDEB;
+
+    background-color: #F4F7FF;
+}
+
+
+/*----------------------------------------------------------
+    LISTA DE AÇÕES
+----------------------------------------------------------*/
+
+.lista-acoes-operacionais {
+    display: flex;
+    flex-direction: column;
+
+    gap: 10px;
+}
+
+
+/*----------------------------------------------------------
+    ESTADO VAZIO
+----------------------------------------------------------*/
+
+.acoes-vazias-plano {
+    padding: 20px 16px;
+
+    background-color: #F5F7FC;
+
+    border: 1px dashed #DCE4F2;
+    border-radius: 5px;
+
+    color: #7B8495;
+
+    font-size: 11px;
+    text-align: center;
+
+    line-height: 1.5;
+}
+
+
+

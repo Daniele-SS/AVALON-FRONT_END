@@ -1,0 +1,206 @@
+/*----------------------------------------------------------
+    SEÇÃO PRINCIPAL
+----------------------------------------------------------*/
+
+.dados-acao-plano {
+    width: 100%;
+    box-sizing: border-box;
+
+    padding: 20px 16px 16px;
+
+    background-color: #FFFFFF;
+
+    border: 1px solid #E9EDF5;
+    border-radius: 6px;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 18px;
+}
+
+
+/*----------------------------------------------------------
+    CABEÇALHO
+----------------------------------------------------------*/
+
+.cabecalho-dados-acao {
+    display: flex;
+    flex-direction: column;
+
+    gap: 5px;
+}
+
+.cabecalho-dados-acao h2 {
+    margin: 0;
+
+    color: #17243A;
+
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.cabecalho-dados-acao p {
+    margin: 0;
+
+    color: #7B8495;
+
+    font-size: 11px;
+    font-weight: 400;
+
+    line-height: 1.5;
+}
+
+
+/*----------------------------------------------------------
+    CAMPOS
+----------------------------------------------------------*/
+
+.campo-dados-acao {
+    width: 100%;
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 6px;
+}
+
+.campo-dados-acao label {
+    color: #17243A;
+
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.campo-dados-acao label span {
+    color: #E54848;
+}
+
+
+/*----------------------------------------------------------
+    CABEÇALHO DOS CAMPOS
+----------------------------------------------------------*/
+
+.cabecalho-campo-acao {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 10px;
+}
+
+.cabecalho-campo-acao small {
+    color: #7B8495;
+
+    font-size: 9px;
+    font-weight: 400;
+
+    white-space: nowrap;
+}
+
+
+/*----------------------------------------------------------
+    INPUT, TEXTAREA E SELECT
+----------------------------------------------------------*/
+
+.campo-dados-acao input,
+.campo-dados-acao textarea,
+.campo-dados-acao select {
+    width: 100%;
+    box-sizing: border-box;
+
+    padding: 10px;
+
+    background-color: #EEF3FF;
+
+    border: 1px solid transparent;
+    border-radius: 4px;
+
+    color: #26364F;
+
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 400;
+
+    outline: none;
+
+    transition:
+        border-color 0.2s ease,
+        background-color 0.2s ease;
+}
+
+
+/* INPUT */
+
+.campo-dados-acao input {
+    min-height: 36px;
+}
+
+
+/* TEXTAREA */
+
+.campo-dados-acao textarea {
+    min-height: 90px;
+
+    resize: vertical;
+
+    line-height: 1.5;
+}
+
+
+/* SELECT */
+
+.campo-dados-acao select {
+    min-height: 36px;
+
+    cursor: pointer;
+}
+
+
+/* PLACEHOLDER */
+
+.campo-dados-acao input::placeholder,
+.campo-dados-acao textarea::placeholder {
+    color: #8994A8;
+}
+
+
+/* FOCO */
+
+.campo-dados-acao input:focus,
+.campo-dados-acao textarea:focus,
+.campo-dados-acao select:focus {
+    border-color: #A9BDEB;
+
+    background-color: #F4F7FF;
+}
+
+
+/* DESABILITADO */
+
+.campo-dados-acao input:disabled,
+.campo-dados-acao textarea:disabled,
+.campo-dados-acao select:disabled {
+    opacity: 0.7;
+
+    cursor: not-allowed;
+}
+
+
+/*----------------------------------------------------------
+    TEXTO DE AJUDA
+----------------------------------------------------------*/
+
+.ajuda-campo-acao {
+    margin-top: 0;
+
+    color: #7B8495;
+
+    font-size: 10px;
+    font-weight: 400;
+
+    line-height: 1.4;
+}
