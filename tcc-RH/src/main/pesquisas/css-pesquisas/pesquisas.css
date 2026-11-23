@@ -1,0 +1,92 @@
+/*----------------- PÁGINA PESQUISAS ----------------------*/
+
+.pagina-pesquisas {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+
+/*----------------- MINICARDS -----------------------------*/
+
+.container-minicards-pesquisas {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+}
+
+
+/*----------------- FILTROS ------------------------------*/
+
+.filtros-pesquisas {
+    width: 100%;
+}
+
+
+/*----------------- SEÇÃO PESQUISAS ----------------------*/
+
+.secao-pesquisas {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.cabecalho-secao-pesquisas {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.cabecalho-secao-pesquisas h2 {
+    margin: 0;
+    color: #001F3F;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.cabecalho-secao-pesquisas span {
+    color: #667085;
+    font-size: 14px;
+}
+
+
+/*----------------- GRADE DE PESQUISAS --------------------*/
+
+.grade-pesquisas {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+}
+
+
+/*----------------- MENSAGENS -----------------------------*/
+
+.mensagem-pesquisas {
+    margin: 0;
+    padding: 24px;
+    color: #667085;
+    text-align: center;
+    font-size: 15px;
+    background-color: #FFFFFF;
+    border: 1px solid #E4E7EC;
+    border-radius: 12px;
+}
+
+.mensagem-erro-pesquisas {
+    padding: 20px;
+    color: #B42318;
+    background-color: #FEF3F2;
+    border: 1px solid #FECDCA;
+    border-radius: 12px;
+}
+
+.mensagem-erro-pesquisas p {
+    margin: 0;
+}
+

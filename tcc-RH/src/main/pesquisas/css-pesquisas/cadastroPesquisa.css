@@ -1,0 +1,832 @@
+
+/* =========================================================
+   CADASTRO DE PESQUISA
+========================================================= */
+
+.cadastro-pesquisa {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+
+    width: 100%;
+    padding-bottom: 40px;
+
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   CABEÇALHO
+========================================================= */
+
+.cabecalho-nova-pesquisa {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 13px;
+
+    width: 100%;
+    min-height: 129px;
+    margin-bottom: 2px;
+}
+
+.cabecalho-nova-pesquisa h1 {
+    margin: 0;
+
+    color: #172033;
+    font-size: 22px;
+    font-weight: 600;
+}
+
+.cabecalho-nova-pesquisa p {
+    margin: 8px 0 0;
+
+    color: #52586B;
+    font-size: 13px;
+    line-height: 19px;
+}
+
+
+/* =========================================================
+   CAMINHO DE NAVEGAÇÃO
+========================================================= */
+
+.caminho-cadastro-pesquisa {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    font-size: 12px;
+}
+
+.caminho-cadastro-pesquisa button {
+    width: auto;
+    height: auto;
+    padding: 0;
+
+    border: none;
+    background: transparent;
+
+    color: #434655;
+    font-size: 12px;
+    font-weight: 500;
+
+    cursor: pointer;
+}
+
+.caminho-cadastro-pesquisa button:hover {
+    color: #2452E8;
+    text-decoration: underline;
+}
+
+.caminho-cadastro-pesquisa span {
+    color: #9AA3B2;
+}
+
+.caminho-cadastro-pesquisa strong {
+    color: #131B2E;
+    font-weight: 500;
+}
+
+
+/* =========================================================
+   CARDS DAS ETAPAS
+========================================================= */
+
+.cartao-cadastro-pesquisa {
+    box-sizing: border-box;
+
+    width: 100%;
+    margin-top: 23px;
+    padding: 22px 19px;
+
+    background: #FFFFFF;
+    border: none;
+    border-radius: 8px;
+
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+
+/* =========================================================
+   CABEÇALHO DAS ETAPAS
+========================================================= */
+
+.cabecalho-etapa-pesquisa {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 15px;
+
+    width: 100%;
+    margin-bottom: 22px;
+}
+
+.informacao-etapa-pesquisa {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    min-width: 0;
+}
+
+.numero-etapa-pesquisa {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    width: 36px;
+    height: 36px;
+
+    color: #FFFFFF;
+    background: #1E40AF;
+
+    border-radius: 6px;
+
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.legenda-etapa-pesquisa {
+    display: block;
+    margin-bottom: 4px;
+
+    color: #777D90;
+
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+}
+
+.informacao-etapa-pesquisa h2 {
+    margin: 0;
+
+    color: #172033;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.informacao-etapa-pesquisa p {
+    margin: 6px 0 0;
+
+    color: #52586B;
+    font-size: 12px;
+    line-height: 18px;
+}
+
+
+/* =========================================================
+   ETIQUETAS E CONTADORES
+========================================================= */
+
+.status-etapa-pesquisa,
+.contador-pesquisa {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    min-height: 24px;
+    padding: 0 9px;
+
+    border-radius: 12px;
+
+    font-size: 10px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.status-etapa-pesquisa {
+    color: #8A5A13;
+    background: #FFF4D6;
+}
+
+.contador-pesquisa {
+    color: #1E40AF;
+    background: #E8EDFF;
+}
+
+
+/* =========================================================
+   CAMPOS
+========================================================= */
+
+.campos-identificacao-pesquisa {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    width: 100%;
+}
+
+.campo-pesquisa {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    width: 100%;
+    min-width: 0;
+}
+
+.campo-pesquisa label {
+    display: block;
+    margin: 0;
+
+    color: #202A40;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.campo-pesquisa label span {
+    color: #DC2626;
+}
+
+.rotulo-campo-pesquisa {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.rotulo-campo-pesquisa small {
+    color: #777D90;
+    font-size: 10px;
+}
+
+.campo-pesquisa input,
+.campo-pesquisa textarea,
+.campo-pesquisa select {
+    box-sizing: border-box;
+
+    width: 100%;
+    min-width: 0;
+
+    padding: 9px 10px;
+
+    color: #202A40;
+    background: #F1F2FF;
+
+    border: 1px solid transparent;
+    border-radius: 5px;
+
+    outline: none;
+
+    font-family: inherit;
+    font-size: 12px;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.campo-pesquisa input,
+.campo-pesquisa select {
+    height: 36px;
+}
+
+.campo-pesquisa textarea {
+    min-height: 90px;
+    resize: vertical;
+    line-height: 18px;
+}
+
+.campo-pesquisa input:focus,
+.campo-pesquisa textarea:focus,
+.campo-pesquisa select:focus {
+    background: #FFFFFF;
+    border-color: #2452E8;
+    box-shadow: 0 0 0 2px rgba(36, 82, 232, 0.10);
+}
+
+.campo-pesquisa input::placeholder,
+.campo-pesquisa textarea::placeholder {
+    color: #777D90;
+    opacity: 1;
+}
+
+
+/* =========================================================
+   PERÍODO
+========================================================= */
+
+.campos-periodo-pesquisa {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+
+    width: 100%;
+}
+
+
+/* =========================================================
+   PRIVACIDADE E ANONIMATO
+========================================================= */
+
+.privacidade-pesquisa {
+    box-sizing: border-box;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+
+    width: 100%;
+    padding: 14px;
+
+    background: #F1F2FF;
+    border: 1px solid #E5E7F2;
+    border-radius: 6px;
+}
+
+.privacidade-pesquisa strong {
+    color: #202A40;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.privacidade-pesquisa p {
+    margin: 5px 0 0;
+
+    color: #626B80;
+    font-size: 11px;
+    line-height: 17px;
+}
+
+
+/* =========================================================
+   ALTERNÂNCIA DE ANONIMATO
+========================================================= */
+
+.alternancia-pesquisa {
+    position: relative;
+
+    display: inline-block;
+    flex-shrink: 0;
+
+    width: 42px;
+    height: 23px;
+}
+
+.alternancia-pesquisa input {
+    width: 0;
+    height: 0;
+    opacity: 0;
+}
+
+.controle-alternancia-pesquisa {
+    position: absolute;
+    inset: 0;
+
+    cursor: pointer;
+
+    background: #CBD5E1;
+    border-radius: 20px;
+
+    transition: 0.2s;
+}
+
+.controle-alternancia-pesquisa::before {
+    content: "";
+
+    position: absolute;
+
+    width: 17px;
+    height: 17px;
+    left: 3px;
+    bottom: 3px;
+
+    background: #FFFFFF;
+    border-radius: 50%;
+
+    transition: 0.2s;
+}
+
+.alternancia-pesquisa input:checked + .controle-alternancia-pesquisa {
+    background: #2452E8;
+}
+
+.alternancia-pesquisa input:checked + .controle-alternancia-pesquisa::before {
+    transform: translateX(19px);
+}
+
+
+/* =========================================================
+   LISTA DE PERGUNTAS
+========================================================= */
+
+.lista-cadastro-perguntas {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    width: 100%;
+}
+
+
+/* =========================================================
+   CARD INDIVIDUAL DA PERGUNTA
+========================================================= */
+
+.item-cadastro-pergunta {
+    box-sizing: border-box;
+
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+
+    width: 100%;
+    padding: 20px;
+
+    background: #FFFFFF;
+    border: 1px solid #E4E7EC;
+    border-radius: 10px;
+}
+
+
+/* =========================================================
+   CABEÇALHO DA PERGUNTA
+========================================================= */
+
+.cabecalho-item-pergunta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.informacao-item-pergunta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.numero-pergunta-pesquisa {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 29px;
+    height: 29px;
+
+    color: #1E40AF;
+    background: #E8EDFF;
+
+    border-radius: 6px;
+
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.informacao-item-pergunta h3 {
+    margin: 0;
+
+    color: #202A40;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.botao-remover-pergunta-pesquisa {
+    width: auto;
+    height: auto;
+    padding: 6px 10px;
+
+    color: #B42318;
+    background: #FFF5F5;
+
+    border: 1px solid #F0C7CC;
+    border-radius: 5px;
+
+    font-size: 11px;
+    cursor: pointer;
+}
+
+.botao-remover-pergunta-pesquisa:hover {
+    background: #FDE8E8;
+}
+
+
+/* =========================================================
+   CONFIGURAÇÃO DA PERGUNTA
+========================================================= */
+
+.configuracao-pergunta-pesquisa {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+    gap: 20px;
+
+    width: 100%;
+}
+
+.obrigatoria-pergunta-pesquisa {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+
+    min-height: 36px;
+
+    color: #202A40;
+    font-size: 12px;
+
+    cursor: pointer;
+}
+
+.obrigatoria-pergunta-pesquisa input {
+    width: 15px;
+    height: 15px;
+    margin: 0;
+
+    accent-color: #2452E8;
+}
+
+
+/* =========================================================
+   ALTERNATIVAS FIXAS
+========================================================= */
+
+.alternativas-fixas-pesquisa {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    width: 100%;
+    padding: 16px;
+
+    box-sizing: border-box;
+
+    background: #F8F9FC;
+    border: 1px solid #E4E7EC;
+    border-radius: 8px;
+}
+
+.cabecalho-alternativas-pesquisa {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.cabecalho-alternativas-pesquisa strong {
+    color: #202A40;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.cabecalho-alternativas-pesquisa span {
+    padding: 5px 9px;
+
+    color: #1E40AF;
+    background: #E8EDFF;
+
+    border-radius: 12px;
+
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.lista-alternativas-fixas-pesquisa {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+
+    width: 100%;
+}
+
+.lista-alternativas-fixas-pesquisa div {
+    box-sizing: border-box;
+
+    display: flex;
+    align-items: center;
+
+    min-height: 38px;
+    padding: 9px 12px;
+
+    color: #344054;
+    background: #FFFFFF;
+
+    border: 1px solid #E4E7EC;
+    border-radius: 6px;
+
+    font-size: 12px;
+}
+
+.alternativas-fixas-pesquisa p {
+    margin: 0;
+
+    color: #777D90;
+    font-size: 11px;
+    line-height: 17px;
+}
+
+
+/* =========================================================
+   ADICIONAR PERGUNTA
+========================================================= */
+
+.botao-adicionar-pergunta-pesquisa {
+    width: 100%;
+    min-height: 42px;
+    margin-top: 16px;
+    padding: 10px 14px;
+
+    color: #2452E8;
+    background: #F1F2FF;
+
+    border: 1px dashed #AAB7E8;
+    border-radius: 6px;
+
+    font-size: 12px;
+    font-weight: 600;
+
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.botao-adicionar-pergunta-pesquisa:hover {
+    background: #E8EDFF;
+    border-color: #2452E8;
+}
+
+
+/* =========================================================
+   PÚBLICO DA PESQUISA
+========================================================= */
+
+.opcoes-publico-pesquisa {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+
+    width: 100%;
+}
+
+.opcao-publico-pesquisa {
+    box-sizing: border-box;
+
+    display: flex;
+    align-items: center;
+    gap: 9px;
+
+    min-height: 44px;
+    padding: 10px 12px;
+
+    background: #F1F2FF;
+    border: 1px solid transparent;
+    border-radius: 5px;
+
+    color: #202A40;
+    font-size: 12px;
+    font-weight: 500;
+
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.opcao-publico-pesquisa:hover {
+    border-color: #2452E8;
+}
+
+.opcao-publico-pesquisa input {
+    flex-shrink: 0;
+    margin: 0;
+
+    accent-color: #2452E8;
+}
+
+
+/* =========================================================
+   SELEÇÃO DE SETORES E CARGOS
+========================================================= */
+
+.selecao-itens-pesquisa {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    width: 100%;
+    margin-top: 20px;
+}
+
+.selecao-itens-pesquisa h3 {
+    margin: 0;
+
+    color: #202A40;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.selecao-itens-pesquisa > p {
+    margin: 0;
+    color: #777D90;
+    font-size: 12px;
+}
+
+.lista-itens-publico-pesquisa {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+
+    width: 100%;
+}
+
+.lista-itens-publico-pesquisa label {
+    box-sizing: border-box;
+
+    display: flex;
+    align-items: center;
+    gap: 9px;
+
+    min-height: 38px;
+    padding: 9px 11px;
+
+    background: #F1F2FF;
+    border-radius: 5px;
+
+    color: #202A40;
+    font-size: 12px;
+
+    cursor: pointer;
+}
+
+.lista-itens-publico-pesquisa input {
+    flex-shrink: 0;
+    margin: 0;
+
+    accent-color: #2452E8;
+}
+
+
+/* =========================================================
+   MENSAGENS DE ERRO
+========================================================= */
+
+.erro-cadastro-pesquisa {
+    box-sizing: border-box;
+
+    width: 100%;
+    margin: 18px 0 0;
+    padding: 12px 14px;
+
+    color: #B42318;
+    background: #FFF5F5;
+
+    border: 1px solid #F0C7CC;
+    border-radius: 6px;
+
+    font-size: 12px;
+    line-height: 18px;
+}
+
+
+/* =========================================================
+   BOTÕES FINAIS
+========================================================= */
+
+.botoes-cadastro-pesquisa {
+    display: flex;
+    justify-content: flex-end;
+
+    width: 100%;
+    margin-top: 24px;
+}
+
+
+
+.resumo-publico-pesquisa {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+
+    margin-top: 24px;
+    padding: 20px;
+
+    background-color: #F1F2FF;
+    border: 1px solid #DDE1FF;
+    border-radius: 8px;
+}
+
+.resumo-publico-pesquisa strong {
+    display: block;
+
+    color: #001F3F;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.resumo-publico-pesquisa p {
+    margin: 6px 0 0;
+
+    color: #6B7280;
+    font-size: 13px;
+}
+
+.resumo-publico-pesquisa > span {
+    color: #2452E8;
+    font-size: 20px;
+    font-weight: 700;
+    white-space: nowrap;
+}
