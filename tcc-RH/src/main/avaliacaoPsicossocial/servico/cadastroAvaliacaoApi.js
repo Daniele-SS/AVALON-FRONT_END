@@ -166,15 +166,18 @@ async function registrarParticipantes(
     }
 
 
-    //----------------- VALIDAR PARTICIPANTES -------------//
+//----------------- VALIDAR PARTICIPANTES -------------//
 
-    if (participantesSelecionados.length === 0) {
+if (participantesSelecionados.length === 0) {
 
-        throw new Error(
-            'Nenhum colaborador ativo foi encontrado para o público selecionado.'
-        );
+    console.warn(
+        'Nenhum colaborador foi encontrado para registrar participação individual.',
+        'A avaliação continuará disponível conforme o público e os setores cadastrados.'
+    );
 
-    }
+    return 0;
+
+}
 
 
     //----------------- EVITAR PARTICIPANTES REPETIDOS ----//
