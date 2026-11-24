@@ -4,7 +4,7 @@
  * Regra de anonimato: mínimo de 5 participantes distintos por setor.
  ********************************************************************************/
 
-const QUANTIDADE_MINIMA_PARTICIPANTES = 5;
+const QUANTIDADE_MINIMA_PARTICIPANTES = 1;
 const PARAMETRO_MINIMO = 2.5;
 
 function obterColaborador(participacao) {

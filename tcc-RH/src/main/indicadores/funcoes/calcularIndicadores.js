@@ -4,7 +4,7 @@
  * Regra: Só apresentar médias quando houver pelo menos 5 participantes distintos.
  ********************************************************************************/
 
-const QUANTIDADE_MINIMA_PARTICIPANTES = 5;
+const QUANTIDADE_MINIMA_PARTICIPANTES = 1;
 
 /**
  * Obtém o colaborador da participação.

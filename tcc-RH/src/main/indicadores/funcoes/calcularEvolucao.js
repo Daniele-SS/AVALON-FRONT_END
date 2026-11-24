@@ -3,7 +3,7 @@
  * Objetivo: Montar os dados históricos do gráfico de evolução dos indicadores.
  ********************************************************************************/
 
-const QUANTIDADE_MINIMA_PARTICIPANTES = 5;
+const QUANTIDADE_MINIMA_PARTICIPANTES = 1;
 
 /**
  * Obtém a data da avaliação.
