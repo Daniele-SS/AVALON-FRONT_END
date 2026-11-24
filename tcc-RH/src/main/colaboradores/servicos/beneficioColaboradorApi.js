@@ -127,6 +127,6 @@ export async function buscarBeneficiosSetor() {
 
     const resposta = await requisicaoApi('/beneficio_setor');
 
-    return resposta.response?.beneficioSetor || [];
+    return resposta.response?.beneficioSetores || [];
 
 }
