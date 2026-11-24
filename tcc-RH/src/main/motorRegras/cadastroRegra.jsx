@@ -112,30 +112,27 @@ function CadastroRegra({ voltar, continuar }) {
 
     //----------------- ALTERAR VALOR DE REFERÊNCIA -----------//
 
-    function alterarValorReferencia(valor) {
+ function alterarValorReferencia(valor) {
 
-        if (valor === '') {
-
-            setValorReferencia('');
-
-            setErroValor('');
-
-            return;
-
-        }
-
-        // Aceita somente números e uma casa decimal.
-        if (!/^\d*\.?\d*$/.test(valor)) {
-
-            return;
-
-        }
-
-        setValorReferencia(valor);
-
+    // Permite apagar o campo durante a digitação.
+    if (valor === '') {
+        setValorReferencia('');
         setErroValor('');
-
+        return;
     }
+
+    // Aceita valores de 1 até 5, com no máximo uma casa decimal.
+    // Exemplos válidos: 1, 2.5, 3.2, 4.9, 5, 5.0
+    // Exemplos inválidos: 0, 5.1, 6, 3.25
+    const formatoValido = /^(?:[1-4](?:\.\d?)?|5(?:\.0?)?)$/;
+
+    if (!formatoValido.test(valor)) {
+        return;
+    }
+
+    setValorReferencia(valor);
+    setErroValor('');
+}
 
 
     //----------------- CONTINUAR PARA AÇÃO ------------------//
