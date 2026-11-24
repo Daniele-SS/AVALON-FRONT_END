@@ -48,7 +48,7 @@ export async function buscarSetoresPesquisa() {
 
     const resultado = await requisicao('/setor');
 
-    return resultado.response?.setores || [];
+    return resultado.response?.setor || [];
 
 }
 
