@@ -151,17 +151,32 @@ function CadastroBeneficio({
 
                 const idBeneficio = beneficio.id_beneficio ?? beneficio.id;
 
+
                 // Carrega os setores vinculados ao benefício.
                 if (beneficio.disponibilidade === 'SETOR') {
 
                     const vinculos = await buscarVinculosSetores(idBeneficio);
 
-                    const setoresSelecionados = vinculos
-                        .filter((vinculo) => vinculo.setor?.id != null)
-                        .map((vinculo) => ({
-                            id: vinculo.setor.id,
-                            nome: vinculo.setor.nome
+                    const setoresSelecionados = vinculos.flatMap((vinculo) => {
+
+                        // A API retorna o setor dentro de um array.
+                        const setoresVinculados = Array.isArray(vinculo.setor)
+                            ? vinculo.setor
+                            : vinculo.setor
+                                ? [vinculo.setor]
+                                : [];
+
+                        return setoresVinculados.map((setor) => ({
+                            id: setor.id,
+                            nome: setor.nome
                         }));
+
+                    });
+
+                    console.log(
+                        'SETORES SELECIONADOS NA EDIÇÃO:',
+                        setoresSelecionados
+                    );
 
                     setItensSelecionados(setoresSelecionados);
 
