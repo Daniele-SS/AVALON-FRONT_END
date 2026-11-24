@@ -1,5 +1,5 @@
 
-//----------------- CONFIGURAÇÃO DA API -----------------------------//
+ //----------------- CONFIGURAÇÃO DA API -----------------------------//
 
 const API = 'http://localhost:8080/v1/senai/avalon';
 
@@ -69,6 +69,22 @@ async function realizarRequisicao(url, configuracao = {}, aceitar404 = false) {
 }
 
 
+//----------------- OBTER ID DO BENEFÍCIO VINCULADO ------------------//
+
+function obterIdBeneficioVinculado(vinculo) {
+
+    return (
+        vinculo.beneficio?.id ??
+        vinculo.beneficio?.id_beneficio ??
+        vinculo.beneficio?.beneficios?.[0]?.id ??
+        vinculo.beneficio?.beneficios?.[0]?.id_beneficio ??
+        vinculo.id_beneficio ??
+        vinculo.beneficio_id
+    );
+
+}
+
+
 //----------------- BUSCAR VÍNCULOS DE SETORES -----------------------//
 
 async function buscarVinculosSetores(idBeneficio) {
@@ -88,8 +104,7 @@ async function buscarVinculosSetores(idBeneficio) {
     return vinculos.filter((vinculo) => {
 
         const idBeneficioVinculado =
-            vinculo.beneficio?.id ??
-            vinculo.id_beneficio;
+            obterIdBeneficioVinculado(vinculo);
 
         return Number(idBeneficioVinculado) === Number(idBeneficio);
 
@@ -117,8 +132,7 @@ async function buscarVinculosCargos(idBeneficio) {
     return vinculos.filter((vinculo) => {
 
         const idBeneficioVinculado =
-            vinculo.beneficio?.id ??
-            vinculo.id_beneficio;
+            obterIdBeneficioVinculado(vinculo);
 
         return Number(idBeneficioVinculado) === Number(idBeneficio);
 
