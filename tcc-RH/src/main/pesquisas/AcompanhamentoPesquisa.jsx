@@ -1,5 +1,5 @@
 
- //----------------- IMPORTAÇÕES -----------------------------//
+//----------------- IMPORTAÇÕES -----------------------------//
 
 import Minicards from '../../componentes/minicard/minicard.jsx';
 
@@ -444,13 +444,6 @@ function AcompanhamentoPesquisa({
 
                 <nav className="caminho-acompanhamento-pesquisa">
 
-                    <span className="pagina-atual-acompanhamento">
-                        Acompanhamento
-                    </span>
-
-                    <span className="seta-acompanhamento">
-                        &gt;
-                    </span>
 
                     <button
                         type="button"
@@ -458,6 +451,15 @@ function AcompanhamentoPesquisa({
                     >
                         Pesquisas
                     </button>
+
+                    <span className="seta-acompanhamento">
+                        &gt;
+                    </span>
+
+
+                    <span className="pagina-atual-acompanhamento">
+                        Acompanhamento
+                    </span>
 
                 </nav>
 
@@ -557,6 +559,19 @@ function AcompanhamentoPesquisa({
                 )}
 
             </section>
+            {/* BOTÃO VOLTAR NO FINAL DA TELA */}
+
+            <div className="rodape-acompanhamento-pesquisa">
+
+                <button
+                    type="button"
+                    className="botao-voltar-acompanhamento"
+                    onClick={onVoltar}
+                >
+                    ← Voltar para pesquisas
+                </button>
+
+            </div>
 
         </div>
 

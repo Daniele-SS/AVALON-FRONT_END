@@ -244,3 +244,17 @@
     font-size: 14px;
     line-height: 1.6;
 }
+
+
+/* RODAPÉ DO ACOMPANHAMENTO */
+
+.rodape-acompanhamento-pesquisa {
+    display: flex;
+    justify-content: flex-start;
+
+    width: 100%;
+    margin-top: 30px;
+    padding-bottom: 30px;
+
+    box-sizing: border-box;
+}
