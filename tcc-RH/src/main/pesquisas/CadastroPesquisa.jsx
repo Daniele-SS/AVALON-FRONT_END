@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 
 import {
@@ -7,6 +6,8 @@ import {
     buscarColaboradoresPesquisa,
     cadastrarPesquisaCompleta
 } from './servicos/cadastroPesquisaApi.js';
+
+import BotaoCadastro from '../../componentes/cardNomePag/nomePag.jsx';
 
 import BotaoSalvarCancelar from '../../componentes/botoes/botaoSalvarCancelar.jsx';
 
@@ -139,6 +140,7 @@ function CadastroPesquisa({ voltar, aoCadastrar }) {
         const colaboradoresAtivos = colaboradores.filter(
             colaborador => colaborador.status === 'Ativo'
         );
+
 
         // Todos os colaboradores ativos.
         if (publico === 'TODOS') {
@@ -431,7 +433,8 @@ function CadastroPesquisa({ voltar, aoCadastrar }) {
 
             const idPesquisa = await cadastrarPesquisaCompleta(
                 dadosPesquisa,
-                perguntas
+                perguntas,
+                colaboradores
             );
 
             await aoCadastrar?.(idPesquisa);
@@ -465,35 +468,38 @@ function CadastroPesquisa({ voltar, aoCadastrar }) {
 
             {/* CABEÇALHO */}
 
-            <header className="cabecalho-nova-pesquisa">
+            <div className="cabecalho-nova-pesquisa">
 
-                <div>
+                <BotaoCadastro
 
-                    <h1>Nova Pesquisa</h1>
+                    titulo="Nova Pesquisa"
 
-                    <p>
-                        Crie uma pesquisa para coletar percepções e opiniões
-                        dos colaboradores.
-                    </p>
+                    descricao="Crie uma pesquisa para coletar percepções e opiniões dos colaboradores."
 
-                </div>
+                >
 
-                <nav className="caminho-cadastro-pesquisa">
+                    <nav className="caminho-cadastro-pesquisa">
 
-                    <button
-                        type="button"
-                        onClick={voltar}
-                    >
-                        Pesquisas
-                    </button>
+                        <button
+                            type="button"
+                            onClick={voltar}
+                        >
+                            Pesquisas
+                        </button>
 
-                    <span>&gt;</span>
+                        <span className="seta">
+                            &gt;
+                        </span>
 
-                    <strong>Nova Pesquisa</strong>
+                        <span className="pagina-atual-pesquisa">
+                            Nova Pesquisa
+                        </span>
 
-                </nav>
+                    </nav>
 
-            </header>
+                </BotaoCadastro>
+
+            </div>
 
 
             {/* ERRO DE CARREGAMENTO */}

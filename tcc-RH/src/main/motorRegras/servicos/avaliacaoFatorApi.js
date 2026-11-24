@@ -1,14 +1,19 @@
 
-//----------------- BUSCAR FATORES DA AVALIAÇÃO --------------//
+/********************************************************************************
+ * Objetivo: Buscar fatores psicossociais diretamente do catálogo
+ *           tbl_psicossocial_fator, sem depender de avaliações cadastradas.
+ ********************************************************************************/
+
+const API = 'http://localhost:8080/v1/senai/avalon';
+
+//----------------- BUSCAR FATORES PSICOSSOCIAIS -----------------//
 
 async function buscarFatoresAvaliacao() {
 
-    // Recupera o token de autenticação.
     const token = localStorage.getItem('access_token');
 
-    // Consulta a API.
     const resposta = await fetch(
-        'http://localhost:8080/v1/senai/avalon/avaliacao_fator',
+        `${API}/pscicossocialFator`,
         {
             method: 'GET',
             headers: {
@@ -20,47 +25,25 @@ async function buscarFatoresAvaliacao() {
         }
     );
 
-    // Verifica se a requisição foi realizada corretamente.
+    // Verifica a resposta antes de tentar converter para JSON
     if (!resposta.ok) {
-        throw new Error('Não foi possível buscar os fatores psicossociais.');
+        throw new Error(
+            `Não foi possível buscar os fatores psicossociais. Status: ${resposta.status}`
+        );
     }
 
     const dados = await resposta.json();
 
-    // Recupera os fatores retornados pela API.
-    const avaliacaoFatores = dados.response?.avaliacaoFatores || [];
+    const fatores = dados.response?.psicossocialFatores || [];
 
-    // Remove fatores duplicados e mantém somente os ativos.
-    const fatoresUnicos = [];
-
-    avaliacaoFatores.forEach((item) => {
-
-        const fator = item.psicossocial_fator;
-
-        if (!fator || Number(fator.ativo) !== 1) {
-            return;
-        }
-
-        // Verifica se o fator já foi adicionado.
-        const jaExiste = fatoresUnicos.some(
-            (fatorExistente) => fatorExistente.id === fator.id
-        );
-
-        if (!jaExiste) {
-            fatoresUnicos.push({
-                id: fator.id,
-                nome: fator.nome,
-                descricao: fator.descricao
-            });
-        }
-
-    });
-
-    return fatoresUnicos;
-
+    // Retorna somente fatores ativos para cadastrar regras
+    return fatores
+        .filter((fator) => Number(fator.ativo) === 1)
+        .map((fator) => ({
+            id: fator.id,
+            nome: fator.nome,
+            descricao: fator.descricao
+        }));
 }
-
-
-//----------------- EXPORTAÇÃO ------------------------------//
 
 export default buscarFatoresAvaliacao;

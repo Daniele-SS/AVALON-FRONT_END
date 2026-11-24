@@ -43,6 +43,21 @@ async function converterResposta(resposta) {
 }
 
 
+//----------------- CONVERTER LISTA VAZIA -------------------------//
+
+async function converterListaOuVazia(resposta) {
+
+    // Quando não existem registros, o backend pode retornar 404.
+    // Nesse caso, consideramos a lista vazia.
+    if (resposta.status === 404) {
+        return {};
+    }
+
+    return converterResposta(resposta);
+
+}
+
+
 //----------------- BUSCAR DADOS ----------------------------------//
 
 async function buscarDadosAvaliacaoPsicossocial() {
@@ -104,61 +119,76 @@ async function buscarDadosAvaliacaoPsicossocial() {
     }
 
 
-    //----------------- VERIFICAR RESPOSTAS OBRIGATÓRIAS ----------//
+    //----------------- VERIFICAR RESPOSTAS -----------------------//
 
-    if (!respostaAvaliacoes.ok) {
-        throw new Error('Não foi possível carregar as avaliações.');
+    // As rotas de listagem podem estar vazias.
+    // Um 404 nessas rotas será tratado como lista vazia.
+
+    if (
+        !respostaAvaliacoes.ok &&
+        respostaAvaliacoes.status !== 404
+    ) {
+        throw new Error(
+            'Não foi possível carregar as avaliações.'
+        );
     }
 
-    if (!respostaParticipacoes.ok) {
-        throw new Error('Não foi possível carregar as participações.');
+    if (
+        !respostaParticipacoes.ok &&
+        respostaParticipacoes.status !== 404
+    ) {
+        throw new Error(
+            'Não foi possível carregar as participações.'
+        );
     }
 
-    if (!respostaSetores.ok) {
-        throw new Error('Não foi possível carregar os setores das avaliações.');
+    if (
+        !respostaSetores.ok &&
+        respostaSetores.status !== 404
+    ) {
+        throw new Error(
+            'Não foi possível carregar os setores das avaliações.'
+        );
     }
 
-    if (!respostaColaboradores.ok) {
-        throw new Error('Não foi possível carregar os colaboradores.');
-    }
-
-
-    //----------------- VERIFICAR ROTA DE CARGOS ------------------//
-
-    if (!respostaCargos.ok && respostaCargos.status !== 404) {
-
+    if (
+        !respostaCargos.ok &&
+        respostaCargos.status !== 404
+    ) {
         throw new Error(
             'Não foi possível carregar os cargos das avaliações.'
         );
-
     }
 
-    if (respostaCargos.status === 404) {
 
-        console.warn(
-            'A rota /avaliacao_cargo não foi encontrada no Back-end. A tela continuará carregando sem os vínculos de cargos.'
+    //----------------- VERIFICAR COLABORADORES -------------------//
+
+    // A rota de colaboradores continua obrigatória.
+    // Se ela falhar, precisamos informar o erro.
+
+    if (!respostaColaboradores.ok) {
+        throw new Error(
+            'Não foi possível carregar os colaboradores.'
         );
-
     }
 
 
     //----------------- CONVERTER RESPOSTAS -----------------------//
 
     const dadosAvaliacoes =
-        await converterResposta(respostaAvaliacoes);
+        await converterListaOuVazia(respostaAvaliacoes);
 
     const dadosParticipacoes =
-        await converterResposta(respostaParticipacoes);
+        await converterListaOuVazia(respostaParticipacoes);
 
     const dadosSetores =
-        await converterResposta(respostaSetores);
+        await converterListaOuVazia(respostaSetores);
+
+    const dadosCargos =
+        await converterListaOuVazia(respostaCargos);
 
     const dadosColaboradores =
         await converterResposta(respostaColaboradores);
-
-    const dadosCargos = respostaCargos.ok
-        ? await converterResposta(respostaCargos)
-        : {};
 
 
     //----------------- ORGANIZAR AVALIAÇÕES ----------------------//

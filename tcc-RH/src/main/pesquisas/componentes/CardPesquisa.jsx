@@ -326,10 +326,11 @@ function contarParticipantesConcluidos(participacoesPesquisa) {
 
 function CardPesquisa({
     pesquisa,
-    participacoes,
-    pesquisaSetores,
-    pesquisaCargos,
-    colaboradores
+    participacoes = [],
+    pesquisaSetores = [],
+    pesquisaCargos = [],
+    colaboradores = [],
+    onVerAcompanhamento
 }) {
 
     const situacao = interpretarSituacaoPesquisa(pesquisa);
@@ -515,11 +516,11 @@ function CardPesquisa({
             </div>
 
 
-            {/* ANONIMATO */}
+            {/* RODAPÉ: ANONIMATO E ACOMPANHAMENTO */}
 
             <div className="rodape-card-pesquisa">
 
-                <span>
+                <span className="texto-anonimato-pesquisa">
 
                     {Number(pesquisa.anonimo) === 1
                         ? 'Pesquisa anônima'
@@ -527,6 +528,18 @@ function CardPesquisa({
                     }
 
                 </span>
+
+                <button
+                    type="button"
+                    className="botao-acompanhamento-pesquisa"
+                    onClick={onVerAcompanhamento}
+                >
+
+                    Ver acompanhamento
+
+                    <span aria-hidden="true">→</span>
+
+                </button>
 
             </div>
 

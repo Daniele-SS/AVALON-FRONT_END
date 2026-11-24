@@ -214,8 +214,54 @@
 }
 
 .rodape-card-pesquisa span {
+    color: #f5f6f7;
+    font-size: 12px;
+}
+
+
+.rodape-card-pesquisa {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding-top: 14px;
+    border-top: 1px solid #EAECF0;
+}
+
+.texto-anonimato-pesquisa {
     color: #667085;
     font-size: 12px;
 }
 
+.botao-acompanhamento-pesquisa {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    width: auto;
+    padding: 9px 12px;
+
+    background-color: #0050CB;
+    color: #FFFFFF;
+
+    border: none;
+    border-radius: 6px;
+
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.botao-acompanhamento-pesquisa:hover {
+    background-color: #003366;
+}
+
+.botao-acompanhamento-pesquisa span {
+    font-size: 16px;
+    line-height: 1;
+}
 

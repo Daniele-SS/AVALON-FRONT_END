@@ -1,5 +1,5 @@
 
-//----------------- API DO MOTOR DE REGRAS -----------------//
+ //----------------- API DO MOTOR DE REGRAS -----------------//
 
 const API = 'http://localhost:8080/v1/senai/avalon';
 
@@ -36,12 +36,14 @@ async function verificarResposta(resposta, mensagemErro) {
 
     }
 
-    const dados = await resposta.json();
+    const dados = await resposta.json().catch(() => ({}));
 
     if (!resposta.ok || dados.status === false) {
 
         throw new Error(
-            dados.message || mensagemErro
+            dados.message ||
+            dados.mensagem ||
+            mensagemErro
         );
 
     }
@@ -62,17 +64,59 @@ async function buscarDadosMotorRegras() {
         }
     );
 
+
+    //----------------- VERIFICAR AUTENTICAÇÃO ----------------//
+
+    if (resposta.status === 401) {
+
+        localStorage.removeItem('access_token');
+
+        throw new Error(
+            'Sua autenticação expirou. Faça login novamente.'
+        );
+
+    }
+
+
+    //----------------- TRATAR MOTOR DE REGRAS VAZIO -----------//
+
+    // Quando não existem regras cadastradas, a API pode
+    // retornar 404. Para o cadastro de avaliação, isso
+    // significa que não há regras disponíveis para selecionar.
+
+    if (resposta.status === 404) {
+
+        console.log(
+            'Nenhuma regra cadastrada no Motor de Regras.'
+        );
+
+        return [];
+
+    }
+
+
+    //----------------- VERIFICAR OUTROS ERROS ----------------//
+
     const dados = await verificarResposta(
         resposta,
         'Não foi possível carregar as regras do motor.'
     );
+
+
+    //----------------- ORGANIZAR REGRAS ----------------------//
 
     const regras =
         dados.response?.motorRegras ??
         dados.motorRegras ??
         [];
 
+
+    //----------------- CONFERIR DADOS ------------------------//
+
     console.log('Regras carregadas:', regras);
+
+
+    //----------------- RETORNAR REGRAS -----------------------//
 
     return regras;
 

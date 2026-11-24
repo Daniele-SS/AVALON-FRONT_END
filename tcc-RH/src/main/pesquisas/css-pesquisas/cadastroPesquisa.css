@@ -16,34 +16,20 @@
 
 
 /* =========================================================
-   CABEÇALHO
+   CABEÇALHO DA PESQUISA
 ========================================================= */
 
 .cabecalho-nova-pesquisa {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 13px;
-
     width: 100%;
     min-height: 129px;
     margin-bottom: 2px;
 }
 
-.cabecalho-nova-pesquisa h1 {
-    margin: 0;
-
-    color: #172033;
-    font-size: 22px;
-    font-weight: 600;
-}
-
-.cabecalho-nova-pesquisa p {
-    margin: 8px 0 0;
-
-    color: #52586B;
-    font-size: 13px;
-    line-height: 19px;
+/* Mantém o card compartilhado ocupando toda a largura */
+.cabecalho-nova-pesquisa .card-tiulo {
+    width: 100%;
+    height: 129px;
+    min-height: 129px;
 }
 
 
@@ -56,12 +42,16 @@
     align-items: center;
     gap: 8px;
 
+    margin: 0;
+
     font-size: 12px;
 }
 
 .caminho-cadastro-pesquisa button {
     width: auto;
     height: auto;
+
+    margin: 0;
     padding: 0;
 
     border: none;
@@ -79,11 +69,11 @@
     text-decoration: underline;
 }
 
-.caminho-cadastro-pesquisa span {
+.caminho-cadastro-pesquisa .seta {
     color: #9AA3B2;
 }
 
-.caminho-cadastro-pesquisa strong {
+.caminho-cadastro-pesquisa .pagina-atual-pesquisa {
     color: #131B2E;
     font-weight: 500;
 }

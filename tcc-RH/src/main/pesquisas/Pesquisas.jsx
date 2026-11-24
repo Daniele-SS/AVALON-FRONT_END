@@ -1,5 +1,5 @@
 
- //----------------- IMPORTAÇÕES -----------------------------//
+/----------------- IMPORTAÇÕES -----------------------------/
 
 import { useEffect, useState } from 'react';
 
@@ -10,10 +10,18 @@ import AlertaNotificacao from '../../componentes/alerta/Alerta.jsx';
 
 import CardPesquisa from './componentes/CardPesquisa.jsx';
 import CadastroPesquisa from './CadastroPesquisa.jsx';
+import AcompanhamentoPesquisa from './AcompanhamentoPesquisa.jsx';
 
 import {
     buscarDadosPesquisas
 } from './servicos/pesquisasApi.js';
+
+// APIs utilizadas no acompanhamento
+import {
+    listarPerguntas,
+    listarRespostas,
+    listarPesquisaResultados
+} from './servicos/acompanhamentoPesquisaApi.js';
 
 import montarInformacoesPesquisas from './funcoes/pesquisa/montarInformacoesPesquisas.js';
 
@@ -30,19 +38,38 @@ import CadastroIcon from './img/cadastro-icon.svg';
 
 function Pesquisas() {
 
+
+    //----------------- ESTADOS -----------------------------//
+
     const [pesquisas, setPesquisas] = useState([]);
     const [participacoes, setParticipacoes] = useState([]);
     const [pesquisaSetores, setPesquisaSetores] = useState([]);
     const [pesquisaCargos, setPesquisaCargos] = useState([]);
     const [colaboradores, setColaboradores] = useState([]);
 
+    // Dados utilizados no acompanhamento
+    const [perguntas, setPerguntas] = useState([]);
+    const [respostas, setRespostas] = useState([]);
+    const [pesquisaResultados, setPesquisaResultados] = useState([]);
+
+    // Carregamento e erro da listagem
     const [carregando, setCarregando] = useState(true);
     const [erro, setErro] = useState('');
+
+    // Carregamento e erro dos resultados
+    const [carregandoAcompanhamento, setCarregandoAcompanhamento] = useState(false);
+    const [erroAcompanhamento, setErroAcompanhamento] = useState('');
 
     const [alertaNotificacao, setAlertaNotificacao] = useState(null);
 
     // Controla se a tela de cadastro está aberta.
     const [telaCadastro, setTelaCadastro] = useState(false);
+
+    // Controla a tela atual da funcionalidade.
+    const [telaAtual, setTelaAtual] = useState('lista');
+
+    // Guarda a pesquisa selecionada para acompanhamento.
+    const [pesquisaSelecionada, setPesquisaSelecionada] = useState(null);
 
     // Atualiza os dados da listagem após cadastrar.
     const [atualizarLista, setAtualizarLista] = useState(0);
@@ -54,7 +81,7 @@ function Pesquisas() {
     });
 
 
-    //----------------- CARREGAR DADOS ----------------------//
+    //----------------- CARREGAR DADOS DA LISTAGEM -----------//
 
     useEffect(() => {
 
@@ -67,11 +94,11 @@ function Pesquisas() {
 
                 const dados = await buscarDadosPesquisas();
 
-                setPesquisas(dados.pesquisas);
-                setParticipacoes(dados.participacoes);
-                setPesquisaSetores(dados.pesquisaSetores);
-                setPesquisaCargos(dados.pesquisaCargos);
-                setColaboradores(dados.colaboradores);
+                setPesquisas(dados.pesquisas || []);
+                setParticipacoes(dados.participacoes || []);
+                setPesquisaSetores(dados.pesquisaSetores || []);
+                setPesquisaCargos(dados.pesquisaCargos || []);
+                setColaboradores(dados.colaboradores || []);
 
             } catch (error) {
 
@@ -92,6 +119,67 @@ function Pesquisas() {
     }, [atualizarLista]);
 
 
+    //----------------- CARREGAR DADOS DO ACOMPANHAMENTO ----//
+
+    useEffect(() => {
+
+        // Só busca os dados quando uma pesquisa estiver selecionada
+        // e a tela de acompanhamento estiver aberta.
+        if (
+            telaAtual !== 'acompanhamento' ||
+            !pesquisaSelecionada
+        ) {
+            return;
+        }
+
+        async function carregarDadosAcompanhamento() {
+
+            try {
+
+                setCarregandoAcompanhamento(true);
+                setErroAcompanhamento('');
+
+                // Busca perguntas, respostas e resultados consolidados.
+                const [
+                    perguntasApi,
+                    respostasApi,
+                    resultadosApi
+                ] = await Promise.all([
+                    listarPerguntas(),
+                    listarRespostas(),
+                    listarPesquisaResultados()
+                ]);
+
+                // Guarda os dados recebidos das APIs.
+                setPerguntas(perguntasApi || []);
+                setRespostas(respostasApi || []);
+                setPesquisaResultados(resultadosApi || []);
+
+            } catch (error) {
+
+                console.error(
+                    'Erro ao carregar dados do acompanhamento:',
+                    error
+                );
+
+                setErroAcompanhamento(
+                    error.message ||
+                    'Erro ao carregar os resultados da pesquisa.'
+                );
+
+            } finally {
+
+                setCarregandoAcompanhamento(false);
+
+            }
+
+        }
+
+        carregarDadosAcompanhamento();
+
+    }, [telaAtual, pesquisaSelecionada]);
+
+
     //----------------- NOVA PESQUISA -----------------------//
 
     function novaPesquisa() {
@@ -107,6 +195,30 @@ function Pesquisas() {
     function voltarParaListagem() {
 
         setTelaCadastro(false);
+        setTelaAtual('lista');
+        setPesquisaSelecionada(null);
+
+        // Limpa os dados do acompanhamento anterior.
+        setPerguntas([]);
+        setRespostas([]);
+        setPesquisaResultados([]);
+        setErroAcompanhamento('');
+
+    }
+
+
+    //----------------- ABRIR ACOMPANHAMENTO ----------------//
+
+    function abrirAcompanhamento(pesquisa) {
+
+        // Limpa os dados anteriores antes de abrir outra pesquisa.
+        setPerguntas([]);
+        setRespostas([]);
+        setPesquisaResultados([]);
+        setErroAcompanhamento('');
+
+        setPesquisaSelecionada(pesquisa);
+        setTelaAtual('acompanhamento');
 
     }
 
@@ -116,6 +228,7 @@ function Pesquisas() {
     function pesquisaCadastrada() {
 
         setTelaCadastro(false);
+        setTelaAtual('lista');
 
         setAlertaNotificacao({
             tipo: 'sucesso',
@@ -169,11 +282,43 @@ function Pesquisas() {
     }
 
 
+    //----------------- TELA DE ACOMPANHAMENTO --------------//
+
+    if (telaAtual === 'acompanhamento' && pesquisaSelecionada) {
+
+        return (
+
+            <AcompanhamentoPesquisa
+                pesquisa={pesquisaSelecionada}
+                participacoes={participacoes}
+                pesquisaSetores={pesquisaSetores}
+                pesquisaCargos={pesquisaCargos}
+                colaboradores={colaboradores}
+
+                // Dados buscados pelas APIs de acompanhamento
+                perguntas={perguntas}
+                respostas={respostas}
+                pesquisaResultados={pesquisaResultados}
+
+                // Estados de carregamento e erro
+                carregando={carregandoAcompanhamento}
+                erro={erroAcompanhamento}
+
+                onVoltar={voltarParaListagem}
+            />
+
+        );
+
+    }
+
+
     //----------------- RENDERIZAR LISTAGEM ----------------//
 
     return (
 
         <div className="pagina-pesquisas">
+
+            {/* CABEÇALHO */}
 
             <BotaoCadastro
                 titulo="Pesquisas"
@@ -291,6 +436,9 @@ function Pesquisas() {
                                 pesquisaSetores={pesquisaSetores}
                                 pesquisaCargos={pesquisaCargos}
                                 colaboradores={colaboradores}
+                                onVerAcompanhamento={() =>
+                                    abrirAcompanhamento(pesquisa)
+                                }
                             />
 
                         ))}
@@ -319,5 +467,8 @@ function Pesquisas() {
     );
 
 }
+
+
+//----------------- EXPORTAÇÃO ------------------------------//
 
 export default Pesquisas;

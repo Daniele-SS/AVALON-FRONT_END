@@ -1,9 +1,11 @@
 
 const API_URL = 'http://localhost:8080/v1/senai/avalon';
 
-//-------------------- REQUISIÇÃO --------------------//
+
+//----------------- REQUISIÇÃO PADRÃO ------------------------//
 
 async function requisicao(endpoint, metodo = 'GET', dados = null) {
+
     const token = localStorage.getItem('access_token');
 
     const resposta = await fetch(`${API_URL}${endpoint}`, {
@@ -39,33 +41,44 @@ async function requisicao(endpoint, metodo = 'GET', dados = null) {
     return resultado;
 }
 
-//-------------------- LISTAR SETORES --------------------//
+
+//----------------- BUSCAR SETORES --------------------------//
 
 export async function buscarSetoresPesquisa() {
+
     const resultado = await requisicao('/setor');
 
     return resultado.response?.setores || [];
+
 }
 
-//-------------------- LISTAR CARGOS --------------------//
+
+//----------------- BUSCAR CARGOS --------------------------//
 
 export async function buscarCargosPesquisa() {
+
     const resultado = await requisicao('/cargo');
 
     return resultado.response?.cargos || [];
+
 }
 
-//-------------------- LISTAR COLABORADORES --------------------//
+
+//----------------- BUSCAR COLABORADORES --------------------//
 
 export async function buscarColaboradoresPesquisa() {
+
     const resultado = await requisicao('/colaborador');
 
     return resultado.response?.colaborador || [];
+
 }
 
-//-------------------- EXTRAIR ID DA PESQUISA --------------------//
+
+//----------------- EXTRAIR ID DA PESQUISA -----------------//
 
 function extrairIdPesquisa(resultado) {
+
     const resposta = resultado?.response;
 
     return (
@@ -75,11 +88,61 @@ function extrairIdPesquisa(resultado) {
         resultado?.pesquisa?.id ||
         resultado?.id
     );
+
 }
 
-//-------------------- CADASTRAR PESQUISA COMPLETA --------------------//
 
-export async function cadastrarPesquisaCompleta(dadosPesquisa, perguntas) {
+//----------------- FILTRAR PÚBLICO DA PESQUISA ------------//
+
+function filtrarColaboradoresPublico(dadosPesquisa, colaboradores) {
+
+    const colaboradoresAtivos = colaboradores.filter(
+        colaborador => colaborador.status === 'Ativo'
+    );
+
+    // Pesquisa destinada a todos os colaboradores ativos
+    if (dadosPesquisa.publico_selecionado === 'TODOS') {
+        return colaboradoresAtivos;
+    }
+
+    // Pesquisa destinada aos setores selecionados
+    if (dadosPesquisa.publico_selecionado === 'SETOR') {
+
+        const setoresSelecionados = dadosPesquisa.setores.map(Number);
+
+        return colaboradoresAtivos.filter(colaborador =>
+            colaborador.setor?.some(setor =>
+                setoresSelecionados.includes(Number(setor.id))
+            )
+        );
+
+    }
+
+    // Pesquisa destinada aos cargos selecionados
+    if (dadosPesquisa.publico_selecionado === 'CARGO') {
+
+        const cargosSelecionados = dadosPesquisa.cargos.map(Number);
+
+        return colaboradoresAtivos.filter(colaborador =>
+            cargosSelecionados.includes(Number(colaborador.cargo?.id))
+        );
+
+    }
+
+    return [];
+
+}
+
+
+//----------------- CADASTRAR PESQUISA COMPLETA -------------//
+
+export async function cadastrarPesquisaCompleta(
+    dadosPesquisa,
+    perguntas,
+    colaboradores
+) {
+
+    //----------------- CADASTRAR PESQUISA ------------------//
 
     const resultadoPesquisa = await requisicao(
         '/pesquisa',
@@ -95,8 +158,11 @@ export async function cadastrarPesquisaCompleta(dadosPesquisa, perguntas) {
         );
     }
 
-    // Cadastra as perguntas na ordem definida.
+
+    //----------------- CADASTRAR PERGUNTAS -----------------//
+
     for (let indice = 0; indice < perguntas.length; indice++) {
+
         const pergunta = perguntas[indice];
 
         await requisicao('/pergunta', 'POST', {
@@ -106,27 +172,65 @@ export async function cadastrarPesquisaCompleta(dadosPesquisa, perguntas) {
             ordem: indice + 1,
             obrigatorio: Number(pergunta.obrigatorio)
         });
+
     }
 
-    // Vincula os setores selecionados.
+
+    //----------------- VINCULAR SETORES --------------------//
+
     if (dadosPesquisa.publico_selecionado === 'SETOR') {
+
         for (const idSetor of dadosPesquisa.setores) {
+
             await requisicao('/pesquisa_setor', 'POST', {
                 id_pesquisa: Number(idPesquisa),
                 id_setor: Number(idSetor)
             });
+
         }
+
     }
 
-    // Vincula os cargos selecionados.
+
+    //----------------- VINCULAR CARGOS ---------------------//
+
     if (dadosPesquisa.publico_selecionado === 'CARGO') {
+
         for (const idCargo of dadosPesquisa.cargos) {
+
             await requisicao('/pesquisa_cargo', 'POST', {
                 id_pesquisa: Number(idPesquisa),
                 id_cargo: Number(idCargo)
             });
+
         }
+
     }
 
+
+    //----------------- FILTRAR COLABORADORES ---------------//
+
+    const colaboradoresPublico = filtrarColaboradoresPublico(
+        dadosPesquisa,
+        colaboradores || []
+    );
+
+
+    //----------------- CRIAR PARTICIPAÇÕES -----------------//
+
+    for (const colaborador of colaboradoresPublico) {
+
+        await requisicao('/participacao', 'POST', {
+            id_pesquisa: Number(idPesquisa),
+            id_colaborador: Number(colaborador.id),
+            status: 0
+        });
+
+    }
+
+
+    //----------------- RETORNAR ID DA PESQUISA -------------//
+
     return idPesquisa;
+
 }

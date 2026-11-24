@@ -19,19 +19,45 @@ export async function buscarDadosPesquisas() {
     };
 
     const rotas = [
-        `${API_URL}/pesquisa`,
-        `${API_URL}/participacao`,
-        `${API_URL}/pesquisa_setor`,
-        `${API_URL}/pesquisa_cargo`,
-        `${API_URL}/colaborador`
+        {
+            nome: 'pesquisas',
+            url: `${API_URL}/pesquisa`,
+            campo: 'pesquisas',
+            aceitarVazio: true
+        },
+        {
+            nome: 'participacoes',
+            url: `${API_URL}/participacao`,
+            campo: 'participacoes',
+            aceitarVazio: true
+        },
+        {
+            nome: 'pesquisaSetores',
+            url: `${API_URL}/pesquisa_setor`,
+            campo: 'pesquisa_setores',
+            aceitarVazio: true
+        },
+        {
+            nome: 'pesquisaCargos',
+            url: `${API_URL}/pesquisa_cargo`,
+            campo: 'pesquisaCargos',
+            aceitarVazio: true
+        },
+        {
+            nome: 'colaboradores',
+            url: `${API_URL}/colaborador`,
+            campo: 'colaborador',
+            aceitarVazio: false
+        }
     ];
 
     const respostas = await Promise.all(
 
         rotas.map(async (rota) => {
 
-            const resposta = await fetch(rota, configuracao);
+            const resposta = await fetch(rota.url, configuracao);
 
+            // Sessão expirada
             if (resposta.status === 401) {
 
                 localStorage.removeItem('access_token');
@@ -42,10 +68,22 @@ export async function buscarDadosPesquisas() {
 
             }
 
+            // Não existem registros para listar
+            if (resposta.status === 404 && rota.aceitarVazio) {
+
+                return {
+                    response: {
+                        [rota.campo]: []
+                    }
+                };
+
+            }
+
+            // Outros erros continuam sendo informados
             if (!resposta.ok) {
 
                 throw new Error(
-                    `Erro ao buscar dados. Código: ${resposta.status}`
+                    `Erro ao buscar ${rota.nome}. Código: ${resposta.status}`
                 );
 
             }

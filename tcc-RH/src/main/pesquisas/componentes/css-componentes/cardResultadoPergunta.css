@@ -1,0 +1,138 @@
+
+/*----------------- CARD DA PERGUNTA -----------------*/
+
+.card-resultado-pergunta {
+    width: 100%;
+    box-sizing: border-box;
+
+    background-color: #FFFFFF;
+
+    border: 1px solid #E5E7EB;
+    border-radius: 12px;
+
+    overflow: hidden;
+}
+
+
+/*----------------- RESULTADO DISCURSIVO -----------------*/
+
+.resultado-discursivo-pesquisa {
+    width: 100%;
+    box-sizing: border-box;
+
+    padding: 24px;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 20px;
+}
+
+
+/*----------------- CABEÇALHO DISCURSIVO -----------------*/
+
+.cabecalho-discursivo-pesquisa {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+
+    gap: 16px;
+}
+
+
+.cabecalho-discursivo-pesquisa h3 {
+    margin: 0;
+
+    color: #001F3F;
+
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.5;
+}
+
+
+/*----------------- TIPO DA PERGUNTA -----------------*/
+
+.tipo-pergunta-pesquisa {
+    flex-shrink: 0;
+
+    padding: 6px 12px;
+
+    background-color: #EAF2FF;
+
+    border-radius: 20px;
+
+    color: #1D4ED8;
+
+    font-size: 12px;
+    font-weight: 500;
+}
+
+
+/*----------------- LISTA DE RESPOSTAS -----------------*/
+
+.lista-respostas-discursivas {
+    display: flex;
+    flex-direction: column;
+
+    gap: 12px;
+}
+
+
+/*----------------- RESPOSTA INDIVIDUAL -----------------*/
+
+.resposta-discursiva-pesquisa {
+    padding: 14px 16px;
+
+    background-color: #F8F9FF;
+
+    border: 1px solid #E5E7EB;
+    border-radius: 8px;
+
+    color: #374151;
+
+    font-size: 14px;
+    line-height: 1.6;
+
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
+}
+
+
+/*----------------- SEM RESPOSTAS -----------------*/
+
+.sem-respostas-discursivas {
+    margin: 0;
+
+    padding: 16px 0;
+
+    color: #6B7280;
+
+    font-size: 14px;
+}
+
+
+/*----------------- TIPO NÃO IDENTIFICADO -----------------*/
+
+.resultado-tipo-desconhecido {
+    padding: 24px;
+}
+
+
+.resultado-tipo-desconhecido h3 {
+    margin: 0 0 12px;
+
+    color: #001F3F;
+
+    font-size: 18px;
+    font-weight: 600;
+}
+
+
+.resultado-tipo-desconhecido p {
+    margin: 0;
+
+    color: #6B7280;
+
+    font-size: 14px;
+}

@@ -1,0 +1,246 @@
+
+/* =========================================================
+   PÁGINA DE ACOMPANHAMENTO
+========================================================= */
+
+.pagina-acompanhamento-pesquisa {
+    display: flex;
+    flex-direction: column;
+
+    width: 100%;
+    padding-bottom: 40px;
+
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   CARD DO CABEÇALHO
+========================================================= */
+
+.cabecalho-acompanhamento-pesquisa {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 18px;
+
+    width: 100%;
+    min-height: 129px;
+
+    padding: 22px 24px;
+    margin-bottom: 23px;
+
+    background: #FFFFFF;
+    border: none;
+    border-radius: 8px;
+
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   CAMINHO DE NAVEGAÇÃO
+========================================================= */
+
+.caminho-acompanhamento-pesquisa {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    margin: 0;
+
+    font-size: 12px;
+}
+
+
+/* Página atual */
+
+.pagina-atual-acompanhamento {
+    color: #131B2E;
+    font-weight: 500;
+}
+
+
+/* Seta */
+
+.seta-acompanhamento {
+    color: #9AA3B2;
+}
+
+
+/* Página anterior */
+
+.caminho-acompanhamento-pesquisa button {
+    width: auto;
+    height: auto;
+
+    margin: 0;
+    padding: 0;
+
+    border: none;
+    background: transparent;
+
+    color: #434655;
+    font-size: 12px;
+    font-weight: 500;
+
+    cursor: pointer;
+}
+
+.caminho-acompanhamento-pesquisa button:hover {
+    color: #2452E8;
+    text-decoration: underline;
+}
+
+
+/* =========================================================
+   NOME DA PESQUISA
+========================================================= */
+
+.nome-pesquisa-acompanhamento {
+    margin: 0;
+
+    color: #172033;
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 1.4;
+
+    overflow-wrap: anywhere;
+}
+
+
+/* =========================================================
+   MINICARDS DO ACOMPANHAMENTO
+========================================================= */
+
+.minicards-acompanhamento-pesquisa {
+    display: flex;
+    align-items: stretch;
+    gap: 20px;
+
+    width: 100%;
+    margin-bottom: 32px;
+
+    box-sizing: border-box;
+}
+
+
+/* Cada minicard ocupa o mesmo espaço */
+
+.minicards-acompanhamento-pesquisa > * {
+    flex: 1;
+    min-width: 0;
+}
+
+
+/* =========================================================
+   SEÇÃO DE RESULTADOS
+========================================================= */
+
+.resultados-acompanhamento-pesquisa {
+    display: flex;
+    flex-direction: column;
+
+    width: 100%;
+
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   TÍTULO DOS RESULTADOS
+========================================================= */
+
+.titulo-resultados-pesquisa {
+    margin: 0 0 28px;
+
+    color: #131B2E;
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+
+/* =========================================================
+   LISTA DE PERGUNTAS
+========================================================= */
+
+.lista-resultados-perguntas {
+    display: flex;
+    flex-direction: column;
+
+    width: 100%;
+
+    gap: 28px;
+
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   AVISO DE ANONIMATO
+========================================================= */
+
+.aviso-anonimato-pesquisa {
+    display: flex;
+    flex-direction: column;
+
+    width: 100%;
+
+    gap: 8px;
+
+    padding: 24px;
+
+    background: #FFFFFF;
+
+    border: 1px solid #E5E7EB;
+    border-radius: 12px;
+
+    box-sizing: border-box;
+}
+
+
+.aviso-anonimato-pesquisa h3 {
+    margin: 0;
+
+    color: #001F3F;
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.5;
+}
+
+
+.aviso-anonimato-pesquisa p {
+    margin: 0;
+
+    color: #6B7280;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+
+/* =========================================================
+   PESQUISA SEM PERGUNTAS
+========================================================= */
+
+.sem-perguntas-pesquisa {
+    padding: 24px;
+
+    background: #FFFFFF;
+
+    border: 1px solid #E5E7EB;
+    border-radius: 12px;
+
+    box-sizing: border-box;
+}
+
+
+.sem-perguntas-pesquisa p {
+    margin: 0;
+
+    color: #6B7280;
+    font-size: 14px;
+    line-height: 1.6;
+}
