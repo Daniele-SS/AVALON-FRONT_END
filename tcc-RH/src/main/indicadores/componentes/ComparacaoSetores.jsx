@@ -83,15 +83,21 @@ function ComparacaoSetores({
                     <strong>Dados insuficientes para comparação</strong>
 
                     <p>
-                        São necessários pelo menos 5 participantes distintos
+                        São necessários pelo menos 1 participantes distintos
                         por setor para exibir os resultados.
                     </p>
                 </div>
             ) : (
                 <div className="comparacao-setores-lista">
                     {dados.map((setor) => {
-                        const media = Number(setor.media);
-                        const mediaValida = Number.isFinite(media);
+const media =
+    setor.media === null ||
+    setor.media === undefined ||
+    setor.media === ''
+        ? NaN
+        : Number(setor.media);
+
+const mediaValida = Number.isFinite(media);
 
                         const abaixoDaMeta =
                             mediaValida && media < parametroMinimo;

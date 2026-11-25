@@ -53,10 +53,13 @@
     gap: 12px;
 }
 
-/* PAINÉIS */
 
+/* Permite que os painéis cresçam conforme o conteúdo */
 .painel-indicadores {
     box-sizing: border-box;
     width: 100%;
     min-width: 0;
+    height: auto;
+    min-height: 0;
+    overflow: visible;
 }

@@ -564,70 +564,79 @@ function Indicadores() {
        EVOLUÇÃO HISTÓRICA
     ===================================================== */
 
-const evolucao = useMemo(() => {
-    if (ehGestor && !idSetorSelecionado) {
+    const evolucao = useMemo(() => {
+        if (ehGestor && !idSetorSelecionado) {
+            return [];
+        }
+
+        return calcularEvolucao({
+            avaliacoes: dados.avaliacoes,
+            participacoes: dados.participacoes,
+            respostas: dados.respostas,
+            fatores,
+            idSetor: idSetorSelecionado
+        });
+    }, [
+        dados.avaliacoes,
+        dados.participacoes,
+        dados.respostas,
+        fatores,
+        idSetorSelecionado,
+        ehGestor
+    ]);
+
+/* =====================================================
+   COMPARAÇÃO POR SETOR
+
+   RH: compara todos os setores.
+   Gestor: compara somente o próprio setor.
+
+   Usa todas as avaliações, participações e respostas.
+   ===================================================== */
+
+const comparacaoSetores = useMemo(() => {
+    const fator = fatores.find(
+        item =>
+            normalizarTexto(item.nome) ===
+            normalizarTexto(fatorSelecionado)
+    );
+
+    if (
+        !fator ||
+        (ehGestor && !setorSelecionado)
+    ) {
         return [];
     }
 
-    return calcularEvolucao({
+    const setoresParaComparacao = ehGestor
+        ? [setorSelecionado]
+        : dados.setores;
+
+    return calcularComparacaoSetores({
+        setores: setoresParaComparacao,
+
+        // IMPORTANTE: envia todas as avaliações.
         avaliacoes: dados.avaliacoes,
+
+        // IMPORTANTE: envia todas as participações.
         participacoes: dados.participacoes,
+
+        // Envia todas as respostas.
         respostas: dados.respostas,
-        fatores,
-        idSetor: idSetorSelecionado
+
+        // Fator selecionado no gráfico.
+        idFator: fator.id
     });
 }, [
+    dados.setores,
     dados.avaliacoes,
     dados.participacoes,
     dados.respostas,
     fatores,
-    idSetorSelecionado,
-    ehGestor
+    fatorSelecionado,
+    ehGestor,
+    setorSelecionado
 ]);
-
-    /* =====================================================
-       COMPARAÇÃO POR SETOR
-
-       RH: compara todos os setores.
-       Gestor: recebe somente o próprio setor.
-    ===================================================== */
-
-    const comparacaoSetores = useMemo(() => {
-        const fator = fatores.find(
-            item =>
-                normalizarTexto(item.nome) ===
-                normalizarTexto(fatorSelecionado)
-        );
-
-        if (
-            !fator ||
-            !ultimaAvaliacao ||
-            (ehGestor && !setorSelecionado)
-        ) {
-            return [];
-        }
-
-        const setoresParaComparacao = ehGestor
-            ? [setorSelecionado]
-            : dados.setores;
-
-        return calcularComparacaoSetores({
-            setores: setoresParaComparacao,
-            participacoes: participacoesUltimaAvaliacao,
-            respostas: dados.respostas,
-            idAvaliacao: ultimaAvaliacao.id,
-            idFator: fator.id
-        });
-    }, [
-        dados.setores,
-        dados.respostas,
-        fatores,
-        fatorSelecionado,
-        ultimaAvaliacao,
-        participacoesUltimaAvaliacao,
-        ehGestor,
-        setorSelecionado
-    ]);
 
     /* =====================================================
        MÉDIAS DOS CARDS
