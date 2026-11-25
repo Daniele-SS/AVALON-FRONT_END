@@ -1,26 +1,62 @@
 
+import { useEffect, useRef, useState } from 'react';
 import './css-componentes/graficoEvolucao.css';
 
+/* =========================================================
+   CONFIGURAÇÕES DO GRÁFICO
+========================================================= */
+
 const LARGURA = 1000;
-const ALTURA = 360;
+const ALTURA = 390;
 
 const MARGEM = {
-    topo: 24,
-    direita: 24,
-    baixo: 48,
-    esquerda: 48
+    topo: 30,
+    direita: 35,
+    baixo: 78,
+    esquerda: 60
 };
 
-const CORES = [
-    '#26A88D',
-    '#4D7CFE',
-    '#E69A2D',
-    '#8B5CF6',
-    '#E45D8C',
-    '#169BC1',
-    '#7A9A35',
-    '#D36B36'
+/* =========================================================
+   FATORES PSICOSSOCIAIS
+========================================================= */
+
+const FATORES_GRAFICO = [
+    {
+        nome: 'Comunicação',
+        cor: '#169BC1'
+    },
+    {
+        nome: 'Reconhecimento',
+        cor: '#E45D8C'
+    },
+    {
+        nome: 'Carga de Trabalho',
+        cor: '#0057D9'
+    },
+    {
+        nome: 'Autonomia',
+        cor: '#7A9A35'
+    }
 ];
+
+const MESES = [
+    'Janeiro',
+    'Fevereiro',
+    'Março',
+    'Abril',
+    'Maio',
+    'Junho',
+    'Julho',
+    'Agosto',
+    'Setembro',
+    'Outubro',
+    'Novembro',
+    'Dezembro'
+];
+
+/* =========================================================
+   FUNÇÕES AUXILIARES
+========================================================= */
 
 function normalizarTexto(texto = '') {
     return String(texto)
@@ -31,7 +67,11 @@ function normalizarTexto(texto = '') {
 }
 
 function converterNumero(valor) {
-    if (valor === null || valor === undefined || valor === '') {
+    if (
+        valor === null ||
+        valor === undefined ||
+        valor === ''
+    ) {
         return null;
     }
 
@@ -39,30 +79,41 @@ function converterNumero(valor) {
         String(valor).replace(',', '.')
     );
 
-    if (!Number.isFinite(numero) || numero < 1 || numero > 5) {
+    if (
+        !Number.isFinite(numero) ||
+        numero < 1 ||
+        numero > 5
+    ) {
         return null;
     }
 
     return numero;
 }
 
-function obterSatisfacao(item) {
-    return converterNumero(
-        item.satisfacao ??
-        item.satisfacaoGeral ??
-        item.mediaGeral ??
-        item.media_geral
-    );
-}
+/* =========================================================
+   OBTER MÉDIA DO FATOR
+========================================================= */
 
-function obterMediaFator(item, fator) {
-    const medias = item.medias ?? item.mediasFatores ?? {};
+function obterMediaFator(item, nomeFator) {
+    const medias =
+        item.medias ??
+        item.mediasFatores ??
+        item.medias_fatores ??
+        {};
+
+    /* Caso as médias venham como um array */
 
     if (Array.isArray(medias)) {
-        const mediaEncontrada = medias.find((media) => {
-            const nome = media.nome ?? media.fator ?? media.nomeFator;
+        const mediaEncontrada = medias.find(media => {
+            const nome =
+                media.nome ??
+                media.fator ??
+                media.nomeFator;
 
-            return normalizarTexto(nome) === normalizarTexto(fator);
+            return (
+                normalizarTexto(nome) ===
+                normalizarTexto(nomeFator)
+            );
         });
 
         return converterNumero(
@@ -72,9 +123,13 @@ function obterMediaFator(item, fator) {
         );
     }
 
-    const chaveEncontrada = Object.keys(medias).find((chave) => {
-        return normalizarTexto(chave) === normalizarTexto(fator);
-    });
+    /* Caso as médias venham como um objeto */
+
+    const chaveEncontrada = Object.keys(medias).find(
+        chave =>
+            normalizarTexto(chave) ===
+            normalizarTexto(nomeFator)
+    );
 
     if (!chaveEncontrada) {
         return null;
@@ -82,7 +137,10 @@ function obterMediaFator(item, fator) {
 
     const valor = medias[chaveEncontrada];
 
-    if (typeof valor === 'object' && valor !== null) {
+    if (
+        typeof valor === 'object' &&
+        valor !== null
+    ) {
         return converterNumero(
             valor.media ??
             valor.valor ??
@@ -93,124 +151,241 @@ function obterMediaFator(item, fator) {
     return converterNumero(valor);
 }
 
-function obterData(item) {
-    return (
+/* =========================================================
+   OBTER CHAVE DO MÊS
+========================================================= */
+
+function obterChaveMes(item) {
+    if (item.chaveMes) {
+        return String(item.chaveMes);
+    }
+
+    if (
+        item.id &&
+        /^\d{4}-\d{2}$/.test(String(item.id))
+    ) {
+        return String(item.id);
+    }
+
+    const data =
         item.data ??
         item.data_inicio ??
         item.dataInicio ??
         item.data_fim ??
         item.dataFim ??
-        item.mes ??
-        ''
+        '';
+
+    const texto = String(data);
+
+    /* Data no formato YYYY-MM-DD */
+
+    const dataISO = texto.match(
+        /^(\d{4})-(\d{2})/
     );
-}
-
-function formatarData(valor, indice) {
-    if (!valor) {
-        return `Aval. ${indice + 1}`;
-    }
-
-    const texto = String(valor);
-
-    // Data ISO: 2026-11-21 ou 2026-11-21T...
-    const dataISO = texto.match(/^(\d{4})-(\d{2})-(\d{2})/);
 
     if (dataISO) {
-        return `${dataISO[3]}/${dataISO[2]}`;
+        return `${dataISO[1]}-${dataISO[2]}`;
     }
 
-    // Data brasileira: 21/11/2026
-    const dataBR = texto.match(/^(\d{2})\/(\d{2})\/(\d{4})/);
+    /* Mês por extenso com ano */
 
-    if (dataBR) {
-        return `${dataBR[1]}/${dataBR[2]}`;
+    const mesTexto = String(item.mes ?? '');
+    const mesNormalizado = normalizarTexto(mesTexto);
+
+    const indiceMes = MESES.findIndex(
+        mes =>
+            mesNormalizado.includes(
+                normalizarTexto(mes)
+            )
+    );
+
+    const anoEncontrado = mesTexto.match(/\d{4}/);
+
+    if (
+        indiceMes >= 0 &&
+        anoEncontrado
+    ) {
+        return `${anoEncontrado[0]}-${String(
+            indiceMes + 1
+        ).padStart(2, '0')}`;
     }
 
-    // Se só houver mês/ano, encurta o nome do mês.
-    const meses = [
-        'janeiro', 'fevereiro', 'março', 'abril',
-        'maio', 'junho', 'julho', 'agosto',
-        'setembro', 'outubro', 'novembro', 'dezembro'
-    ];
+    return '';
+}
 
+/* =========================================================
+   OBTER RÓTULO DO MÊS
+========================================================= */
+
+function obterRotuloMes(item, indice) {
+    const chaveMes = obterChaveMes(item);
+
+    if (chaveMes) {
+        const [ano, mes] = chaveMes
+            .split('-')
+            .map(Number);
+
+        if (
+            Number.isFinite(ano) &&
+            mes >= 1 &&
+            mes <= 12
+        ) {
+            return {
+                mes: MESES[mes - 1],
+                ano: String(ano)
+            };
+        }
+    }
+
+    const texto = String(item.mes ?? '');
     const textoNormalizado = normalizarTexto(texto);
 
-    const mesEncontrado = meses.findIndex((mes) => {
-        return textoNormalizado.includes(normalizarTexto(mes));
-    });
+    const indiceMes = MESES.findIndex(
+        mes =>
+            textoNormalizado.includes(
+                normalizarTexto(mes)
+            )
+    );
 
-    if (mesEncontrado >= 0) {
-        const ano = texto.match(/\d{4}/)?.[0] ?? '';
-
-        return `${meses[mesEncontrado].slice(0, 3)}/${ano}`;
+    if (indiceMes >= 0) {
+        return {
+            mes: MESES[indiceMes],
+            ano: texto.match(/\d{4}/)?.[0] ?? ''
+        };
     }
 
-    return texto;
+    return {
+        mes: texto || `Mês ${indice + 1}`,
+        ano: ''
+    };
 }
+
+/* =========================================================
+   PREPARAR DADOS DO GRÁFICO
+========================================================= */
 
 function prepararDados(dados, fatores) {
     if (!Array.isArray(dados)) {
         return [];
     }
 
+    const fatoresDisponiveis =
+        Array.isArray(fatores) ? fatores : [];
+
     return dados
         .map((item, indiceOriginal) => {
-            const satisfacao = obterSatisfacao(item);
+            const mediasFatores =
+                FATORES_GRAFICO.map(fator => {
+                    const nomeDisponivel =
+                        fatoresDisponiveis.find(nome =>
+                            normalizarTexto(nome) ===
+                            normalizarTexto(fator.nome)
+                        );
 
-            const mediasFatores = fatores.map((fator) => {
-                return obterMediaFator(item, fator);
-            });
+                    return obterMediaFator(
+                        item,
+                        nomeDisponivel || fator.nome
+                    );
+                });
 
             return {
                 ...item,
                 indiceOriginal,
-                dataOriginal: obterData(item),
-                satisfacao,
+                chaveMes: obterChaveMes(item),
+                rotuloMes: obterRotuloMes(
+                    item,
+                    indiceOriginal
+                ),
                 mediasFatores
             };
         })
-        .filter((item) => {
-            const temSatisfacao = item.satisfacao !== null;
-
-            const temAlgumFator = item.mediasFatores.some((media) => {
-                return media !== null;
-            });
-
-            // Não reserva espaço para avaliações sem médias válidas.
-            return temSatisfacao || temAlgumFator;
-        })
+        .filter(item =>
+            item.mediasFatores.some(
+                media => media !== null
+            )
+        )
         .sort((a, b) => {
-            const dataA = new Date(a.dataOriginal).getTime();
-            const dataB = new Date(b.dataOriginal).getTime();
-
-            if (Number.isFinite(dataA) && Number.isFinite(dataB)) {
-                return dataA - dataB;
+            if (a.chaveMes && b.chaveMes) {
+                return a.chaveMes.localeCompare(
+                    b.chaveMes
+                );
             }
 
-            return a.indiceOriginal - b.indiceOriginal;
+            return (
+                a.indiceOriginal -
+                b.indiceOriginal
+            );
         });
 }
 
-function obterPosicaoX(indice, quantidade, larguraUtil) {
+/* =========================================================
+   POSIÇÕES DOS PONTOS
+========================================================= */
+
+function obterPosicaoX(
+    indice,
+    quantidade,
+    larguraUtil
+) {
     if (quantidade <= 1) {
-        return MARGEM.esquerda + larguraUtil / 2;
+        return (
+            MARGEM.esquerda +
+            larguraUtil / 2
+        );
     }
 
-    return MARGEM.esquerda +
-        (indice / (quantidade - 1)) * larguraUtil;
+    return (
+        MARGEM.esquerda +
+        (indice / (quantidade - 1)) *
+        larguraUtil
+    );
 }
 
 function obterPosicaoY(valor, alturaUtil) {
-    return MARGEM.topo +
-        ((5 - valor) / 4) * alturaUtil;
+    return (
+        MARGEM.topo +
+        ((5 - valor) / 4) *
+        alturaUtil
+    );
 }
 
-function criarSegmentos(serie, alturaUtil, larguraUtil, quantidade) {
+/* =========================================================
+   CRIAR CAMINHO DAS LINHAS
+========================================================= */
+
+function criarCaminho(
+    serie,
+    alturaUtil,
+    larguraUtil,
+    quantidade
+) {
+    const pontos = serie.valores.map(
+        (valor, indice) => {
+            if (valor === null) {
+                return null;
+            }
+
+            return {
+                x: obterPosicaoX(
+                    indice,
+                    quantidade,
+                    larguraUtil
+                ),
+                y: obterPosicaoY(
+                    valor,
+                    alturaUtil
+                ),
+                valor,
+                indice
+            };
+        }
+    );
+
     const segmentos = [];
     let segmentoAtual = [];
 
-    serie.valores.forEach((valor, indice) => {
-        if (valor === null) {
+    pontos.forEach(ponto => {
+        if (!ponto) {
             if (segmentoAtual.length > 0) {
                 segmentos.push(segmentoAtual);
                 segmentoAtual = [];
@@ -219,12 +394,7 @@ function criarSegmentos(serie, alturaUtil, larguraUtil, quantidade) {
             return;
         }
 
-        segmentoAtual.push({
-            x: obterPosicaoX(indice, quantidade, larguraUtil),
-            y: obterPosicaoY(valor, alturaUtil),
-            valor,
-            indice
-        });
+        segmentoAtual.push(ponto);
     });
 
     if (segmentoAtual.length > 0) {
@@ -234,15 +404,20 @@ function criarSegmentos(serie, alturaUtil, larguraUtil, quantidade) {
     return segmentos;
 }
 
-function criarCaminho(segmento) {
+function converterSegmentoEmCaminho(segmento) {
     return segmento
         .map((ponto, indice) => {
-            const comando = indice === 0 ? 'M' : 'L';
+            const comando =
+                indice === 0 ? 'M' : 'L';
 
             return `${comando} ${ponto.x} ${ponto.y}`;
         })
         .join(' ');
 }
+
+/* =========================================================
+   RÓTULOS DO EIXO X
+========================================================= */
 
 function obterIndicesRotulos(quantidade) {
     if (quantidade <= 6) {
@@ -256,12 +431,44 @@ function obterIndicesRotulos(quantidade) {
 
     for (let i = 0; i < 6; i++) {
         indices.add(
-            Math.round((i / 5) * (quantidade - 1))
+            Math.round(
+                (i / 5) * (quantidade - 1)
+            )
         );
     }
 
     return [...indices];
 }
+
+/* =========================================================
+   POSIÇÃO DO TOOLTIP
+========================================================= */
+
+function obterPosicaoTooltip(ponto) {
+    const larguraTooltip = 195;
+    const alturaTooltip = 100;
+
+    let x = ponto.x + 14;
+    let y = ponto.y - alturaTooltip - 12;
+
+    if (x + larguraTooltip > LARGURA - 5) {
+        x = ponto.x - larguraTooltip - 14;
+    }
+
+    if (y < 5) {
+        y = ponto.y + 14;
+    }
+
+    if (y + alturaTooltip > ALTURA - 5) {
+        y = ALTURA - alturaTooltip - 5;
+    }
+
+    return { x, y };
+}
+
+/* =========================================================
+   COMPONENTE PRINCIPAL
+========================================================= */
 
 export default function GraficoEvolucao({
     dados = [],
@@ -269,195 +476,465 @@ export default function GraficoEvolucao({
     setorSelecionado = 'Todos os setores',
     parametroMinimo = 2.5
 }) {
-    const dadosValidos = prepararDados(dados, fatores);
+    /*
+     * Referência usada para detectar quando o gráfico
+     * entra na área visível da página.
+     */
+    const graficoRef = useRef(null);
+
+    /*
+     * A animação começa desativada e é ativada
+     * somente quando o gráfico aparece na tela.
+     */
+    const [animacaoIniciada, setAnimacaoIniciada] =
+        useState(false);
+
+    /* =====================================================
+       ANIMAÇÃO AO ENTRAR NA TELA
+    ===================================================== */
+
+    useEffect(() => {
+        const elemento = graficoRef.current;
+
+        if (!elemento || animacaoIniciada) {
+            return;
+        }
+
+        /*
+         * Se o navegador não suportar IntersectionObserver,
+         * ativa a animação normalmente.
+         */
+        if (!('IntersectionObserver' in window)) {
+            setAnimacaoIniciada(true);
+            return;
+        }
+
+        const observador = new IntersectionObserver(
+            entradas => {
+                const graficoVisivel = entradas.some(
+                    entrada => entrada.isIntersecting
+                );
+
+                if (graficoVisivel) {
+                    setAnimacaoIniciada(true);
+
+                    /*
+                     * Desconecta o observador depois da primeira
+                     * entrada na tela para não repetir a animação.
+                     */
+                    observador.disconnect();
+                }
+            },
+            {
+                threshold: 0.05,
+                rootMargin: '0px 0px -5% 0px'
+            }
+        );
+
+        observador.observe(elemento);
+
+        return () => {
+            observador.disconnect();
+        };
+    }, [animacaoIniciada]);
+
+    /* =====================================================
+       DADOS E DIMENSÕES
+    ===================================================== */
+
+    const dadosValidos = prepararDados(
+        dados,
+        fatores
+    );
 
     const larguraUtil =
-        LARGURA - MARGEM.esquerda - MARGEM.direita;
+        LARGURA -
+        MARGEM.esquerda -
+        MARGEM.direita;
 
     const alturaUtil =
-        ALTURA - MARGEM.topo - MARGEM.baixo;
+        ALTURA -
+        MARGEM.topo -
+        MARGEM.baixo;
 
-    const series = [
-        {
-            nome: 'Satisfação Geral',
-            valores: dadosValidos.map((item) => item.satisfacao)
-        },
-        ...fatores.map((fator, indice) => ({
-            nome: fator,
-            valores: dadosValidos.map((item) => {
-                return item.mediasFatores[indice];
-            })
-        }))
-    ];
+    const series = FATORES_GRAFICO.map(
+        (fator, indiceFator) => ({
+            ...fator,
+            valores: dadosValidos.map(item =>
+                item.mediasFatores[indiceFator]
+            )
+        })
+    );
 
-    const seriesValidas = series.filter((serie) => {
-        return serie.valores.some((valor) => valor !== null);
-    });
+    const seriesValidas = series.filter(
+        serie =>
+            serie.valores.some(
+                valor => valor !== null
+            )
+    );
 
-    const indicesRotulos = obterIndicesRotulos(dadosValidos.length);
+    const indicesRotulos = obterIndicesRotulos(
+        dadosValidos.length
+    );
 
-    const datasRotulos = indicesRotulos.map((indice) => {
-        const item = dadosValidos[indice];
+    const posicaoParametro = obterPosicaoY(
+        parametroMinimo,
+        alturaUtil
+    );
 
-        return {
-            indice,
-            data: formatarData(item.dataOriginal, indice)
-        };
-    });
+    /* =====================================================
+       RENDERIZAÇÃO
+    ===================================================== */
 
     return (
-        <section className="grafico-evolucao">
+        <section
+            ref={graficoRef}
+            className="grafico-evolucao"
+        >
+            {/* CABEÇALHO */}
+
             <header className="grafico-evolucao-cabecalho">
                 <div>
-                    <h2> Evolução dos Indicadores </h2>
+                    <span className="grafico-evolucao-subtitulo">
+                        HISTÓRICO
+                    </span>
+
+                    <h2>
+                        Evolução Mensal dos Fatores Psicossociais
+                    </h2>
 
                     <p>
-                        Acompanhe a evolução das médias nas avaliações.
+                        Acompanhe a evolução mensal dos fatores
+                        psicossociais com base nas avaliações
+                        encerradas.
                     </p>
                 </div>
 
                 <span className="grafico-evolucao-setor">
-                    {setorSelecionado || 'Todos os setores'}
+                    {setorSelecionado ||
+                        'Todos os setores'}
                 </span>
             </header>
 
+            {/* LEGENDA DOS FATORES */}
+
+            <div className="grafico-evolucao-legenda">
+                {FATORES_GRAFICO.map(fator => (
+                    <div
+                        className="grafico-evolucao-legenda-item"
+                        key={fator.nome}
+                    >
+                        <span
+                            className="grafico-evolucao-legenda-cor"
+                            style={{
+                                backgroundColor: fator.cor
+                            }}
+                        />
+
+                        <span>
+                            {fator.nome}
+                        </span>
+                    </div>
+                ))}
+            </div>
+
+            {/* GRÁFICO */}
+
             {dadosValidos.length === 0 ? (
                 <div className="grafico-evolucao-vazio">
-                    Ainda não existem avaliações com dados anônimos
-                    suficientes para exibir a evolução.
+                    Ainda não existem respostas válidas
+                    para apresentar a evolução dos
+                    indicadores.
                 </div>
             ) : (
-                <>
-                    <div className="grafico-evolucao-legenda">
-                        {seriesValidas.map((serie, indice) => (
-                            <div
-                                className="grafico-evolucao-legenda-item"
-                                key={serie.nome}
-                            >
-                                <span
-                                    className="grafico-evolucao-legenda-cor"
-                                    style={{
-                                        backgroundColor: CORES[indice % CORES.length]
-                                    }}
-                                />
+                <div className="grafico-evolucao-area">
+                    <svg
+                        className={`grafico-evolucao-svg ${
+                            animacaoIniciada
+                                ? 'grafico-evolucao-animar'
+                                : ''
+                        }`}
+                        viewBox={`0 0 ${LARGURA} ${ALTURA}`}
+                        role="img"
+                        aria-label="Evolução mensal dos fatores psicossociais"
+                    >
+                        {/* GRADE E ESCALA VERTICAL */}
 
-                                <span>{serie.nome}</span>
-                            </div>
-                        ))}
-                    </div>
+                        {[1, 2, 3, 4, 5].map(valor => {
+                            const y = obterPosicaoY(
+                                valor,
+                                alturaUtil
+                            );
 
-                    <div className="grafico-evolucao-area">
-                        <svg
-                            className="grafico-evolucao-svg"
-                            viewBox={`0 0 ${LARGURA} ${ALTURA}`}
-                            role="img"
-                            aria-label="Gráfico de evolução dos indicadores"
-                        >
-                            {[1, 2, 3, 4, 5].map((valor) => {
-                                const y = obterPosicaoY(valor, alturaUtil);
+                            return (
+                                <g key={valor}>
+                                    <line
+                                        className="grafico-evolucao-grade"
+                                        x1={MARGEM.esquerda}
+                                        x2={
+                                            LARGURA -
+                                            MARGEM.direita
+                                        }
+                                        y1={y}
+                                        y2={y}
+                                    />
 
-                                return (
-                                    <g key={valor}>
-                                        <line
-                                            className="grafico-evolucao-grade"
-                                            x1={MARGEM.esquerda}
-                                            x2={LARGURA - MARGEM.direita}
-                                            y1={y}
-                                            y2={y}
-                                        />
+                                    <text
+                                        className="grafico-evolucao-eixo-y"
+                                        x={
+                                            MARGEM.esquerda -
+                                            15
+                                        }
+                                        y={y + 5}
+                                        textAnchor="end"
+                                    >
+                                        {valor.toFixed(1)}
+                                    </text>
+                                </g>
+                            );
+                        })}
 
-                                        <text
-                                            className="grafico-evolucao-eixo-y"
-                                            x={MARGEM.esquerda - 18}
-                                            y={y + 6}
-                                            textAnchor="end"
-                                        >
-                                            {valor}
-                                        </text>
-                                    </g>
-                                );
-                            })}
+                        {/* EIXO VERTICAL */}
 
-                            <line
-                                className="grafico-evolucao-meta"
-                                x1={MARGEM.esquerda}
-                                x2={LARGURA - MARGEM.direita}
-                                y1={obterPosicaoY(parametroMinimo, alturaUtil)}
-                                y2={obterPosicaoY(parametroMinimo, alturaUtil)}
+                        <line
+                            className="grafico-evolucao-eixo"
+                            x1={MARGEM.esquerda}
+                            y1={MARGEM.topo}
+                            x2={MARGEM.esquerda}
+                            y2={
+                                ALTURA -
+                                MARGEM.baixo
+                            }
+                        />
+
+                        {/* EIXO HORIZONTAL */}
+
+                        <line
+                            className="grafico-evolucao-eixo"
+                            x1={MARGEM.esquerda}
+                            y1={
+                                ALTURA -
+                                MARGEM.baixo
+                            }
+                            x2={
+                                LARGURA -
+                                MARGEM.direita
+                            }
+                            y2={
+                                ALTURA -
+                                MARGEM.baixo
+                            }
+                        />
+
+                        {/* PARÂMETRO MÍNIMO DA MÉDIA */}
+
+                        <line
+                            className="grafico-evolucao-meta"
+                            x1={MARGEM.esquerda}
+                            x2={
+                                LARGURA -
+                                MARGEM.direita
+                            }
+                            y1={posicaoParametro}
+                            y2={posicaoParametro}
+                        />
+
+                        {/* RÓTULO DO PARÂMETRO */}
+
+                        <g className="grafico-evolucao-meta-rotulo">
+                            <rect
+                                className="grafico-evolucao-meta-fundo"
+                                x={LARGURA / 2 - 100}
+                                y={posicaoParametro - 12}
+                                width="200"
+                                height="24"
+                                rx="3"
                             />
 
-                            {seriesValidas.map((serie, indiceSerie) => {
-                                const segmentos = criarSegmentos(
-                                    serie,
-                                    alturaUtil,
-                                    larguraUtil,
-                                    dadosValidos.length
-                                );
+                            <text
+                                className="grafico-evolucao-meta-texto"
+                                x={LARGURA / 2}
+                                y={posicaoParametro + 4}
+                                textAnchor="middle"
+                            >
+                                {`PARÂMETRO MÍNIMO (${String(
+                                    parametroMinimo
+                                ).replace('.', ',')})`}
+                            </text>
+                        </g>
 
-                                const cor = CORES[indiceSerie % CORES.length];
+                        {/* LINHAS E PONTOS DOS FATORES */}
 
-                                return (
-                                    <g key={serie.nome}>
-                                        {segmentos.map((segmento, indiceSegmento) => (
+                        {seriesValidas.map(serie => {
+                            const segmentos = criarCaminho(
+                                serie,
+                                alturaUtil,
+                                larguraUtil,
+                                dadosValidos.length
+                            );
+
+                            return (
+                                <g key={serie.nome}>
+                                    {/* LINHAS */}
+
+                                    {segmentos.map(
+                                        (
+                                            segmento,
+                                            indiceSegmento
+                                        ) => (
                                             <path
                                                 key={`${serie.nome}-${indiceSegmento}`}
                                                 className="grafico-evolucao-linha"
-                                                d={criarCaminho(segmento)}
-                                                stroke={cor}
+                                                d={converterSegmentoEmCaminho(
+                                                    segmento
+                                                )}
+                                                stroke={serie.cor}
+                                                pathLength="1"
                                             />
-                                        ))}
+                                        )
+                                    )}
 
-                                        {segmentos.flat().map((ponto) => (
-                                            <circle
-                                                key={`${serie.nome}-${ponto.indice}`}
-                                                className="grafico-evolucao-ponto"
-                                                cx={ponto.x}
-                                                cy={ponto.y}
-                                                r="7"
-                                                fill={cor}
-                                            >
-                                                <title>
-                                                    {serie.nome}: {ponto.valor.toFixed(1)}
-                                                </title>
-                                            </circle>
-                                        ))}
-                                    </g>
-                                );
-                            })}
+                                    {/* PONTOS COM TOOLTIP */}
 
-                            {datasRotulos.map(({ indice, data }) => {
-                                const x = obterPosicaoX(
-                                    indice,
-                                    dadosValidos.length,
-                                    larguraUtil
-                                );
+                                    {segmentos
+                                        .flat()
+                                        .map(ponto => {
+                                            const item =
+                                                dadosValidos[
+                                                    ponto.indice
+                                                ];
 
-                                return (
-                                    <text
-                                        key={`${indice}-${data}`}
-                                        className="grafico-evolucao-eixo-x"
-                                        x={x}
-                                        y={ALTURA - 16}
-                                        textAnchor="middle"
-                                    >
-                                        {data}
-                                    </text>
-                                );
-                            })}
-                        </svg>
-                    </div>
-                </>
+                                            const rotulo =
+                                                item.rotuloMes;
+
+                                            const posicaoTooltip =
+                                                obterPosicaoTooltip(
+                                                    ponto
+                                                );
+
+                                            return (
+                                                <g
+                                                    key={`${serie.nome}-${ponto.indice}`}
+                                                    className="grafico-evolucao-ponto-grupo"
+                                                >
+                                                    <circle
+                                                        className="grafico-evolucao-ponto"
+                                                        cx={ponto.x}
+                                                        cy={ponto.y}
+                                                        r="6"
+                                                        fill={serie.cor}
+                                                        style={{
+                                                            animationDelay:
+                                                                `${ponto.indice * 100}ms`
+                                                        }}
+                                                    />
+
+                                                    <foreignObject
+                                                        className="grafico-evolucao-tooltip-container"
+                                                        x={posicaoTooltip.x}
+                                                        y={posicaoTooltip.y}
+                                                        width="195"
+                                                        height="100"
+                                                    >
+                                                        <div
+                                                            xmlns="http://www.w3.org/1999/xhtml"
+                                                            className="grafico-evolucao-tooltip"
+                                                        >
+                                                            <strong className="grafico-evolucao-tooltip-titulo">
+                                                                {serie.nome}
+                                                            </strong>
+
+                                                            <span className="grafico-evolucao-tooltip-periodo">
+                                                                {rotulo.mes}{' '}
+                                                                {rotulo.ano}
+                                                            </span>
+
+                                                            <div className="grafico-evolucao-tooltip-valor">
+                                                                <span>
+                                                                    Média
+                                                                </span>
+
+                                                                <strong>
+                                                                    {ponto.valor
+                                                                        .toFixed(1)
+                                                                        .replace(
+                                                                            '.',
+                                                                            ','
+                                                                        )}
+                                                                </strong>
+                                                            </div>
+                                                        </div>
+                                                    </foreignObject>
+                                                </g>
+                                            );
+                                        })}
+                                </g>
+                            );
+                        })}
+
+                        {/* MESES E ANOS NO EIXO X */}
+
+                        {indicesRotulos.map(indice => {
+                            const x = obterPosicaoX(
+                                indice,
+                                dadosValidos.length,
+                                larguraUtil
+                            );
+
+                            const rotulo =
+                                dadosValidos[indice].rotuloMes;
+
+                            return (
+                                <text
+                                    key={`${indice}-${rotulo.mes}-${rotulo.ano}`}
+                                    className="grafico-evolucao-eixo-x"
+                                    x={x}
+                                    y={ALTURA - 42}
+                                    textAnchor="middle"
+                                >
+                                    <tspan x={x} dy="0">
+                                        {rotulo.mes}
+                                    </tspan>
+
+                                    {rotulo.ano && (
+                                        <tspan
+                                            className="grafico-evolucao-ano"
+                                            x={x}
+                                            dy="19"
+                                        >
+                                            {rotulo.ano}
+                                        </tspan>
+                                    )}
+                                </text>
+                            );
+                        })}
+                    </svg>
+                </div>
             )}
+
+            {/* RODAPÉ */}
 
             <footer className="grafico-evolucao-rodape">
                 <div className="grafico-evolucao-parametro">
                     <span />
-                    <p>Parâmetro mínimo: {String(parametroMinimo).replace('.', ',')}</p>
+
+                    <p>
+                        Parâmetro mínimo:{' '}
+                        {String(parametroMinimo).replace(
+                            '.',
+                            ','
+                        )}
+                    </p>
                 </div>
 
                 <span className="grafico-evolucao-escala">
                     Escala de 1 a 5
                 </span>
+
+                <p className="grafico-evolucao-consolidacao">
+                    Quantidade mínima para consolidação:{' '}
+                    <strong>1 participante válido</strong>
+                </p>
             </footer>
         </section>
     );

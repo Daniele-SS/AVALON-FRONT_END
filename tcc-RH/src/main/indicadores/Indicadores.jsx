@@ -564,26 +564,26 @@ function Indicadores() {
        EVOLUÇÃO HISTÓRICA
     ===================================================== */
 
-    const evolucao = useMemo(() => {
-        if (ehGestor && !idSetorSelecionado) {
-            return [];
-        }
+const evolucao = useMemo(() => {
+    if (ehGestor && !idSetorSelecionado) {
+        return [];
+    }
 
-        return calcularEvolucao({
-            avaliacoes: dados.avaliacoes,
-            participacoes: dados.participacoes,
-            respostas: dados.respostas,
-            fatores,
-            idSetor: idSetorSelecionado
-        });
-    }, [
-        dados.avaliacoes,
-        dados.participacoes,
-        dados.respostas,
+    return calcularEvolucao({
+        avaliacoes: dados.avaliacoes,
+        participacoes: dados.participacoes,
+        respostas: dados.respostas,
         fatores,
-        idSetorSelecionado,
-        ehGestor
-    ]);
+        idSetor: idSetorSelecionado
+    });
+}, [
+    dados.avaliacoes,
+    dados.participacoes,
+    dados.respostas,
+    fatores,
+    idSetorSelecionado,
+    ehGestor
+]);
 
     /* =====================================================
        COMPARAÇÃO POR SETOR

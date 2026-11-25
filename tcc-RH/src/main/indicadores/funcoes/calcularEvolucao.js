@@ -1,12 +1,60 @@
 
 /********************************************************************************
- * Objetivo: Montar os dados históricos do gráfico de evolução dos indicadores.
+ * Objetivo:
+ * Montar os dados históricos dos indicadores por mês.
+ *
+ * Regras:
+ * - Considera avaliações em andamento e encerradas.
+ * - Ignora avaliações canceladas.
+ * - Agrupa várias avaliações do mesmo mês.
+ * - Calcula a média mensal de cada fator psicossocial.
+ * - Considera somente respostas válidas entre 1 e 5.
+ * - Considera pelo menos 1 participante distinto.
+ * - Respeita o filtro de setor.
  ********************************************************************************/
 
 const QUANTIDADE_MINIMA_PARTICIPANTES = 1;
 
+/* =========================================================
+   DATAS
+========================================================= */
+
 /**
- * Obtém a data da avaliação.
+ * Converte uma data para Date sem deslocar datas
+ * que chegam no formato YYYY-MM-DD.
+ */
+function converterData(data) {
+    if (!data) {
+        return null;
+    }
+
+    if (data instanceof Date) {
+        return Number.isNaN(data.getTime()) ? null : data;
+    }
+
+    const texto = String(data);
+
+    const dataSomente = texto.match(
+        /^(\d{4})-(\d{2})-(\d{2})$/
+    );
+
+    if (dataSomente) {
+        return new Date(
+            Number(dataSomente[1]),
+            Number(dataSomente[2]) - 1,
+            Number(dataSomente[3])
+        );
+    }
+
+    const dataConvertida = new Date(data);
+
+    return Number.isNaN(dataConvertida.getTime())
+        ? null
+        : dataConvertida;
+}
+
+/**
+ * Obtém a data principal da avaliação.
  */
 function obterDataAvaliacao(avaliacao) {
     return (
@@ -20,6 +68,117 @@ function obterDataAvaliacao(avaliacao) {
 }
 
 /**
+ * Obtém a data em que a resposta foi registrada.
+ *
+ * Se a resposta não possuir data, utiliza a data
+ * da avaliação como referência.
+ */
+function obterDataResposta(resposta, avaliacao) {
+    return (
+        resposta.data_resposta ||
+        resposta.data_criacao ||
+        resposta.created_at ||
+        resposta.createdAt ||
+        resposta.data ||
+        obterDataAvaliacao(avaliacao)
+    );
+}
+
+/**
+ * Cria uma chave para agrupar os dados por mês.
+ *
+ * Exemplo:
+ * 2026-10
+ */
+function obterChaveMes(data) {
+    const dataConvertida = converterData(data);
+
+    if (!dataConvertida) {
+        return '';
+    }
+
+    const ano = dataConvertida.getFullYear();
+
+    const mes = String(
+        dataConvertida.getMonth() + 1
+    ).padStart(2, '0');
+
+    return `${ano}-${mes}`;
+}
+
+/**
+ * Formata o mês para aparecer no gráfico.
+ *
+ * Exemplo:
+ * Outubro 2026
+ */
+function formatarMes(chaveMes) {
+    if (!chaveMes) {
+        return '';
+    }
+
+    const [ano, mes] = chaveMes.split('-').map(Number);
+
+    const data = new Date(ano, mes - 1, 1);
+
+    const nomeMes = data.toLocaleDateString(
+        'pt-BR',
+        { month: 'long' }
+    );
+
+    return (
+        nomeMes.charAt(0).toUpperCase() +
+        nomeMes.slice(1) +
+        ` ${ano}`
+    );
+}
+
+/* =========================================================
+   AVALIAÇÕES
+========================================================= */
+
+/**
+ * Obtém o status da avaliação.
+ */
+function obterStatusAvaliacao(avaliacao) {
+    return (
+        avaliacao.status?.nome ||
+        avaliacao.status?.descricao ||
+        avaliacao.status ||
+        avaliacao.situacao?.nome ||
+        avaliacao.situacao ||
+        avaliacao.estado?.nome ||
+        avaliacao.estado ||
+        ''
+    );
+}
+
+/**
+ * Verifica se a avaliação foi cancelada.
+ *
+ * Avaliações em andamento e encerradas são aceitas.
+ */
+function avaliacaoFoiCancelada(avaliacao) {
+    const status = String(
+        obterStatusAvaliacao(avaliacao)
+    )
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .trim();
+
+    return (
+        status.includes('cancelad') ||
+        status.includes('excluid') ||
+        status.includes('apagada')
+    );
+}
+
+/* =========================================================
+   PARTICIPAÇÕES
+========================================================= */
+
+/**
  * Obtém o ID da avaliação vinculada à participação.
  */
 function obterIdAvaliacao(participacao) {
@@ -30,19 +189,14 @@ function obterIdAvaliacao(participacao) {
 }
 
 /**
- * Obtém o colaborador da participação.
- */
-function obterColaborador(participacao) {
-    return Array.isArray(participacao.colaborador)
-        ? participacao.colaborador[0]
-        : participacao.colaborador;
-}
-
-/**
  * Obtém o ID do colaborador.
  */
 function obterIdColaborador(participacao) {
-    const colaborador = obterColaborador(participacao);
+    const colaborador = Array.isArray(
+        participacao.colaborador
+    )
+        ? participacao.colaborador[0]
+        : participacao.colaborador;
 
     return Number(
         colaborador?.id ??
@@ -55,7 +209,11 @@ function obterIdColaborador(participacao) {
  * Obtém o setor do colaborador.
  */
 function obterSetorColaborador(participacao) {
-    const colaborador = obterColaborador(participacao);
+    const colaborador = Array.isArray(
+        participacao.colaborador
+    )
+        ? participacao.colaborador[0]
+        : participacao.colaborador;
 
     return Array.isArray(colaborador?.setor)
         ? colaborador.setor[0]
@@ -66,7 +224,12 @@ function obterSetorColaborador(participacao) {
  * Obtém o ID do setor da participação.
  */
 function obterIdSetor(participacao) {
-    const colaborador = obterColaborador(participacao);
+    const colaborador = Array.isArray(
+        participacao.colaborador
+    )
+        ? participacao.colaborador[0]
+        : participacao.colaborador;
+
     const setor = obterSetorColaborador(participacao);
 
     return Number(
@@ -77,19 +240,25 @@ function obterIdSetor(participacao) {
     );
 }
 
-/**
- * Calcula a média das respostas válidas.
- */
-function calcularMedia(respostas) {
-    const valores = respostas
-        .map(resposta => Number(resposta.valor))
-        .filter(valor =>
-            Number.isFinite(valor) &&
-            valor >= 1 &&
-            valor <= 5
-        );
+/* =========================================================
+   RESPOSTAS
+========================================================= */
 
-    if (valores.length === 0) {
+/**
+ * Obtém o ID da participação vinculada à resposta.
+ */
+function obterIdParticipacaoResposta(resposta) {
+    return Number(
+        resposta.id_avaliacao_participacao ??
+        resposta.avaliacao_participacao?.id
+    );
+}
+
+/**
+ * Calcula a média de valores válidos.
+ */
+function calcularMedia(valores) {
+    if (!valores.length) {
         return null;
     }
 
@@ -98,41 +267,52 @@ function calcularMedia(respostas) {
         0
     );
 
-    return Number((soma / valores.length).toFixed(1));
+    return Number(
+        (soma / valores.length).toFixed(1)
+    );
 }
 
 /**
- * Formata o mês e o ano para aparecer no eixo do gráfico.
+ * Obtém o valor válido da resposta.
  */
-function formatarMes(data) {
-    if (!data) {
-        return '';
-    }
-
-    const dataConvertida = new Date(data);
-
-    if (Number.isNaN(dataConvertida.getTime())) {
-        return '';
-    }
-
-    const mes = dataConvertida.toLocaleDateString(
-        'pt-BR',
-        { month: 'long' }
+function obterValorResposta(resposta) {
+    const valor = Number(
+        String(resposta.valor ?? '').replace(',', '.')
     );
 
-    const ano = dataConvertida.getFullYear();
+    if (
+        !Number.isFinite(valor) ||
+        valor < 1 ||
+        valor > 5
+    ) {
+        return null;
+    }
 
-    return `${mes.charAt(0).toUpperCase()}${mes.slice(1)} ${ano}`;
+    return valor;
 }
 
+/* =========================================================
+   CÁLCULO DA EVOLUÇÃO
+========================================================= */
+
 /**
- * Calcula a evolução dos indicadores ao longo das avaliações.
+ * Parâmetros:
+ *
+ * avaliacoes:
+ * Lista de avaliações cadastradas.
+ *
+ * participacoes:
+ * Lista de participações das avaliações.
+ *
+ * respostas:
+ * Lista de respostas dos colaboradores.
+ *
+ * fatores:
+ * Array de fatores com id e nome.
  *
  * idSetor:
- * - null: considera todos os setores.
- * - número: considera somente o setor informado.
- *
- * fatores: array de objetos com id e nome.
+ * null = todos os setores.
+ * número = somente o setor informado.
  */
 export function calcularEvolucao({
     avaliacoes = [],
@@ -142,89 +322,217 @@ export function calcularEvolucao({
     idSetor = null,
     quantidadeMinima = QUANTIDADE_MINIMA_PARTICIPANTES
 }) {
-    const avaliacoesOrdenadas = [...avaliacoes].sort(
-        (a, b) => {
-            const dataA = new Date(
-                obterDataAvaliacao(a)
-            ).getTime() || 0;
+    /* =====================================================
+       AVALIAÇÕES VÁLIDAS
+    ===================================================== */
 
-            const dataB = new Date(
-                obterDataAvaliacao(b)
-            ).getTime() || 0;
+    const avaliacoesValidas = avaliacoes.filter(
+        avaliacao =>
+            !avaliacaoFoiCancelada(avaliacao)
+    );
 
-            return dataA - dataB;
+    const idsAvaliacoesValidas = new Set(
+        avaliacoesValidas.map(
+            avaliacao => Number(avaliacao.id)
+        )
+    );
+
+    /* =====================================================
+       MAPEAR AVALIAÇÕES
+    ===================================================== */
+
+    const mapaAvaliacoes = new Map();
+
+    avaliacoesValidas.forEach(avaliacao => {
+        mapaAvaliacoes.set(
+            Number(avaliacao.id),
+            avaliacao
+        );
+    });
+
+    /* =====================================================
+       MAPEAR PARTICIPAÇÕES
+    ===================================================== */
+
+    const participacoesValidas = participacoes.filter(
+        participacao => {
+            const idAvaliacao =
+                obterIdAvaliacao(participacao);
+
+            if (!idsAvaliacoesValidas.has(idAvaliacao)) {
+                return false;
+            }
+
+            if (
+                idSetor !== null &&
+                idSetor !== undefined &&
+                obterIdSetor(participacao) !== Number(idSetor)
+            ) {
+                return false;
+            }
+
+            const idColaborador =
+                obterIdColaborador(participacao);
+
+            return (
+                Number.isFinite(idColaborador) &&
+                idColaborador > 0
+            );
         }
     );
 
-    return avaliacoesOrdenadas.map(avaliacao => {
-        const participacoesAvaliacao = participacoes.filter(
-            participacao =>
-                obterIdAvaliacao(participacao) ===
-                Number(avaliacao.id)
+    const mapaParticipacoes = new Map();
+
+    participacoesValidas.forEach(participacao => {
+        mapaParticipacoes.set(
+            Number(participacao.id),
+            participacao
+        );
+    });
+
+    /* =====================================================
+       AGRUPAR RESPOSTAS POR MÊS
+    ===================================================== */
+
+    const mapaMensal = new Map();
+
+    respostas.forEach(resposta => {
+        const idParticipacao =
+            obterIdParticipacaoResposta(resposta);
+
+        const participacao =
+            mapaParticipacoes.get(idParticipacao);
+
+        if (!participacao) {
+            return;
+        }
+
+        const idAvaliacao =
+            obterIdAvaliacao(participacao);
+
+        const avaliacao =
+            mapaAvaliacoes.get(idAvaliacao);
+
+        if (!avaliacao) {
+            return;
+        }
+
+        const valor = obterValorResposta(resposta);
+
+        if (valor === null) {
+            return;
+        }
+
+        const dataResposta = obterDataResposta(
+            resposta,
+            avaliacao
         );
 
-        const participacoesFiltradas =
-            participacoesAvaliacao.filter(participacao => {
-                if (idSetor === null || idSetor === undefined) {
-                    return true;
-                }
+        const chaveMes = obterChaveMes(dataResposta);
 
-                return obterIdSetor(participacao) ===
-                    Number(idSetor);
+        if (!chaveMes) {
+            return;
+        }
+
+        if (!mapaMensal.has(chaveMes)) {
+            mapaMensal.set(chaveMes, {
+                valoresGerais: [],
+                participantes: new Set(),
+                fatores: {}
             });
+        }
 
-        // Conta participantes distintos para preservar o anonimato.
-        const participantesDistintos = new Set(
-            participacoesFiltradas
-                .map(obterIdColaborador)
-                .filter(id => Number.isFinite(id) && id > 0)
+        const dadosMes = mapaMensal.get(chaveMes);
+
+        const idColaborador =
+            obterIdColaborador(participacao);
+
+        dadosMes.participantes.add(idColaborador);
+
+        dadosMes.valoresGerais.push(valor);
+
+        /* =============================================
+           IDENTIFICAR O FATOR DA RESPOSTA
+        ============================================= */
+
+        const idFator = Number(
+            resposta.id_psicossocial_fator
         );
 
-        const totalParticipantes = participantesDistintos.size;
+        const fator = fatores.find(
+            item => Number(item.id) === idFator
+        );
 
-        // Não apresenta dados de avaliações com menos de 5 participantes.
-        if (totalParticipantes < quantidadeMinima) {
-            return {
-                id: avaliacao.id,
-                mes: formatarMes(obterDataAvaliacao(avaliacao)),
-                satisfacao: null,
-                medias: {},
-                totalParticipantes,
-                possuiDadosAnonimos: false
+        if (!fator) {
+            return;
+        }
+
+        if (!dadosMes.fatores[fator.nome]) {
+            dadosMes.fatores[fator.nome] = {
+                valores: [],
+                participantes: new Set()
             };
         }
 
-        const idsParticipacoes = new Set(
-            participacoesFiltradas.map(
-                participacao => Number(participacao.id)
-            )
-        );
+        const dadosFator =
+            dadosMes.fatores[fator.nome];
 
-        const respostasAvaliacao = respostas.filter(resposta =>
-            idsParticipacoes.has(
-                Number(resposta.id_avaliacao_participacao)
-            )
+        dadosFator.valores.push(valor);
+
+        dadosFator.participantes.add(
+            idColaborador
         );
+    });
+
+    /* =====================================================
+       MONTAR RESULTADO FINAL
+    ===================================================== */
+
+    const mesesOrdenados = Array.from(
+        mapaMensal.keys()
+    ).sort();
+
+    return mesesOrdenados.map(chaveMes => {
+        const dadosMes = mapaMensal.get(chaveMes);
+
+        const totalParticipantes =
+            dadosMes.participantes.size;
 
         const medias = {};
 
         fatores.forEach(fator => {
-            const respostasFator = respostasAvaliacao.filter(
-                resposta =>
-                    Number(resposta.id_psicossocial_fator) ===
-                    Number(fator.id)
-            );
+            const dadosFator =
+                dadosMes.fatores[fator.nome];
 
-            medias[fator.nome] = calcularMedia(respostasFator);
+            if (!dadosFator) {
+                medias[fator.nome] = null;
+                return;
+            }
+
+            if (
+                dadosFator.participantes.size <
+                quantidadeMinima
+            ) {
+                medias[fator.nome] = null;
+                return;
+            }
+
+            medias[fator.nome] = calcularMedia(
+                dadosFator.valores
+            );
         });
 
         return {
-            id: avaliacao.id,
-            mes: formatarMes(obterDataAvaliacao(avaliacao)),
-            satisfacao: calcularMedia(respostasAvaliacao),
+            id: chaveMes,
+            chaveMes,
+            mes: formatarMes(chaveMes),
+            satisfacao: totalParticipantes >= quantidadeMinima
+                ? calcularMedia(dadosMes.valoresGerais)
+                : null,
             medias,
             totalParticipantes,
-            possuiDadosAnonimos: true
+            possuiDadosAnonimos:
+                totalParticipantes >= quantidadeMinima
         };
     });
 }

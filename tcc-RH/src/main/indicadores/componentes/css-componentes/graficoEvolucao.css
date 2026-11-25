@@ -1,19 +1,29 @@
 
+/* =========================================================
+   CARD PRINCIPAL
+========================================================= */
+
 .grafico-evolucao {
     box-sizing: border-box;
     width: 100%;
     min-width: 0;
-    min-height: 380px;
-    padding: 24px 18px 22px;
+    padding: 24px;
+
     background: #FFFFFF;
     border: 1px solid #E6EAF0;
-    border-radius: 10px;
+    border-radius: 12px;
+
     display: flex;
     flex-direction: column;
-    gap: 18px;
+    gap: 20px;
+
+    color: #152238;
+    font-family: "Geist", sans-serif;
 }
 
-/* CABEÇALHO */
+/* =========================================================
+   CABEÇALHO
+========================================================= */
 
 .grafico-evolucao-cabecalho {
     display: flex;
@@ -22,65 +32,94 @@
     gap: 20px;
 }
 
+.grafico-evolucao-subtitulo {
+    display: block;
+    margin-bottom: 6px;
+
+    color: #647CA3;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
 .grafico-evolucao-cabecalho h2 {
     margin: 0;
+
     color: #152238;
-    font-size: 15px;
-    font-weight: 700;
+    font-size: 20px;
+    font-weight: 600;
     line-height: 1.4;
 }
 
 .grafico-evolucao-cabecalho p {
     margin: 7px 0 0;
+
     color: #8795AD;
-    font-size: 11px;
+    font-size: 13px;
     line-height: 1.5;
 }
 
 .grafico-evolucao-setor {
+    box-sizing: border-box;
     flex-shrink: 0;
-    padding: 7px 10px;
-    background: #F1F5FF;
-    border-radius: 5px;
+    max-width: 240px;
+    padding: 8px 12px;
+
+    background: #F4F7FC;
+    border: 1px solid #E8EDF5;
+    border-radius: 7px;
+
     color: #64748B;
-    font-size: 10px;
+    font-size: 12px;
+    line-height: 1.4;
+    text-align: center;
 }
 
-/* LEGENDA */
+/* =========================================================
+   LEGENDA DOS FATORES
+========================================================= */
 
 .grafico-evolucao-legenda {
     display: flex;
     align-items: center;
-    justify-content: flex-end;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 12px 22px;
+
+    padding: 12px 16px;
+
+    background: #F8FAFD;
+    border: 1px solid #EDF1F7;
+    border-radius: 8px;
 }
 
 .grafico-evolucao-legenda-item {
     display: flex;
     align-items: center;
-    gap: 6px;
-    padding: 5px 8px;
-    background: #F1F5FF;
-    border-radius: 4px;
-    color: #152238;
-    font-size: 9px;
+    gap: 8px;
+
+    color: #344258;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.4;
 }
 
 .grafico-evolucao-legenda-cor {
-    width: 7px;
-    height: 7px;
+    width: 9px;
+    height: 9px;
     flex-shrink: 0;
     border-radius: 50%;
 }
 
-/* GRÁFICO */
+/* =========================================================
+   ÁREA DO GRÁFICO
+========================================================= */
 
 .grafico-evolucao-area {
+    box-sizing: border-box;
     width: 100%;
     min-width: 0;
-    margin-top: 4px;
-    overflow: hidden;
+    padding: 0 2px;
+    overflow: visible;
 }
 
 .grafico-evolucao-svg {
@@ -90,86 +129,321 @@
     overflow: visible;
 }
 
+/* =========================================================
+   GRADE
+========================================================= */
+
 .grafico-evolucao-grade {
-    stroke: #E7EDF5;
+    stroke: #5c5c5d;
     stroke-width: 1;
-    stroke-dasharray: 2 4;
+    stroke-dasharray: 3 5;
 }
+
+/* =========================================================
+   EIXOS
+========================================================= */
+
+/* Linha vertical à esquerda e linha inferior */
+
+.grafico-evolucao-eixo {
+    stroke: #5c5c5d;
+    stroke-width: 1.5;
+}
+
+/* Números da escala vertical */
 
 .grafico-evolucao-eixo-y {
-    fill: #4B556B;
-    font-size: 15px;
+    fill: #5c5c5d;
+    font-size: 14px;
+    font-weight: 500;
 }
+
+/* Meses */
 
 .grafico-evolucao-eixo-x {
-    fill: #26364D;
+    fill: #5c5c5d;
     font-size: 13px;
+    font-weight: 500;
 }
 
-.grafico-evolucao-meta {
-    stroke: #F05252;
-    stroke-width: 1.5;
-    stroke-dasharray: 4 4;
+/* Ano abaixo do mês */
+
+.grafico-evolucao-ano {
+    fill: #8795AD;
+    font-size: 12px;
+    font-weight: 400;
 }
+
+/* =========================================================
+   PARÂMETRO MÍNIMO DA MÉDIA
+========================================================= */
+
+.grafico-evolucao-meta {
+    stroke: #f90202;
+    stroke-width: 2.5;
+    stroke-dasharray: 8 5;
+    opacity: 1;
+}
+
+.grafico-evolucao-meta-fundo {
+    fill: #FFDAD6;
+    stroke: #FFDAD6;
+    stroke-width: 1;
+}
+
+.grafico-evolucao-meta-texto {
+    fill: #BA1A1A;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+}
+
+/* =========================================================
+   LINHAS DOS FATORES
+========================================================= */
 
 .grafico-evolucao-linha {
     fill: none;
-    stroke-width: 2.5;
+    stroke-width: 3;
     stroke-linecap: round;
     stroke-linejoin: round;
+
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+}
+
+/* A linha começa a ser desenhada quando o gráfico aparece */
+
+.grafico-evolucao-svg.grafico-evolucao-animar
+.grafico-evolucao-linha {
+    animation: desenharLinhaGrafico 1.3s ease forwards;
+}
+
+@keyframes desenharLinhaGrafico {
+    from {
+        stroke-dashoffset: 1;
+    }
+
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+/* =========================================================
+   PONTOS
+========================================================= */
+
+.grafico-evolucao-ponto-grupo {
+    cursor: pointer;
 }
 
 .grafico-evolucao-ponto {
     stroke: #FFFFFF;
-    stroke-width: 1.5;
+    stroke-width: 2.5;
+    cursor: pointer;
+
+    opacity: 0;
+    transform: scale(0.4);
+    transform-box: fill-box;
+    transform-origin: center;
+
+    transition:
+        r 0.18s ease,
+        stroke-width 0.18s ease;
 }
 
-/* SEM DADOS */
+/* Os pontos aparecem somente quando a animação é ativada */
+
+.grafico-evolucao-svg.grafico-evolucao-animar
+.grafico-evolucao-ponto {
+    animation: aparecerPontoGrafico 0.45s ease forwards;
+}
+
+.grafico-evolucao-ponto-grupo:hover
+.grafico-evolucao-ponto {
+    stroke-width: 3.5;
+}
+
+@keyframes aparecerPontoGrafico {
+    0% {
+        opacity: 0;
+        transform: scale(0.4);
+    }
+
+    70% {
+        opacity: 1;
+        transform: scale(1.15);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* =========================================================
+   TOOLTIP
+========================================================= */
+
+.grafico-evolucao-tooltip-container {
+    overflow: visible;
+    pointer-events: none;
+}
+
+.grafico-evolucao-tooltip {
+    box-sizing: border-box;
+    width: 190px;
+    min-height: 76px;
+    padding: 13px 15px;
+
+    background: #FFFFFF;
+    color: #152238;
+
+    border: 1px solid #E6EAF0;
+    border-radius: 10px;
+
+    box-shadow:
+        0 4px 14px rgba(21, 34, 56, 0.10),
+        0 1px 3px rgba(21, 34, 56, 0.05);
+
+    font-family: "Geist", sans-serif;
+    font-size: 12px;
+    line-height: 1.5;
+
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(5px);
+
+    transition:
+        opacity 0.18s ease,
+        transform 0.18s ease,
+        visibility 0.18s ease;
+
+    pointer-events: none;
+}
+
+.grafico-evolucao-ponto-grupo:hover
+.grafico-evolucao-tooltip {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.grafico-evolucao-tooltip-titulo {
+    display: block;
+    margin-bottom: 5px;
+
+    color: #152238;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.grafico-evolucao-tooltip-periodo {
+    display: block;
+    margin-bottom: 8px;
+
+    color: #8795AD;
+    font-size: 11px;
+    font-weight: 400;
+}
+
+.grafico-evolucao-tooltip-valor {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+
+    padding-top: 8px;
+    border-top: 1px solid #EDF1F7;
+}
+
+.grafico-evolucao-tooltip-valor span {
+    color: #64748B;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.grafico-evolucao-tooltip-valor strong {
+    color: #0057D9;
+    font-size: 17px;
+    font-weight: 700;
+}
+
+/* =========================================================
+   ESTADO SEM DADOS
+========================================================= */
 
 .grafico-evolucao-vazio {
     box-sizing: border-box;
     width: 100%;
-    min-height: 240px;
+    min-height: 260px;
+    padding: 28px;
+
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 24px;
+
     color: #8795AD;
-    font-size: 12px;
+    background: #FAFBFF;
+    border: 1px dashed #DCE4F0;
+    border-radius: 8px;
+
+    font-size: 13px;
     text-align: center;
     line-height: 1.6;
 }
 
-/* RODAPÉ */
+/* =========================================================
+   RODAPÉ
+========================================================= */
 
 .grafico-evolucao-rodape {
-    padding-top: 12px;
-    border-top: 1px solid #E6EAF0;
+    padding-top: 16px;
+    border-top: 1px solid #E9EEF5;
+
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 16px;
+    flex-wrap: wrap;
+    gap: 12px;
 }
 
 .grafico-evolucao-parametro {
     display: flex;
     align-items: center;
-    gap: 7px;
+    gap: 9px;
 }
 
 .grafico-evolucao-parametro span {
-    width: 7px;
-    height: 7px;
+    width: 22px;
+    height: 0;
     flex-shrink: 0;
-    background: #F05252;
-    border-radius: 2px;
+
+    border-top: 2.5px dashed #000000;
 }
 
 .grafico-evolucao-parametro p,
 .grafico-evolucao-escala {
     margin: 0;
+
     color: #8795AD;
-    font-size: 10px;
+    font-size: 12px;
+    line-height: 1.5;
 }
 
-/* RESPONSIVIDADE */
+/* Informação sobre a quantidade mínima */
+
+.grafico-evolucao-consolidacao {
+    margin: 0;
+
+    color: #64748B;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.grafico-evolucao-consolidacao strong {
+    color: #152238;
+    font-weight: 600;
+}
+
+
