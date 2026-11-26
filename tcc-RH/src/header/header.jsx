@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -13,33 +14,29 @@ function Header() {
 
     useEffect(() => {
         const usuarioSalvo =
-            localStorage.getItem('usuario');
+            localStorage.getItem('usuario') ||
+            localStorage.getItem('usuarioLogin');
 
         if (!usuarioSalvo) {
             return;
         }
 
         try {
-            const usuarioConvertido =
-                JSON.parse(usuarioSalvo);
+            const usuarioConvertido = JSON.parse(usuarioSalvo);
 
-            setUsuario(usuarioConvertido);
+            const usuarioAtual =
+                usuarioConvertido?.usuario ??
+                usuarioConvertido?.response?.usuario ??
+                usuarioConvertido;
 
-            console.log(
-                'Usuário carregado no Header:',
-                usuarioConvertido
-            );
-
+            setUsuario(usuarioAtual);
         } catch (erro) {
-            console.error(
-                'Erro ao ler usuário:',
-                erro
-            );
+            console.error('Erro ao ler usuário:', erro);
         }
     }, []);
 
     function alternarMenu() {
-        setMenuAberto(!menuAberto);
+        setMenuAberto((menuAtual) => !menuAtual);
     }
 
     function verMeuPerfil() {
@@ -60,16 +57,19 @@ function Header() {
     }
 
     const nomeUsuario =
-        usuario?.nome ||
+        usuario?.nome ??
+        usuario?.nome_completo ??
+        usuario?.usuario?.nome ??
         'Usuário';
 
     const nivelAcesso =
-        usuario?.nivel_acesso?.nome ||
+        usuario?.nivel_acesso?.nome ??
+        usuario?.nivel_acesso ??
+        usuario?.nivel ??
         'Usuário';
 
     return (
         <header>
-
             <div className="acoes-header">
 
                 <img
@@ -81,32 +81,21 @@ function Header() {
                 <div className="pefil">
 
                     <div className="foto-perfil">
-
                         <img
                             src={perfilIcone}
                             alt="Perfil"
                         />
-
                     </div>
 
                     <div className="informacoes">
-
-                        <h4>
-                            {nomeUsuario}
-                        </h4>
-
-                        <p>
-                            {nivelAcesso}
-                        </p>
-
+                        <h4>{nomeUsuario}</h4>
+                        <p>{nivelAcesso}</p>
                     </div>
 
                     <button
                         type="button"
                         className={`seta-perfil ${
-                            menuAberto
-                                ? 'seta-aberta'
-                                : ''
+                            menuAberto ? 'seta-aberta' : ''
                         }`}
                         onClick={alternarMenu}
                         aria-label="Abrir menu do perfil"
@@ -116,7 +105,6 @@ function Header() {
                     </button>
 
                     {menuAberto && (
-
                         <div className="dropdown-perfil">
 
                             <button
@@ -135,13 +123,10 @@ function Header() {
                             </button>
 
                         </div>
-
                     )}
 
                 </div>
-
             </div>
-
         </header>
     );
 }

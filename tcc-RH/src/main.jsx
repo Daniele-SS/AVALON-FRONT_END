@@ -23,6 +23,7 @@ import PlanoAcao from './main/PlanosAcao/PlanoAcao'
 import Notificacao from './main/notificacao/Notificacao'
 import MinhaEquipe from './main/minhaEquipe/MinhaEquipe'
 import Solicitacao from './main/solicitacao/Solicitacao'
+import Perfil from '../src/header/perfil.jsx';
 
 import './menu/CSS-Menu/sidebar.css'
 
@@ -71,6 +72,7 @@ function Sistema() {
           <Route path="/notificacoes" element={<Notificacao />} />
           <Route path="/minha-equipe" element={<MinhaEquipe />} />
           <Route path="/solicitacao" element={<Solicitacao />} />
+          <Route path="/perfil" element={<Perfil />}/>
         </Route>
 
         <Route path="*" element={<Navigate to="/login" />} />

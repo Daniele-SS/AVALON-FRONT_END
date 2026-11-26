@@ -225,14 +225,7 @@ function VisualizarInfo({
                 {/* Botões à direita */}
                 <div className="visualizar-info-acoes">
 
-                    <button
-                        type="button"
-                        className="visualizar-info-botao-desativar"
-                        onClick={onDesativar}
-                        disabled={!onDesativar}
-                    >
-                        {textoBotaoDesativar}
-                    </button>
+
 
                     <button
                         type="button"
