@@ -1,6 +1,6 @@
-
 /********************************************************************************
- * Objetivo: Buscar respostas, participações e regras das avaliações.
+ * Objetivo:
+ * Buscar respostas, participações e regras das avaliações.
  ********************************************************************************/
 
 const URL_API = 'http://localhost:8080/v1/senai/avalon';
@@ -24,26 +24,34 @@ async function requisicaoIndicadores(endpoint) {
     }
 
     if (!resposta.ok) {
-        throw new Error(`Não foi possível buscar ${endpoint}.`);
+        throw new Error(
+            `Não foi possível buscar ${endpoint}. Código: ${resposta.status}`
+        );
     }
 
     return resposta.json();
 }
 
 export async function buscarRespostasIndicadores() {
-    const dados = await requisicaoIndicadores('/avaliacao_resposta');
+    const dados = await requisicaoIndicadores(
+        '/avaliacao_resposta'
+    );
 
     return dados.response?.respostas || [];
 }
 
 export async function buscarParticipacoesIndicadores() {
-    const dados = await requisicaoIndicadores('/avaliacao_participacao');
+    const dados = await requisicaoIndicadores(
+        '/avaliacao_participacao'
+    );
 
     return dados.response?.participacoes || [];
 }
 
 export async function buscarRegrasIndicadores() {
-    const dados = await requisicaoIndicadores('/avaliacao_motor_regras');
+    const dados = await requisicaoIndicadores(
+        '/avaliacao_motor_regras'
+    );
 
     return dados.response?.avaliacao_motor_regras || [];
 }

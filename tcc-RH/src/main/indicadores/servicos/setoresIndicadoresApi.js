@@ -1,4 +1,3 @@
-
 /********************************************************************************
  * Objetivo: Buscar os setores cadastrados na API.
  ********************************************************************************/
@@ -24,7 +23,9 @@ export async function buscarSetoresIndicadores() {
     }
 
     if (!resposta.ok) {
-        throw new Error('Não foi possível buscar os setores.');
+        throw new Error(
+            `Não foi possível buscar os setores. Código: ${resposta.status}`
+        );
     }
 
     const dados = await resposta.json();

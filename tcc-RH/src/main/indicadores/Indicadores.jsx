@@ -1,4 +1,3 @@
-
 import { useEffect, useMemo, useState } from 'react';
 
 import BotaoCadastro from '../../componentes/cardNomePag/nomePag.jsx';
@@ -33,10 +32,6 @@ const DADOS_INICIAIS = {
     feedbacks: []
 };
 
-/* =========================================================
-   FUNÇÕES AUXILIARES
-========================================================= */
-
 function normalizarTexto(texto = '') {
     return String(texto)
         .normalize('NFD')
@@ -47,12 +42,45 @@ function normalizarTexto(texto = '') {
 
 function obterDataAvaliacao(avaliacao) {
     return (
-        avaliacao.data_fim ||
-        avaliacao.data_final ||
-        avaliacao.data_inicio ||
-        avaliacao.data ||
-        avaliacao.created_at ||
+        avaliacao?.data_fim ||
+        avaliacao?.data_final ||
+        avaliacao?.data_inicio ||
+        avaliacao?.data ||
+        avaliacao?.created_at ||
         ''
+    );
+}
+
+function obterStatusAvaliacao(avaliacao) {
+    return (
+        avaliacao?.status?.nome ||
+        avaliacao?.status?.descricao ||
+        avaliacao?.status ||
+        avaliacao?.situacao?.nome ||
+        avaliacao?.situacao ||
+        avaliacao?.estado?.nome ||
+        avaliacao?.estado ||
+        ''
+    );
+}
+
+function avaliacaoEncerrada(avaliacao) {
+    const status = obterStatusAvaliacao(avaliacao);
+
+    if (Number(status) === 1) {
+        return true;
+    }
+
+    if (Number(status) === 0) {
+        return false;
+    }
+
+    const texto = normalizarTexto(status);
+
+    return (
+        texto.includes('encerrad') ||
+        texto.includes('concluid') ||
+        texto.includes('finalizad')
     );
 }
 
@@ -84,30 +112,30 @@ function obterIdSetorParticipacao(participacao) {
 
 function obterIdAvaliacao(participacao) {
     return Number(
-        participacao.id_avaliacao ??
-        participacao.avaliacao?.id
+        participacao?.id_avaliacao ??
+        participacao?.avaliacao?.id
     );
 }
 
 function obterNomeFator(regra) {
     return (
-        regra.factor_psicossocial?.nome ||
-        regra.fator_psicossocial?.nome ||
-        regra.motor_regras?.fator_psicossocial?.nome ||
-        regra.motor_regras?.factor_psicossocial?.nome ||
-        regra.nome_fator ||
+        regra?.factor_psicossocial?.nome ||
+        regra?.fator_psicossocial?.nome ||
+        regra?.motor_regras?.fator_psicossocial?.nome ||
+        regra?.motor_regras?.factor_psicossocial?.nome ||
+        regra?.nome_fator ||
         ''
     );
 }
 
 function obterIdFator(regra) {
     return Number(
-        regra.factor_psicossocial?.id ??
-        regra.fator_psicossocial?.id ??
-        regra.motor_regras?.fator_psicossocial?.id ??
-        regra.motor_regras?.factor_psicossocial?.id ??
-        regra.motor_regras?.id_psicossocial_fator ??
-        regra.id_psicossocial_fator
+        regra?.factor_psicossocial?.id ??
+        regra?.fator_psicossocial?.id ??
+        regra?.motor_regras?.fator_psicossocial?.id ??
+        regra?.motor_regras?.factor_psicossocial?.id ??
+        regra?.motor_regras?.id_psicossocial_fator ??
+        regra?.id_psicossocial_fator
     );
 }
 
@@ -116,16 +144,16 @@ function obterMediaFator(mediasFatores = {}, nomeFator) {
         return null;
     }
 
-    const chaveEncontrada = Object.keys(mediasFatores).find(
-        chave =>
-            normalizarTexto(chave) === normalizarTexto(nomeFator)
+    const chave = Object.keys(mediasFatores).find(
+        item =>
+            normalizarTexto(item) === normalizarTexto(nomeFator)
     );
 
-    if (!chaveEncontrada) {
+    if (!chave) {
         return null;
     }
 
-    const valor = mediasFatores[chaveEncontrada];
+    const valor = mediasFatores[chave];
 
     if (valor === null || valor === undefined || valor === '') {
         return null;
@@ -139,9 +167,7 @@ function obterMediaFator(mediasFatores = {}, nomeFator) {
             : Number(media);
     }
 
-    const numero = Number(
-        String(valor).replace(',', '.')
-    );
+    const numero = Number(String(valor).replace(',', '.'));
 
     return Number.isFinite(numero) ? numero : null;
 }
@@ -153,11 +179,9 @@ function formatarMedia(media) {
 
     const numero = Number(media);
 
-    if (!Number.isFinite(numero)) {
-        return '—';
-    }
-
-    return numero.toFixed(1).replace('.', ',');
+    return Number.isFinite(numero)
+        ? numero.toFixed(1).replace('.', ',')
+        : '—';
 }
 
 function obterClassificacao(media) {
@@ -180,13 +204,8 @@ function obterClassificacao(media) {
     return 'Normal';
 }
 
-/* =========================================================
-   COMPONENTE PRINCIPAL
-========================================================= */
-
 function Indicadores() {
     const [dados, setDados] = useState(DADOS_INICIAIS);
-
     const [carregando, setCarregando] = useState(true);
     const [erro, setErro] = useState('');
 
@@ -208,92 +227,41 @@ function Indicadores() {
     const ehGestor =
         normalizarTexto(perfilUsuario.nivel) === 'gestor';
 
-    /* =====================================================
-       CARREGAMENTO DOS DADOS
-    ===================================================== */
-
     useEffect(() => {
         const usuario = JSON.parse(
             localStorage.getItem('usuario') || '{}'
         );
 
-        const nivelAcesso = usuario.nivel_acesso?.nome || '';
+        const nivelAcesso = usuario?.nivel_acesso?.nome || '';
 
         async function carregarDados() {
             try {
                 setCarregando(true);
                 setErro('');
 
-                const resultado = await buscarDadosIndicadores();
+                const resultado = await buscarDadosIndicadores(usuario);
 
-                const participacoes = Array.isArray(
-                    resultado.participacoes
-                )
-                    ? resultado.participacoes
-                    : [];
-
-                /* =========================================
-                   IDENTIFICAR O SETOR DO GESTOR
-                ========================================= */
-
-                let setorGestor = null;
+                let setorGestor = resultado.setorGestor || null;
 
                 if (normalizarTexto(nivelAcesso) === 'gestor') {
-                    const participacaoGestor = participacoes.find(
-                        participacao => {
-                            const colaborador =
-                                obterColaborador(participacao);
-
-                            const idColaborador = Number(
-                                colaborador?.id ??
-                                colaborador?.id_colaborador ??
-                                participacao.id_colaborador
-                            );
-
-                            return (
-                                idColaborador ===
-                                Number(usuario.id_colaborador)
-                            );
-                        }
-                    );
-
-                    if (participacaoGestor) {
-                        setorGestor = obterSetorColaborador(
-                            participacaoGestor
-                        );
-                    }
-
-                    const idSetorGestor = Number(
+                    const idSetor = Number(
                         setorGestor?.id ??
-                        obterIdSetorParticipacao(
-                            participacaoGestor || {}
-                        )
+                        setorGestor?.id_setor
                     );
 
-                    if (
-                        Number.isFinite(idSetorGestor) &&
-                        idSetorGestor > 0
-                    ) {
-                        const setorCadastrado = (
-                            resultado.setores || []
-                        ).find(
-                            setor =>
-                                Number(setor.id) === idSetorGestor
+                    if (Number.isFinite(idSetor) && idSetor > 0) {
+                        const setorCadastrado = resultado.setores.find(
+                            setor => Number(setor.id) === idSetor
                         );
 
                         setorGestor = {
                             ...(setorCadastrado || {}),
                             ...(setorGestor || {}),
-                            id: idSetorGestor
+                            id: idSetor
                         };
                     } else {
                         setorGestor = null;
                     }
-
-                    console.log(
-                        'SETOR DO GESTOR:',
-                        setorGestor
-                    );
                 }
 
                 setPerfilUsuario({
@@ -304,15 +272,10 @@ function Indicadores() {
                     setor: setorGestor
                 });
 
-                /* =========================================
-                   SALVAR OS DADOS DA TELA
-                ========================================= */
-
                 setDados({
                     ...DADOS_INICIAIS,
                     ...resultado
                 });
-
             } catch (error) {
                 setErro(
                     error.message ||
@@ -325,10 +288,6 @@ function Indicadores() {
 
         carregarDados();
     }, []);
-
-    /* =====================================================
-       FATORES PSICOSSOCIAIS COM ID
-    ===================================================== */
 
     const fatores = useMemo(() => {
         const mapa = new Map();
@@ -348,10 +307,6 @@ function Indicadores() {
         }));
     }, [dados.regras]);
 
-    /* =====================================================
-       NOMES PARA GRÁFICO E SELETOR
-    ===================================================== */
-
     const nomesFatores = useMemo(() => {
         const nomes = fatores.map(fator => fator.nome);
 
@@ -369,10 +324,6 @@ function Indicadores() {
 
         return nomes;
     }, [fatores]);
-
-    /* =====================================================
-       MANTÉM O FATOR SELECIONADO VÁLIDO
-    ===================================================== */
 
     useEffect(() => {
         const fatorExiste = nomesFatores.some(
@@ -392,13 +343,6 @@ function Indicadores() {
             );
         }
     }, [nomesFatores, fatorSelecionado]);
-
-    /* =====================================================
-       OPÇÕES DO FILTRO DE SETOR
-
-       RH: todos os setores.
-       Gestor: somente o próprio setor.
-    ===================================================== */
 
     const setoresDropdown = useMemo(() => {
         if (ehGestor) {
@@ -425,13 +369,6 @@ function Indicadores() {
         perfilUsuario.setor,
         dados.setores
     ]);
-
-    /* =====================================================
-       SETOR SELECIONADO
-
-       Gestor: sempre o próprio setor.
-       RH: respeita o filtro atual.
-    ===================================================== */
 
     const setorSelecionado = useMemo(() => {
         if (ehGestor) {
@@ -463,16 +400,14 @@ function Indicadores() {
             return null;
         }
 
-        const setoresCorrespondentes = dados.setores.filter(
+        const correspondentes = dados.setores.filter(
             setor =>
                 normalizarTexto(setor.nome).includes(pesquisa)
         );
 
-        if (setoresCorrespondentes.length === 1) {
-            return setoresCorrespondentes[0];
-        }
-
-        return null;
+        return correspondentes.length === 1
+            ? correspondentes[0]
+            : null;
     }, [
         ehGestor,
         perfilUsuario.idSetor,
@@ -481,37 +416,17 @@ function Indicadores() {
         filtros
     ]);
 
-    /* =====================================================
-       ID DO SETOR SELECIONADO
-
-       IMPORTANTE:
-       Esta variável precisa ser declarada antes de
-       ultimaAvaliacao, pois o useMemo utiliza seu valor.
-    ===================================================== */
-
     const idSetorSelecionado = ehGestor
         ? perfilUsuario.idSetor
         : setorSelecionado
             ? Number(setorSelecionado.id)
             : null;
 
-    /* =====================================================
-       AVALIAÇÃO MAIS RECENTE COM RESPOSTAS VÁLIDAS
-
-       Considera respostas com valores de 1 a 5.
-       Quando um setor está selecionado, considera
-       somente as participações daquele setor.
-    ===================================================== */
-
     const ultimaAvaliacao = useMemo(() => {
         if (!dados.avaliacoes.length) {
             return null;
         }
 
-        /*
-         * Identifica as participações do setor selecionado.
-         * Se o RH selecionar "Todos", considera todos.
-         */
         const participacoesFiltradas =
             dados.participacoes.filter(participacao => {
                 if (
@@ -527,31 +442,22 @@ function Indicadores() {
                 );
             });
 
-        /*
-         * Guarda os IDs das participações.
-         */
         const idsParticipacoes = new Set(
             participacoesFiltradas
                 .map(participacao => Number(participacao.id))
-                .filter(id =>
-                    Number.isFinite(id) && id > 0
-                )
+                .filter(id => Number.isFinite(id) && id > 0)
         );
 
-        /*
-         * Identifica as avaliações que possuem
-         * pelo menos uma resposta válida.
-         */
         const idsAvaliacoesComRespostas = new Set();
 
         dados.respostas.forEach(resposta => {
             const valor = Number(
-                String(resposta.valor ?? '').replace(',', '.')
+                String(resposta?.valor ?? '').replace(',', '.')
             );
 
             const idParticipacao = Number(
-                resposta.id_avaliacao_participacao ??
-                resposta.avaliacao_participacao?.id
+                resposta?.id_avaliacao_participacao ??
+                resposta?.avaliacao_participacao?.id
             );
 
             if (
@@ -563,90 +469,46 @@ function Indicadores() {
                 return;
             }
 
-            const participacao =
-                participacoesFiltradas.find(
-                    item =>
-                        Number(item.id) === idParticipacao
-                );
+            const participacao = participacoesFiltradas.find(
+                item => Number(item.id) === idParticipacao
+            );
 
             if (!participacao) {
                 return;
             }
 
-            const idAvaliacao = obterIdAvaliacao(
-                participacao
-            );
+            const idAvaliacao = obterIdAvaliacao(participacao);
 
-            if (
-                Number.isFinite(idAvaliacao) &&
-                idAvaliacao > 0
-            ) {
-                idsAvaliacoesComRespostas.add(
-                    idAvaliacao
-                );
+            if (Number.isFinite(idAvaliacao) && idAvaliacao > 0) {
+                idsAvaliacoesComRespostas.add(idAvaliacao);
             }
         });
 
-        /*
-         * Mantém somente avaliações com respostas
-         * válidas no setor selecionado.
-         */
-        const avaliacoesComRespostas =
-            dados.avaliacoes.filter(avaliacao =>
-                idsAvaliacoesComRespostas.has(
-                    Number(avaliacao.id)
-                )
-            );
+        const avaliacoesComRespostas = dados.avaliacoes.filter(
+            avaliacao =>
+                avaliacaoEncerrada(avaliacao) &&
+                idsAvaliacoesComRespostas.has(Number(avaliacao.id))
+        );
 
         if (!avaliacoesComRespostas.length) {
             return null;
         }
 
-        /*
-         * Ordena pela data e seleciona a mais recente.
-         */
-        return [...avaliacoesComRespostas].sort(
-            (a, b) => {
-                const dataA = new Date(
-                    obterDataAvaliacao(a)
-                ).getTime();
+        return [...avaliacoesComRespostas].sort((a, b) => {
+            const dataA = new Date(obterDataAvaliacao(a)).getTime();
+            const dataB = new Date(obterDataAvaliacao(b)).getTime();
 
-                const dataB = new Date(
-                    obterDataAvaliacao(b)
-                ).getTime();
-
-                return (
-                    (Number.isFinite(dataB) ? dataB : 0) -
-                    (Number.isFinite(dataA) ? dataA : 0)
-                );
-            }
-        )[0];
+            return (
+                (Number.isFinite(dataB) ? dataB : 0) -
+                (Number.isFinite(dataA) ? dataA : 0)
+            );
+        })[0];
     }, [
         dados.avaliacoes,
         dados.participacoes,
         dados.respostas,
         idSetorSelecionado
     ]);
-
-    /* =====================================================
-       PARTICIPAÇÕES DA ÚLTIMA AVALIAÇÃO
-    ===================================================== */
-
-    const participacoesUltimaAvaliacao = useMemo(() => {
-        if (!ultimaAvaliacao) {
-            return [];
-        }
-
-        return dados.participacoes.filter(
-            participacao =>
-                obterIdAvaliacao(participacao) ===
-                Number(ultimaAvaliacao.id)
-        );
-    }, [dados.participacoes, ultimaAvaliacao]);
-
-    /* =====================================================
-       INDICADORES PRINCIPAIS
-    ===================================================== */
 
     const mediasIndicadores = useMemo(() => {
         if (
@@ -677,10 +539,6 @@ function Indicadores() {
         ehGestor
     ]);
 
-    /* =====================================================
-       EVOLUÇÃO HISTÓRICA
-    ===================================================== */
-
     const evolucao = useMemo(() => {
         if (ehGestor && !idSetorSelecionado) {
             return [];
@@ -702,15 +560,6 @@ function Indicadores() {
         ehGestor
     ]);
 
-    /* =====================================================
-       COMPARAÇÃO POR SETOR
-
-       RH: compara todos os setores.
-       Gestor: compara somente o próprio setor.
-
-       Usa todas as avaliações, participações e respostas.
-    ===================================================== */
-
     const comparacaoSetores = useMemo(() => {
         const fator = fatores.find(
             item =>
@@ -718,30 +567,17 @@ function Indicadores() {
                 normalizarTexto(fatorSelecionado)
         );
 
-        if (
-            !fator ||
-            (ehGestor && !setorSelecionado)
-        ) {
+        if (!fator || (ehGestor && !setorSelecionado)) {
             return [];
         }
 
-        const setoresParaComparacao = ehGestor
-            ? [setorSelecionado]
-            : dados.setores;
-
         return calcularComparacaoSetores({
-            setores: setoresParaComparacao,
-
-            // Envia todas as avaliações.
+            setores: ehGestor
+                ? [setorSelecionado]
+                : dados.setores,
             avaliacoes: dados.avaliacoes,
-
-            // Envia todas as participações.
             participacoes: dados.participacoes,
-
-            // Envia todas as respostas.
             respostas: dados.respostas,
-
-            // Fator selecionado no gráfico.
             idFator: fator.id
         });
     }, [
@@ -754,10 +590,6 @@ function Indicadores() {
         ehGestor,
         setorSelecionado
     ]);
-
-    /* =====================================================
-       MÉDIAS DOS CARDS
-    ===================================================== */
 
     const mediaComunicacao = obterMediaFator(
         mediasIndicadores.mediasFatores,
@@ -774,10 +606,6 @@ function Indicadores() {
         'Carga de Trabalho'
     );
 
-    /* =====================================================
-       CARREGAMENTO
-    ===================================================== */
-
     if (carregando) {
         return (
             <main className="pagina-indicadores">
@@ -788,13 +616,8 @@ function Indicadores() {
         );
     }
 
-    /* =====================================================
-       TELA
-    ===================================================== */
-
     return (
         <main className="pagina-indicadores">
-
             <BotaoCadastro
                 titulo="Indicadores"
                 descricao="Acompanhe os principais resultados da experiência e gestão dos colaboradores."
@@ -806,8 +629,6 @@ function Indicadores() {
                     {erro}
                 </div>
             )}
-
-            {/* FILTRO DE SETOR */}
 
             <section className="filtro-indicadores">
                 {ehGestor ? (
@@ -828,19 +649,12 @@ function Indicadores() {
                 )}
             </section>
 
-            {/* CARDS DE INDICADORES */}
-
             <section className="grade-cards-indicadores">
-
                 <CardIndicador
                     titulo="MÉTRICA GERAL"
                     descricao="Satisfação Geral"
-                    valor={`${formatarMedia(
-                        mediasIndicadores.satisfacaoGeral
-                    )} / 5,0`}
-                    classificacao={obterClassificacao(
-                        mediasIndicadores.satisfacaoGeral
-                    )}
+                    valor={`${formatarMedia(mediasIndicadores.satisfacaoGeral)} / 5,0`}
+                    classificacao={obterClassificacao(mediasIndicadores.satisfacaoGeral)}
                     icone="✦"
                 />
 
@@ -867,7 +681,6 @@ function Indicadores() {
                     classificacao={obterClassificacao(mediaCargaTrabalho)}
                     icone="◷"
                 />
-
             </section>
 
             {!mediasIndicadores.possuiDadosAnonimos && (
@@ -877,8 +690,6 @@ function Indicadores() {
                     deste grupo.
                 </div>
             )}
-
-            {/* GRÁFICO DE EVOLUÇÃO */}
 
             <section className="painel-indicadores">
                 <GraficoEvolucao
@@ -894,8 +705,6 @@ function Indicadores() {
                 />
             </section>
 
-            {/* COMPARAÇÃO POR SETOR */}
-
             <section className="painel-indicadores">
                 <ComparacaoSetores
                     dados={comparacaoSetores}
@@ -905,7 +714,6 @@ function Indicadores() {
                     parametroMinimo={PARAMETRO_MINIMO}
                 />
             </section>
-
         </main>
     );
 }

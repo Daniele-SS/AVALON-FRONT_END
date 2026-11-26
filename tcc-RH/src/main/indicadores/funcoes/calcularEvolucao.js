@@ -1,28 +1,27 @@
-
 /********************************************************************************
  * Objetivo:
- * Montar os dados históricos dos indicadores por mês.
+ * Montar a evolução histórica dos indicadores por mês.
  *
  * Regras:
- * - Considera avaliações em andamento e encerradas.
+ * - Considera somente avaliações encerradas.
  * - Ignora avaliações canceladas.
  * - Agrupa várias avaliações do mesmo mês.
  * - Calcula a média mensal de cada fator psicossocial.
- * - Considera somente respostas válidas entre 1 e 5.
+ * - Considera respostas válidas entre 1 e 5.
  * - Considera pelo menos 1 participante distinto.
  * - Respeita o filtro de setor.
  ********************************************************************************/
 
 const QUANTIDADE_MINIMA_PARTICIPANTES = 1;
 
-/* =========================================================
-   DATAS
-========================================================= */
+function normalizarTexto(texto = '') {
+    return String(texto)
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .trim();
+}
 
-/**
- * Converte uma data para Date sem deslocar datas
- * que chegam no formato YYYY-MM-DD.
- */
 function converterData(data) {
     if (!data) {
         return null;
@@ -34,15 +33,15 @@ function converterData(data) {
 
     const texto = String(data);
 
-    const dataSomente = texto.match(
+    const somenteData = texto.match(
         /^(\d{4})-(\d{2})-(\d{2})$/
     );
 
-    if (dataSomente) {
+    if (somenteData) {
         return new Date(
-            Number(dataSomente[1]),
-            Number(dataSomente[2]) - 1,
-            Number(dataSomente[3])
+            Number(somenteData[1]),
+            Number(somenteData[2]) - 1,
+            Number(somenteData[3])
         );
     }
 
@@ -53,43 +52,28 @@ function converterData(data) {
         : dataConvertida;
 }
 
-/**
- * Obtém a data principal da avaliação.
- */
 function obterDataAvaliacao(avaliacao) {
     return (
-        avaliacao.data_fim ||
-        avaliacao.data_final ||
-        avaliacao.data_inicio ||
-        avaliacao.data ||
-        avaliacao.created_at ||
+        avaliacao?.data_fim ||
+        avaliacao?.data_final ||
+        avaliacao?.data_inicio ||
+        avaliacao?.data ||
+        avaliacao?.created_at ||
         ''
     );
 }
 
-/**
- * Obtém a data em que a resposta foi registrada.
- *
- * Se a resposta não possuir data, utiliza a data
- * da avaliação como referência.
- */
 function obterDataResposta(resposta, avaliacao) {
     return (
-        resposta.data_resposta ||
-        resposta.data_criacao ||
-        resposta.created_at ||
-        resposta.createdAt ||
-        resposta.data ||
+        resposta?.data_resposta ||
+        resposta?.data_criacao ||
+        resposta?.created_at ||
+        resposta?.createdAt ||
+        resposta?.data ||
         obterDataAvaliacao(avaliacao)
     );
 }
 
-/**
- * Cria uma chave para agrupar os dados por mês.
- *
- * Exemplo:
- * 2026-10
- */
 function obterChaveMes(data) {
     const dataConvertida = converterData(data);
 
@@ -106,19 +90,12 @@ function obterChaveMes(data) {
     return `${ano}-${mes}`;
 }
 
-/**
- * Formata o mês para aparecer no gráfico.
- *
- * Exemplo:
- * Outubro 2026
- */
 function formatarMes(chaveMes) {
     if (!chaveMes) {
         return '';
     }
 
     const [ano, mes] = chaveMes.split('-').map(Number);
-
     const data = new Date(ano, mes - 1, 1);
 
     const nomeMes = data.toLocaleDateString(
@@ -133,39 +110,23 @@ function formatarMes(chaveMes) {
     );
 }
 
-/* =========================================================
-   AVALIAÇÕES
-========================================================= */
-
-/**
- * Obtém o status da avaliação.
- */
 function obterStatusAvaliacao(avaliacao) {
     return (
-        avaliacao.status?.nome ||
-        avaliacao.status?.descricao ||
-        avaliacao.status ||
-        avaliacao.situacao?.nome ||
-        avaliacao.situacao ||
-        avaliacao.estado?.nome ||
-        avaliacao.estado ||
+        avaliacao?.status?.nome ||
+        avaliacao?.status?.descricao ||
+        avaliacao?.status ||
+        avaliacao?.situacao?.nome ||
+        avaliacao?.situacao ||
+        avaliacao?.estado?.nome ||
+        avaliacao?.estado ||
         ''
     );
 }
 
-/**
- * Verifica se a avaliação foi cancelada.
- *
- * Avaliações em andamento e encerradas são aceitas.
- */
 function avaliacaoFoiCancelada(avaliacao) {
-    const status = String(
+    const status = normalizarTexto(
         obterStatusAvaliacao(avaliacao)
-    )
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .toLowerCase()
-        .trim();
+    );
 
     return (
         status.includes('cancelad') ||
@@ -174,110 +135,93 @@ function avaliacaoFoiCancelada(avaliacao) {
     );
 }
 
-/* =========================================================
-   PARTICIPAÇÕES
-========================================================= */
-
 /**
- * Obtém o ID da avaliação vinculada à participação.
+ * Status numérico 1 = encerrada.
+ * Status numérico 0 = aberta/em andamento.
+ * Também aceita status textual.
  */
-function obterIdAvaliacao(participacao) {
-    return Number(
-        participacao.id_avaliacao ??
-        participacao.avaliacao?.id
+function avaliacaoEncerrada(avaliacao) {
+    const statusOriginal = obterStatusAvaliacao(avaliacao);
+
+    if (Number(statusOriginal) === 1) {
+        return true;
+    }
+
+    if (Number(statusOriginal) === 0) {
+        return false;
+    }
+
+    const status = normalizarTexto(statusOriginal);
+
+    return (
+        status.includes('encerrad') ||
+        status.includes('concluid') ||
+        status.includes('finalizad')
     );
 }
 
-/**
- * Obtém o ID do colaborador.
- */
-function obterIdColaborador(participacao) {
-    const colaborador = Array.isArray(
-        participacao.colaborador
-    )
+function obterIdAvaliacao(participacao) {
+    return Number(
+        participacao?.id_avaliacao ??
+        participacao?.avaliacao?.id
+    );
+}
+
+function obterColaborador(participacao) {
+    return Array.isArray(participacao?.colaborador)
         ? participacao.colaborador[0]
-        : participacao.colaborador;
+        : participacao?.colaborador;
+}
+
+function obterIdColaborador(participacao) {
+    const colaborador = obterColaborador(participacao);
 
     return Number(
         colaborador?.id ??
         colaborador?.id_colaborador ??
-        participacao.id_colaborador
+        participacao?.id_colaborador
     );
 }
 
-/**
- * Obtém o setor do colaborador.
- */
 function obterSetorColaborador(participacao) {
-    const colaborador = Array.isArray(
-        participacao.colaborador
-    )
-        ? participacao.colaborador[0]
-        : participacao.colaborador;
+    const colaborador = obterColaborador(participacao);
 
     return Array.isArray(colaborador?.setor)
         ? colaborador.setor[0]
         : colaborador?.setor;
 }
 
-/**
- * Obtém o ID do setor da participação.
- */
 function obterIdSetor(participacao) {
-    const colaborador = Array.isArray(
-        participacao.colaborador
-    )
-        ? participacao.colaborador[0]
-        : participacao.colaborador;
-
+    const colaborador = obterColaborador(participacao);
     const setor = obterSetorColaborador(participacao);
 
     return Number(
         colaborador?.id_setor ??
         setor?.id ??
-        participacao.id_setor ??
-        participacao.setor?.id
+        participacao?.id_setor ??
+        participacao?.setor?.id
     );
 }
 
-/* =========================================================
-   RESPOSTAS
-========================================================= */
-
-/**
- * Obtém o ID da participação vinculada à resposta.
- */
 function obterIdParticipacaoResposta(resposta) {
     return Number(
-        resposta.id_avaliacao_participacao ??
-        resposta.avaliacao_participacao?.id
+        resposta?.id_avaliacao_participacao ??
+        resposta?.avaliacao_participacao?.id
     );
 }
 
-/**
- * Calcula a média de valores válidos.
- */
-function calcularMedia(valores) {
-    if (!valores.length) {
-        return null;
-    }
-
-    const soma = valores.reduce(
-        (total, valor) => total + valor,
-        0
-    );
-
+function obterIdFatorResposta(resposta) {
     return Number(
-        (soma / valores.length).toFixed(1)
+        resposta?.id_psicossocial_fator ??
+        resposta?.psicossocial_fator?.id ??
+        resposta?.fator_psicossocial?.id ??
+        resposta?.id_fator_psicossocial
     );
 }
 
-/**
- * Obtém o valor válido da resposta.
- */
 function obterValorResposta(resposta) {
     const valor = Number(
-        String(resposta.valor ?? '').replace(',', '.')
+        String(resposta?.valor ?? '').replace(',', '.')
     );
 
     if (
@@ -291,29 +235,19 @@ function obterValorResposta(resposta) {
     return valor;
 }
 
-/* =========================================================
-   CÁLCULO DA EVOLUÇÃO
-========================================================= */
+function calcularMedia(valores) {
+    if (!valores.length) {
+        return null;
+    }
 
-/**
- * Parâmetros:
- *
- * avaliacoes:
- * Lista de avaliações cadastradas.
- *
- * participacoes:
- * Lista de participações das avaliações.
- *
- * respostas:
- * Lista de respostas dos colaboradores.
- *
- * fatores:
- * Array de fatores com id e nome.
- *
- * idSetor:
- * null = todos os setores.
- * número = somente o setor informado.
- */
+    const soma = valores.reduce(
+        (total, valor) => total + valor,
+        0
+    );
+
+    return Number((soma / valores.length).toFixed(1));
+}
+
 export function calcularEvolucao({
     avaliacoes = [],
     participacoes = [],
@@ -322,44 +256,25 @@ export function calcularEvolucao({
     idSetor = null,
     quantidadeMinima = QUANTIDADE_MINIMA_PARTICIPANTES
 }) {
-    /* =====================================================
-       AVALIAÇÕES VÁLIDAS
-    ===================================================== */
-
     const avaliacoesValidas = avaliacoes.filter(
         avaliacao =>
-            !avaliacaoFoiCancelada(avaliacao)
+            !avaliacaoFoiCancelada(avaliacao) &&
+            avaliacaoEncerrada(avaliacao)
     );
 
-    const idsAvaliacoesValidas = new Set(
-        avaliacoesValidas.map(
-            avaliacao => Number(avaliacao.id)
-        )
-    );
-
-    /* =====================================================
-       MAPEAR AVALIAÇÕES
-    ===================================================== */
-
-    const mapaAvaliacoes = new Map();
-
-    avaliacoesValidas.forEach(avaliacao => {
-        mapaAvaliacoes.set(
+    const mapaAvaliacoes = new Map(
+        avaliacoesValidas.map(avaliacao => [
             Number(avaliacao.id),
             avaliacao
-        );
-    });
-
-    /* =====================================================
-       MAPEAR PARTICIPAÇÕES
-    ===================================================== */
+        ])
+    );
 
     const participacoesValidas = participacoes.filter(
         participacao => {
             const idAvaliacao =
                 obterIdAvaliacao(participacao);
 
-            if (!idsAvaliacoesValidas.has(idAvaliacao)) {
+            if (!mapaAvaliacoes.has(idAvaliacao)) {
                 return false;
             }
 
@@ -381,18 +296,12 @@ export function calcularEvolucao({
         }
     );
 
-    const mapaParticipacoes = new Map();
-
-    participacoesValidas.forEach(participacao => {
-        mapaParticipacoes.set(
+    const mapaParticipacoes = new Map(
+        participacoesValidas.map(participacao => [
             Number(participacao.id),
             participacao
-        );
-    });
-
-    /* =====================================================
-       AGRUPAR RESPOSTAS POR MÊS
-    ===================================================== */
+        ])
+    );
 
     const mapaMensal = new Map();
 
@@ -423,12 +332,8 @@ export function calcularEvolucao({
             return;
         }
 
-        const dataResposta = obterDataResposta(
-            resposta,
-            avaliacao
-        );
-
-        const chaveMes = obterChaveMes(dataResposta);
+        const data = obterDataResposta(resposta, avaliacao);
+        const chaveMes = obterChaveMes(data);
 
         if (!chaveMes) {
             return;
@@ -443,21 +348,13 @@ export function calcularEvolucao({
         }
 
         const dadosMes = mapaMensal.get(chaveMes);
-
         const idColaborador =
             obterIdColaborador(participacao);
 
         dadosMes.participantes.add(idColaborador);
-
         dadosMes.valoresGerais.push(valor);
 
-        /* =============================================
-           IDENTIFICAR O FATOR DA RESPOSTA
-        ============================================= */
-
-        const idFator = Number(
-            resposta.id_psicossocial_fator
-        );
+        const idFator = obterIdFatorResposta(resposta);
 
         const fator = fatores.find(
             item => Number(item.id) === idFator
@@ -474,19 +371,11 @@ export function calcularEvolucao({
             };
         }
 
-        const dadosFator =
-            dadosMes.fatores[fator.nome];
+        const dadosFator = dadosMes.fatores[fator.nome];
 
         dadosFator.valores.push(valor);
-
-        dadosFator.participantes.add(
-            idColaborador
-        );
+        dadosFator.participantes.add(idColaborador);
     });
-
-    /* =====================================================
-       MONTAR RESULTADO FINAL
-    ===================================================== */
 
     const mesesOrdenados = Array.from(
         mapaMensal.keys()
@@ -504,14 +393,9 @@ export function calcularEvolucao({
             const dadosFator =
                 dadosMes.fatores[fator.nome];
 
-            if (!dadosFator) {
-                medias[fator.nome] = null;
-                return;
-            }
-
             if (
-                dadosFator.participantes.size <
-                quantidadeMinima
+                !dadosFator ||
+                dadosFator.participantes.size < quantidadeMinima
             ) {
                 medias[fator.nome] = null;
                 return;
@@ -526,9 +410,10 @@ export function calcularEvolucao({
             id: chaveMes,
             chaveMes,
             mes: formatarMes(chaveMes),
-            satisfacao: totalParticipantes >= quantidadeMinima
-                ? calcularMedia(dadosMes.valoresGerais)
-                : null,
+            satisfacao:
+                totalParticipantes >= quantidadeMinima
+                    ? calcularMedia(dadosMes.valoresGerais)
+                    : null,
             medias,
             totalParticipantes,
             possuiDadosAnonimos:

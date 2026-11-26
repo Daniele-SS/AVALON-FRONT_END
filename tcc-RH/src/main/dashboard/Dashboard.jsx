@@ -1,16 +1,13 @@
-
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import '../../componentes/cardNomePag/nomePag.css';
 import './css-dashboard/dashboard.css';
-
 import buscarDadosDashboard from './servico/dashboardService';
-
-//----------------- ESTADO INICIAL -----------------//
 
 const ESTADO_INICIAL = {
   colaboradores: [],
+  usuarios: [],
   setores: [],
   avaliacoes: [],
   participacoes: [],
@@ -19,30 +16,18 @@ const ESTADO_INICIAL = {
   ferias: [],
   planosAcao: [],
   resultados: [],
+  gestor: null,
+  equipeGestor: [],
+  idColaboradorGestor: null,
+  idSetorGestor: null,
 };
 
-//----------------- DIMENSÕES DOS INDICADORES -----------------//
-
 const DIMENSOES_AVALIACAO = [
-  {
-    nome: 'Ambiente',
-    palavras: ['equilibrio', 'demandas', 'recursos'],
-  },
-  {
-    nome: 'Comunicação',
-    palavras: ['comunicacao'],
-  },
-  {
-    nome: 'Reconhecimento',
-    palavras: ['reconhecimento'],
-  },
-  {
-    nome: 'Carga de trabalho',
-    palavras: ['carga', 'trabalho'],
-  },
+  { nome: 'Ambiente', palavras: ['equilibrio', 'demandas', 'recursos'] },
+  { nome: 'Comunicação', palavras: ['comunicacao'] },
+  { nome: 'Reconhecimento', palavras: ['reconhecimento'] },
+  { nome: 'Carga de trabalho', palavras: ['carga', 'trabalho'] },
 ];
-
-//----------------- DATAS -----------------//
 
 const CHAVES_DATA = [
   'data_criacao',
@@ -57,6 +42,14 @@ const CHAVES_DATA = [
   'data',
 ];
 
+function normalizarTexto(texto) {
+  return String(texto ?? '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .trim()
+    .toLowerCase();
+}
+
 function obterDataRegistro(item) {
   if (!item) return 0;
 
@@ -69,9 +62,7 @@ function obterDataRegistro(item) {
 
     const data = new Date(valor).getTime();
 
-    if (!Number.isNaN(data)) {
-      return data;
-    }
+    if (!Number.isNaN(data)) return data;
   }
 
   return 0;
@@ -83,43 +74,419 @@ function ordenarMaisRecentes(lista) {
   );
 }
 
-//----------------- NÚMEROS -----------------//
-
 function obterNumero(valor) {
-  if (
-    valor === undefined ||
-    valor === null ||
-    valor === ''
-  ) {
+  if (valor === undefined || valor === null || valor === '') {
     return null;
   }
 
-  const numero = Number(
-    String(valor).replace(',', '.')
-  );
+  const numero = Number(String(valor).replace(',', '.'));
 
-  if (
-    Number.isNaN(numero) ||
-    numero < 0 ||
-    numero > 5
-  ) {
+  if (Number.isNaN(numero) || numero < 0 || numero > 5) {
     return null;
   }
 
   return numero;
 }
 
-//----------------- NORMALIZAR TEXTO -----------------//
+function obterUsuarioLogado() {
+  try {
+    const salvo =
+      localStorage.getItem('usuario') ||
+      localStorage.getItem('usuarioLogin');
 
-function normalizarTexto(texto) {
-  return String(texto ?? '')
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .trim()
-    .toLowerCase();
+    if (!salvo) return {};
+
+    const usuario = JSON.parse(salvo);
+
+    return (
+      usuario?.usuario ??
+      usuario?.response?.usuario ??
+      usuario
+    );
+  } catch {
+    return {};
+  }
 }
 
-//----------------- COMPONENTE DASHBOARD -----------------//
+// Obtém o ID do colaborador em diferentes formatos retornados pela API.
+function obterIdColaborador(item) {
+  const id =
+    item?.id_colaborador ??
+    item?.colaborador?.id_colaborador ??
+    item?.colaborador?.id ??
+    null;
+
+  return id == null ? null : String(id);
+}
+
+// Obtém o setor do colaborador em diferentes formatos.
+function obterIdSetorColaborador(colaborador) {
+  const setor = Array.isArray(colaborador?.setor)
+    ? colaborador.setor[0]
+    : colaborador?.setor;
+
+  const id =
+    colaborador?.id_setor ??
+    setor?.id_setor ??
+    setor?.id ??
+    colaborador?.setor_id ??
+    colaborador?.colaborador?.id_setor ??
+    colaborador?.colaborador?.setor?.id_setor ??
+    colaborador?.colaborador?.setor?.id;
+
+  return id == null ? null : String(id);
+}
+
+function obterIdResponsavelPlano(plano) {
+  const colaborador =
+    plano?.colaborador ??
+    plano?.colaborador_responsavel ??
+    plano?.responsavel ??
+    plano?.usuario_responsavel ??
+    plano?.gestor ??
+    null;
+
+  const id =
+    plano?.id_colaborador ??
+    plano?.id_responsavel ??
+    plano?.id_responsavel_plano ??
+    colaborador?.id_colaborador ??
+    colaborador?.colaborador?.id_colaborador ??
+    colaborador?.id;
+
+  return id == null ? null : String(id);
+}
+
+function isStatusConcluido(valor) {
+  if (typeof valor === 'number') return valor === 1;
+  if (typeof valor === 'boolean') return valor;
+
+  return [
+    '1',
+    'true',
+    'concluido',
+    'concluida',
+    'encerrado',
+    'encerrada',
+    'finalizado',
+    'finalizada',
+  ].includes(normalizarTexto(valor));
+}
+
+function isAvaliacaoConcluida(avaliacao) {
+  return isStatusConcluido(
+    avaliacao?.status ??
+    avaliacao?.situacao ??
+    avaliacao?.estado
+  );
+}
+
+// Participações podem usar Respondido/Respondida além de Concluído.
+function isParticipacaoConcluida(participacao) {
+  const status =
+    participacao?.status ??
+    participacao?.situacao ??
+    participacao?.estado;
+
+  if (typeof status === 'number') return status === 1;
+  if (typeof status === 'boolean') return status;
+
+  return [
+    '1',
+    'true',
+    'concluido',
+    'concluida',
+    'respondido',
+    'respondida',
+    'finalizado',
+    'finalizada',
+  ].includes(normalizarTexto(status));
+}
+
+function isRegistroPendente(item) {
+  const bruto =
+    item?.status ??
+    item?.situacao ??
+    item?.estado;
+
+  if (typeof bruto === 'number') return bruto === 0;
+  if (typeof bruto === 'boolean') return !bruto;
+
+  return [
+    'pendente',
+    'pendencia',
+    'aguardando',
+    'em analise',
+    'aberto',
+    'aberta',
+    '0',
+  ].includes(normalizarTexto(bruto));
+}
+
+function formatarStatusPlano(plano) {
+  const valor =
+    plano?.status ??
+    plano?.situacao ??
+    plano?.estado;
+
+  if (
+    typeof valor === 'number' ||
+    /^\d+$/.test(String(valor ?? ''))
+  ) {
+    return Number(valor) === 1
+      ? 'Concluído'
+      : 'Em andamento';
+  }
+
+  if (typeof valor === 'boolean') {
+    return valor ? 'Em andamento' : 'Não iniciado';
+  }
+
+  const texto = normalizarTexto(valor);
+
+  if (
+    [
+      'concluido',
+      'concluida',
+      'encerrado',
+      'encerrada',
+      'finalizado',
+      'finalizada',
+    ].includes(texto)
+  ) {
+    return 'Concluído';
+  }
+
+  if (
+    ['atrasado', 'atrasada', 'em atraso'].includes(texto)
+  ) {
+    return 'Atrasado';
+  }
+
+  if (
+    [
+      'em andamento',
+      'andamento',
+      'ativo',
+      'ativa',
+      'iniciado',
+      'iniciada',
+    ].includes(texto)
+  ) {
+    return 'Em andamento';
+  }
+
+  if (
+    [
+      'nao iniciado',
+      'nao iniciada',
+      'pendente',
+      'aguardando',
+    ].includes(texto)
+  ) {
+    return 'Não iniciado';
+  }
+
+  return valor ? String(valor) : 'Em andamento';
+}
+
+function formatarDataPlano(valor) {
+  if (!valor) return 'Não definida';
+
+  const partes = String(valor)
+    .split('T')[0]
+    .split('-');
+
+  return partes.length === 3
+    ? `${partes[2]}/${partes[1]}/${partes[0]}`
+    : String(valor);
+}
+
+function obterNomeResponsavelPlano(plano) {
+  const responsavel =
+    plano?.colaborador ??
+    plano?.colaborador_responsavel ??
+    plano?.responsavel ??
+    plano?.usuario_responsavel ??
+    plano?.gestor ??
+    null;
+
+  if (typeof responsavel === 'string') {
+    return responsavel.trim() || 'Responsável não definido';
+  }
+
+  const nome =
+    responsavel?.nome ??
+    responsavel?.nome_completo ??
+    responsavel?.nome_colaborador ??
+    responsavel?.colaborador?.nome ??
+    responsavel?.usuario?.nome ??
+    plano?.nome_responsavel ??
+    '';
+
+  return String(nome).trim() || 'Responsável não definido';
+}
+
+// Obtém o ID da avaliação, inclusive quando ela vem aninhada.
+function obterIdAvaliacao(avaliacao) {
+  const id =
+    avaliacao?.id_avaliacao ??
+    avaliacao?.avaliacao?.id_avaliacao ??
+    avaliacao?.avaliacao?.id ??
+    avaliacao?.id;
+
+  return Number(id);
+}
+
+function obterIdAvaliacaoParticipacao(item) {
+  const id =
+    item?.avaliacao?.id_avaliacao ??
+    item?.avaliacao?.id ??
+    item?.id_avaliacao ??
+    item?.avaliacao_id;
+
+  return Number(id);
+}
+
+function obterIdAvaliacaoSetor(item) {
+  const id =
+    item?.id_avaliacao ??
+    item?.avaliacao?.id_avaliacao ??
+    item?.avaliacao?.id ??
+    item?.avaliacao_id;
+
+  return Number(id);
+}
+
+function obterIdSetorAvaliacaoLink(item) {
+  const setor = Array.isArray(item?.setor)
+    ? item.setor[0]
+    : item?.setor;
+
+  const id =
+    item?.id_setor ??
+    setor?.id_setor ??
+    setor?.id;
+
+  return id == null ? null : String(id);
+}
+
+function obterIdSetorResultado(resultado) {
+  const setor = Array.isArray(resultado?.setor)
+    ? resultado.setor[0]
+    : resultado?.setor;
+
+  const id =
+    resultado?.avaliacao?.id_setor ??
+    resultado?.avaliacao?.setor?.id_setor ??
+    resultado?.avaliacao?.setor?.id ??
+    resultado?.id_setor ??
+    setor?.id_setor ??
+    setor?.id;
+
+  return id == null ? null : String(id);
+}
+
+function obterNomeFatorResultado(resultado) {
+  return (
+    resultado?.fator_psicossocial?.psicossocialFator?.nome ??
+    resultado?.fator_psicossocial?.psicossocial_fator?.nome ??
+    resultado?.fator_psicossocial?.nome ??
+    resultado?.psicossocial_fator?.nome ??
+    resultado?.fator?.nome ??
+    resultado?.nome_fator ??
+    ''
+  );
+}
+
+function obterIdFatorResultado(resultado) {
+  return Number(
+    resultado?.fator_psicossocial?.psicossocialFator?.id ??
+    resultado?.fator_psicossocial?.psicossocialFator?.id_psicossocial_fator ??
+    resultado?.fator_psicossocial?.psicossocial_fator?.id ??
+    resultado?.fator_psicossocial?.id_psicossocial_fator ??
+    resultado?.fator_psicossocial?.id ??
+    resultado?.psicossocial_fator?.id ??
+    resultado?.fator?.id ??
+    resultado?.id_psicossocial_fator
+  );
+}
+
+// Obtém o setor do usuário logado.
+function obterIdSetorUsuario(usuario, colaboradores) {
+  const setorUsuario = Array.isArray(usuario?.setor)
+    ? usuario.setor[0]
+    : usuario?.setor;
+
+  const setorColaborador = Array.isArray(
+    usuario?.colaborador?.setor
+  )
+    ? usuario.colaborador.setor[0]
+    : usuario?.colaborador?.setor;
+
+  const setorDireto =
+    usuario?.id_setor ??
+    setorUsuario?.id_setor ??
+    setorUsuario?.id ??
+    usuario?.colaborador?.id_setor ??
+    setorColaborador?.id_setor ??
+    setorColaborador?.id;
+
+  if (setorDireto != null) {
+    return String(setorDireto);
+  }
+
+  const idColaborador = obterIdColaborador(usuario);
+
+  if (!idColaborador) {
+    return null;
+  }
+
+  const colaboradorGestor = colaboradores.find(
+    (item) => obterIdColaborador(item) === idColaborador
+  );
+
+  return obterIdSetorColaborador(colaboradorGestor);
+}
+
+function formatarIndicador(nota) {
+  if (nota === null || nota === undefined) {
+    return {
+      nota: '— / 5',
+      percentual: 0,
+      status: 'Sem dados',
+      tipo: 'normal',
+    };
+  }
+
+  const notaFinal = Math.max(0, Math.min(5, nota));
+  const percentual = Math.round((notaFinal / 5) * 100);
+
+  if (notaFinal < 3) {
+    return {
+      nota: `${notaFinal.toFixed(1).replace('.', ',')} / 5`,
+      percentual,
+      status: 'Prioridade',
+      tipo: 'prioridade',
+    };
+  }
+
+  if (notaFinal < 3.7) {
+    return {
+      nota: `${notaFinal.toFixed(1).replace('.', ',')} / 5`,
+      percentual,
+      status: 'Atenção',
+      tipo: 'atencao',
+    };
+  }
+
+  return {
+    nota: `${notaFinal.toFixed(1).replace('.', ',')} / 5`,
+    percentual,
+    status: 'Normal',
+    tipo: 'normal',
+  };
+}
 
 function Dashboard() {
   const navigate = useNavigate();
@@ -127,8 +494,6 @@ function Dashboard() {
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState('');
   const [dados, setDados] = useState(ESTADO_INICIAL);
-
-  //----------------- CARREGAR DADOS -----------------//
 
   useEffect(() => {
     async function carregar() {
@@ -159,223 +524,131 @@ function Dashboard() {
     carregar();
   }, []);
 
-  //----------------- STATUS PENDENTE -----------------//
+  const usuarioLogado = obterUsuarioLogado();
 
-  const isRegistroPendente = (item) => {
-    const bruto =
-      item?.status ??
-      item?.situacao ??
-      item?.estado;
+  const nivelAcesso = normalizarTexto(
+    usuarioLogado?.nivel_acesso?.nome ??
+    usuarioLogado?.nivel_acesso ??
+    usuarioLogado?.nivel ??
+    ''
+  );
 
-    if (typeof bruto === 'number') {
-      return bruto === 0;
+  const ehGestor = nivelAcesso === 'gestor';
+
+  // O serviço identifica o colaborador Gestor usando a mesma
+  // função utilizada na tela Minha Equipe.
+  const idGestor =
+    dados.idColaboradorGestor != null
+      ? String(dados.idColaboradorGestor)
+      : obterIdColaborador(usuarioLogado);
+
+  const idSetorGestor =
+    dados.idSetorGestor != null
+      ? String(dados.idSetorGestor)
+      : obterIdSetorUsuario(
+          usuarioLogado,
+          dados.colaboradores
+        );
+
+  // Usa a equipe já montada pelo serviço, para que o total
+  // seja igual ao exibido na tela Minha Equipe.
+  const equipeGestor = useMemo(() => {
+    if (!ehGestor) return [];
+
+    if (Array.isArray(dados.equipeGestor)) {
+      return dados.equipeGestor;
     }
 
-    if (typeof bruto === 'boolean') {
-      return !bruto;
-    }
+    if (!idSetorGestor) return [];
 
-    const texto = normalizarTexto(bruto);
+    return (
+      Array.isArray(dados.colaboradores)
+        ? dados.colaboradores
+        : []
+    ).filter((colaborador) => {
+      const mesmoSetor =
+        obterIdSetorColaborador(colaborador) ===
+        String(idSetorGestor);
 
-    if (!texto) return false;
+      const id = obterIdColaborador(colaborador);
 
-    return [
-      'pendente',
-      'pendencia',
-      'aguardando',
-      'em analise',
-      'aberto',
-      'aberta',
-      '0',
-    ].includes(texto);
-  };
+      return mesmoSetor && id !== idGestor;
+    });
+  }, [
+    ehGestor,
+    idSetorGestor,
+    idGestor,
+    dados.equipeGestor,
+    dados.colaboradores,
+  ]);
 
-  //----------------- STATUS DO PLANO DE AÇÃO -----------------//
+  //----------------- FÉRIAS E PLANOS DO GESTOR -----------------//
 
-  const formatarStatusPlano = (plano) => {
-    const valor = plano?.status ??
-      plano?.situacao ??
-      plano?.estado;
+  const feriasPendentesGestor = (
+    Array.isArray(dados.ferias)
+      ? dados.ferias
+      : []
+  ).filter(isRegistroPendente);
 
-    // Na API de Plano de Ação:
-    // 0 = em andamento/ativo
-    // 1 = concluído/encerrado
-    if (typeof valor === 'number' || /^\\d+$/.test(String(valor ?? ''))) {
-      return Number(valor) === 1
-        ? 'Concluído'
-        : 'Em andamento';
-    }
+  const planosDoGestor = (
+    Array.isArray(dados.planosAcao)
+      ? dados.planosAcao
+      : []
+  ).filter(
+    (plano) =>
+      obterIdResponsavelPlano(plano) === idGestor
+  );
 
-    if (typeof valor === 'boolean') {
-      return valor ? 'Em andamento' : 'Não iniciado';
-    }
+  const planosEmAndamentoGestor =
+    planosDoGestor.filter((plano) => {
+      const status = formatarStatusPlano(plano);
 
-    const texto = normalizarTexto(valor);
+      return (
+        status === 'Em andamento' ||
+        status === 'Atrasado'
+      );
+    });
 
-    if (
-      ['concluido', 'concluida', 'encerrado', 'encerrada',
-       'finalizado', 'finalizada'].includes(texto)
-    ) {
-      return 'Concluído';
-    }
-
-    if (['atrasado', 'atrasada', 'em atraso'].includes(texto)) {
-      return 'Atrasado';
-    }
-
-    if (
-      ['em andamento', 'andamento', 'ativo', 'ativa',
-       'iniciado', 'iniciada'].includes(texto)
-    ) {
-      return 'Em andamento';
-    }
-
-    if (
-      ['nao iniciado', 'nao iniciada', 'pendente',
-       'aguardando'].includes(texto)
-    ) {
-      return 'Não iniciado';
-    }
-
-    return texto
-      ? String(valor)
-      : 'Em andamento';
-  };
-
-  //----------------- STATUS ATIVO/INATIVO DAS AVALIAÇÕES -----------------//
-
-  const formatarStatusAtivoInativo = (valor) => {
-    if (typeof valor === 'boolean') {
-      return valor ? 'Ativo' : 'Inativo';
-    }
-
-    if (typeof valor === 'number') {
-      return valor === 1 ? 'Ativo' : 'Inativo';
-    }
-
-    const texto = normalizarTexto(valor);
-
-    if (['1', 'true', 'ativo', 'ativa'].includes(texto)) {
-      return 'Ativo';
-    }
-
-    return 'Inativo';
-  };
-
-  //----------------- FORMATAR DATA DO PLANO -----------------//
-
-  const formatarDataPlano = (valor) => {
-    if (!valor) return 'Não definida';
-
-    const data = String(valor).split('T')[0];
-    const partes = data.split('-');
-
-    if (partes.length !== 3) {
-      return String(valor);
-    }
-
-    return `${partes[2]}/${partes[1]}/${partes[0]}`;
-  };
-
-  //----------------- OBTER RESPONSÁVEL DO PLANO -----------------//
-
-  const obterNomeResponsavelPlano = (plano) => {
-    // O cadastro/acompanhamento do plano utiliza colaborador
-    // como relação do responsável específico daquele plano.
-    const responsavel =
-      plano?.colaborador ??
-      plano?.colaborador_responsavel ??
-      plano?.responsavel ??
-      plano?.usuario_responsavel ??
-      plano?.gestor ??
-      null;
-
-    if (typeof responsavel === 'string') {
-      return responsavel.trim() || 'Responsável não definido';
-    }
-
-    const nome =
-      responsavel?.nome ??
-      responsavel?.nome_completo ??
-      responsavel?.nome_colaborador ??
-      responsavel?.colaborador?.nome ??
-      responsavel?.usuario?.nome ??
-      plano?.colaborador_responsavel?.nome ??
-      plano?.responsavel?.nome ??
-      plano?.usuario_responsavel?.nome ??
-      plano?.nome_responsavel ??
-      '';
-
-    return String(nome).trim() || 'Responsável não definido';
-  };
-
-  //----------------- ID DA AVALIAÇÃO -----------------//
-
-  const obterIdAvaliacao = (avaliacao) =>
-    Number(
-      avaliacao?.id_avaliacao ??
-      avaliacao?.avaliacao?.id ??
-      avaliacao?.id
-    );
-
-  //----------------- SETOR DA AVALIAÇÃO -----------------//
+  //----------------- SETOR E PARTICIPAÇÃO DAS AVALIAÇÕES -----------------//
 
   const obterSetorAvaliacao = (avaliacao) => {
     const idAvaliacao = obterIdAvaliacao(avaliacao);
 
-    const vinculosSetor = Array.isArray(
-      dados.avaliacoesSetores
-    )
-      ? dados.avaliacoesSetores
-      : [];
-
-    const listaSetores = Array.isArray(dados.setores)
-      ? dados.setores
-      : [];
-
-    const vinculo = vinculosSetor.find(
+    const vinculo = (
+      Array.isArray(dados.avaliacoesSetores)
+        ? dados.avaliacoesSetores
+        : []
+    ).find(
       (item) =>
-        Number(
-          item.id_avaliacao ??
-          item.avaliacao?.id
-        ) === idAvaliacao
+        obterIdAvaliacaoSetor(item) === idAvaliacao
     );
 
     const idSetor =
-      vinculo?.id_setor ??
-      vinculo?.setor?.id ??
-      vinculo?.setor?.id_setor ??
-      avaliacao?.id_setor ??
-      avaliacao?.setor?.id;
+      obterIdSetorAvaliacaoLink(vinculo) ??
+      obterIdSetorResultado(avaliacao);
 
     if (idSetor != null) {
-      const setorEncontrado = listaSetores.find(
-        (setor) =>
-          Number(
-            setor.id ??
-            setor.id_setor
-          ) === Number(idSetor)
+      const setor = (
+        Array.isArray(dados.setores)
+          ? dados.setores
+          : []
+      ).find(
+        (item) =>
+          String(item.id_setor ?? item.id) ===
+          String(idSetor)
       );
 
-      if (
-        setorEncontrado?.nome ||
-        setorEncontrado?.descricao
-      ) {
-        return (
-          setorEncontrado.nome ??
-          setorEncontrado.descricao
-        );
-      }
+      const setorVinculado = Array.isArray(vinculo?.setor)
+        ? vinculo.setor[0]
+        : vinculo?.setor;
 
-      if (
-        vinculo?.setor?.nome ||
-        vinculo?.nome_setor
-      ) {
-        return (
-          vinculo.setor?.nome ??
-          vinculo.nome_setor
-        );
-      }
+      return (
+        setor?.nome ??
+        setor?.descricao ??
+        setorVinculado?.nome ??
+        vinculo?.nome_setor ??
+        'Não informado'
+      );
     }
 
     const publico = normalizarTexto(
@@ -393,153 +666,99 @@ function Dashboard() {
     return 'Não informado';
   };
 
-  //----------------- PARTICIPAÇÃO DA AVALIAÇÃO -----------------//
-
   const calcularParticipacaoAvaliacao = (avaliacao) => {
     const idAvaliacao = obterIdAvaliacao(avaliacao);
 
-    const participacoes = Array.isArray(
-      dados.participacoes
-    )
-      ? dados.participacoes
-      : [];
-
-    if (
-      !idAvaliacao ||
-      participacoes.length === 0
-    ) {
-      return 0;
-    }
-
-    const daAvaliacao = participacoes.filter(
-      (participacao) =>
-        Number(
-          participacao.avaliacao?.id ??
-          participacao.id_avaliacao
-        ) === idAvaliacao
+    const participacoes = (
+      Array.isArray(dados.participacoes)
+        ? dados.participacoes
+        : []
+    ).filter(
+      (item) =>
+        obterIdAvaliacaoParticipacao(item) ===
+        idAvaliacao
     );
 
-    if (daAvaliacao.length === 0) {
+    if (!idAvaliacao || participacoes.length === 0) {
       return 0;
     }
 
-    const concluidos = daAvaliacao.filter(
-      (participacao) => {
-        if (typeof participacao.status === 'number') {
-          return participacao.status === 1;
-        }
-
-        if (typeof participacao.status === 'boolean') {
-          return participacao.status;
-        }
-
-        const status = normalizarTexto(
-          participacao.status
-        );
-
-        return [
-          '1',
-          'true',
-          'concluido',
-          'respondido',
-          'respondida',
-        ].includes(status);
-      }
+    const concluidos = participacoes.filter(
+      isParticipacaoConcluida
     ).length;
 
     return Math.min(
       100,
       Math.round(
-        (concluidos / daAvaliacao.length) * 100
+        (concluidos / participacoes.length) * 100
       )
     );
   };
 
-  //----------------- RESULTADOS DOS FATORES -----------------//
-
-  const obterNomeFatorResultado = (resultado) => {
-    return (
-      resultado?.fator_psicossocial?.psicossocialFator?.nome ??
-      resultado?.fator_psicossocial?.nome ??
-      resultado?.psicossocial_fator?.nome ??
-      resultado?.fator?.nome ??
-      resultado?.nome_fator ??
-      ''
-    );
-  };
-
-  const obterIdFatorResultado = (resultado) => {
-    return Number(
-      resultado?.fator_psicossocial?.psicossocialFator?.id ??
-      resultado?.fator_psicossocial?.id ??
-      resultado?.psicossocial_fator?.id ??
-      resultado?.fator?.id ??
-      resultado?.id_psicossocial_fator
-    );
-  };
-
-  const obterDimensaoResultado = (resultado) => {
-    const nomeFator = normalizarTexto(
-      obterNomeFatorResultado(resultado)
-    );
-
-    return DIMENSOES_AVALIACAO.find(
-      (dimensao) =>
-        dimensao.palavras.every(
-          (palavra) => nomeFator.includes(palavra)
-        )
-    ) ?? null;
-  };
-
-  //----------------- AVALIAÇÕES CONCLUÍDAS -----------------//
-
-  const isAvaliacaoConcluida = (avaliacao) => {
-    const status = avaliacao?.status ??
-      avaliacao?.situacao ??
-      avaliacao?.estado;
-
-    if (typeof status === 'number') {
-      return status === 1;
-    }
-
-    if (typeof status === 'boolean') {
-      return status;
-    }
-
-    return [
-      '1',
-      'true',
-      'concluido',
-      'concluida',
-      'encerrado',
-      'encerrada',
-      'finalizado',
-      'finalizada',
-    ].includes(normalizarTexto(status));
-  };
-
   //----------------- RESULTADOS AGRUPADOS POR FATOR -----------------//
 
-  const obterResultadosValidos = () => {
-    const resultados = Array.isArray(dados.resultados)
-      ? dados.resultados
+  const obterResultadosValidos = (
+    somenteEquipe = false
+  ) => {
+    const avaliacoes = Array.isArray(dados.avaliacoes)
+      ? dados.avaliacoes
       : [];
 
     const avaliacoesConcluidas = new Set(
-      (Array.isArray(dados.avaliacoes) ? dados.avaliacoes : [])
+      avaliacoes
         .filter(isAvaliacaoConcluida)
-        .map((avaliacao) => obterIdAvaliacao(avaliacao))
+        .map(obterIdAvaliacao)
         .filter(Boolean)
     );
 
-    // Quando o resultado já traz a avaliação completa, usa seu status.
-    // Caso contrário, consulta a lista de avaliações carregada pelo serviço.
-    const resultadosValidos = resultados
+    const avaliacoesComParticipanteValido = new Set();
+
+    (
+      Array.isArray(dados.participacoes)
+        ? dados.participacoes
+        : []
+    ).forEach((participacao) => {
+      const idAvaliacao =
+        obterIdAvaliacaoParticipacao(participacao);
+
+      if (
+        !idAvaliacao ||
+        !isParticipacaoConcluida(participacao)
+      ) {
+        return;
+      }
+
+      avaliacoesComParticipanteValido.add(
+        idAvaliacao
+      );
+    });
+
+    const resultadosValidos = (
+      Array.isArray(dados.resultados)
+        ? dados.resultados
+        : []
+    )
       .map((resultado) => {
-        const avaliacao = resultado?.avaliacao ?? {};
-        const idAvaliacao = obterIdAvaliacao(resultado);
-        const idFator = obterIdFatorResultado(resultado);
-        const dimensao = obterDimensaoResultado(resultado);
+        const avaliacao =
+          resultado?.avaliacao ?? {};
+
+        const idAvaliacao =
+          obterIdAvaliacao(resultado);
+
+        const idFator =
+          obterIdFatorResultado(resultado);
+
+        const nomeFator = normalizarTexto(
+          obterNomeFatorResultado(resultado)
+        );
+
+        const dimensao =
+          DIMENSOES_AVALIACAO.find((item) =>
+            item.palavras.every((palavra) =>
+              nomeFator.includes(palavra)
+            )
+          ) ?? null;
+
         const nota = obterNumero(
           resultado.valor_medio ??
           resultado.media ??
@@ -565,27 +784,88 @@ function Dashboard() {
           return false;
         }
 
-        if (resultado.avaliacao.status !== undefined) {
-          return isAvaliacaoConcluida(resultado.avaliacao);
+        // Só considera avaliações encerradas.
+        if (
+          resultado.avaliacao.status !== undefined ||
+          resultado.avaliacao.situacao !== undefined ||
+          resultado.avaliacao.estado !== undefined
+        ) {
+          if (
+            !isAvaliacaoConcluida(
+              resultado.avaliacao
+            )
+          ) {
+            return false;
+          }
+        } else if (
+          !avaliacoesConcluidas.has(
+            resultado.idAvaliacao
+          )
+        ) {
+          return false;
         }
 
-        return avaliacoesConcluidas.has(resultado.idAvaliacao);
+        if (somenteEquipe) {
+          // Só considera avaliações com pelo menos uma
+          // participação válida e concluída.
+          if (
+            !avaliacoesComParticipanteValido.has(
+              resultado.idAvaliacao
+            )
+          ) {
+            return false;
+          }
+
+          const avaliacaoCompleta =
+            avaliacoes.find(
+              (item) =>
+                obterIdAvaliacao(item) ===
+                resultado.idAvaliacao
+            );
+
+          const vinculosSetor = (
+            Array.isArray(dados.avaliacoesSetores)
+              ? dados.avaliacoesSetores
+              : []
+          ).filter(
+            (item) =>
+              obterIdAvaliacaoSetor(item) ===
+              resultado.idAvaliacao
+          );
+
+          const idSetorLink = vinculosSetor
+            .map(obterIdSetorAvaliacaoLink)
+            .find(Boolean);
+
+          const idSetorAvaliacao =
+            idSetorLink ??
+            obterIdSetorResultado(avaliacaoCompleta) ??
+            obterIdSetorResultado(resultado);
+
+          if (
+            idSetorAvaliacao == null ||
+            idSetorGestor == null ||
+            String(idSetorAvaliacao) !==
+              String(idSetorGestor)
+          ) {
+            return false;
+          }
+        }
+
+        return true;
       });
 
-    // A API retorna uma linha por pergunta. Calculamos a média das perguntas
-    // do mesmo fator dentro da mesma avaliação para obter uma única nota.
     const grupos = {};
 
     resultadosValidos.forEach((resultado) => {
-      const chave = `${resultado.idAvaliacao}-${resultado.idFator}`;
-
+      const chave =
+        `${resultado.idAvaliacao}-${resultado.idFator}`;
 
       if (!grupos[chave]) {
         grupos[chave] = {
           idAvaliacao: resultado.idAvaliacao,
           idFator: resultado.idFator,
           dimensao: resultado.dimensao,
-          avaliacao: resultado.avaliacao,
           total: 0,
           quantidade: 0,
           data: obterDataRegistro(resultado),
@@ -598,112 +878,70 @@ function Dashboard() {
 
     return Object.values(grupos).map((grupo) => ({
       ...grupo,
-      nota: grupo.quantidade > 0
+      nota: grupo.quantidade
         ? grupo.total / grupo.quantidade
         : null,
     }));
   };
 
-  //----------------- ÚLTIMA NOTA DE CADA FATOR -----------------//
+  const calcularIndicadores = (
+    somenteEquipe = false
+  ) => {
+    const resultados =
+      obterResultadosValidos(somenteEquipe);
 
-  const obterUltimaNotaDoFator = (dimensao) => {
-    const resultados = obterResultadosValidos().filter(
-      (resultado) => resultado.dimensao.nome === dimensao.nome
-    );
+    const obterUltimaNota = (dimensao) => {
+      const encontrados = resultados
+        .filter(
+          (item) =>
+            item.dimensao.nome === dimensao.nome
+        )
+        .sort((a, b) =>
+          b.data !== a.data
+            ? b.data - a.data
+            : b.idAvaliacao - a.idAvaliacao
+        );
 
-    if (resultados.length === 0) {
-      return null;
-    }
-
-    const resultadosOrdenados = [...resultados].sort((a, b) => {
-      if (a.data !== b.data) {
-        return b.data - a.data;
-      }
-
-      return b.idAvaliacao - a.idAvaliacao;
-    });
-
-    return resultadosOrdenados[0]?.nota ?? null;
-  };
-
-  //----------------- FORMATAR INDICADOR -----------------//
-
-  const formatarIndicador = (nota) => {
-    if (nota === null) {
-      return {
-        nota: '— / 5',
-        percentual: 0,
-        status: 'Sem dados',
-        tipo: 'normal',
-      };
-    }
-
-    const notaFinal = Math.max(
-      0,
-      Math.min(5, nota)
-    );
-
-    const percentual = Math.round(
-      (notaFinal / 5) * 100
-    );
-
-    if (notaFinal < 3) {
-      return {
-        nota: `${notaFinal.toFixed(1).replace('.', ',')} / 5`,
-        percentual,
-        status: 'Prioridade',
-        tipo: 'prioridade',
-      };
-    }
-
-    if (notaFinal < 3.7) {
-      return {
-        nota: `${notaFinal.toFixed(1).replace('.', ',')} / 5`,
-        percentual,
-        status: 'Atenção',
-        tipo: 'atencao',
-      };
-    }
-
-    return {
-      nota: `${notaFinal.toFixed(1).replace('.', ',')} / 5`,
-      percentual,
-      status: 'Normal',
-      tipo: 'normal',
+      return encontrados[0]?.nota ?? null;
     };
-  };
 
-  //----------------- CALCULAR INDICADORES -----------------//
-
-  const calcularIndicadorDaAvaliacao = (dimensao) => {
-    const nota = obterUltimaNotaDoFator(dimensao);
-
-    return formatarIndicador(nota);
-  };
-
-  //----------------- SATISFAÇÃO -----------------//
-
-  const calcularIndicadorSatisfacao = () => {
-    const notasFatores = DIMENSOES_AVALIACAO
-      .map((dimensao) =>
-        obterUltimaNotaDoFator(dimensao)
-      )
+    const notas = DIMENSOES_AVALIACAO
+      .map(obterUltimaNota)
       .filter((nota) => nota !== null);
 
-    if (notasFatores.length === 0) {
-      return formatarIndicador(null);
-    }
+    const satisfacao = notas.length
+      ? notas.reduce(
+          (soma, nota) => soma + nota,
+          0
+        ) / notas.length
+      : null;
 
-    const media =
-      notasFatores.reduce(
-        (total, nota) => total + nota,
-        0
-      ) / notasFatores.length;
-
-    return formatarIndicador(media);
+    return [
+      {
+        nome: 'Satisfação',
+        ...formatarIndicador(satisfacao),
+      },
+      ...DIMENSOES_AVALIACAO.map(
+        (dimensao) => ({
+          nome: dimensao.nome,
+          ...formatarIndicador(
+            obterUltimaNota(dimensao)
+          ),
+        })
+      ),
+    ];
   };
 
-  //----------------- FÉRIAS PENDENTES -----------------//
+  // RH utiliza os indicadores gerais.
+  // Gestor utiliza somente os indicadores do seu setor.
+  const indicadoresRH = calcularIndicadores(false);
+  const indicadoresGestor = calcularIndicadores(true);
+
+  const indicadores = ehGestor
+    ? indicadoresGestor
+    : indicadoresRH;
+
+  //----------------- KPI RH -----------------//
 
   const totalFeriasPendentes = (
     Array.isArray(dados.ferias)
@@ -711,9 +949,7 @@ function Dashboard() {
       : []
   ).filter(isRegistroPendente).length;
 
-  //----------------- CARDS KPI -----------------//
-
-  const kpis = [
+  const kpisRH = [
     {
       id: 1,
       titulo: 'Total de colaboradores',
@@ -768,35 +1004,79 @@ function Dashboard() {
     },
   ];
 
-  //----------------- LISTA DE INDICADORES -----------------//
+  //----------------- KPI GESTOR -----------------//
 
-  const indicadores = [
+  const kpisGestor = [
     {
-      nome: 'Satisfação',
-      ...calcularIndicadorSatisfacao(),
+      id: 1,
+      titulo: 'Colaboradores da equipe',
+      valor: String(equipeGestor.length),
+      statusTexto: 'Na sua equipe',
+      statusCor: 'verde',
+      iconeBg: '#dcfce7',
+      iconeCor: '#16a34a',
+      linkTexto: 'Ver minha equipe',
+      rota: '/minha-equipe',
+      iconeTipo: 'usuarios',
+      statusIcone: 'seta-cima',
     },
-    ...DIMENSOES_AVALIACAO.map((dimensao) => ({
-      nome: dimensao.nome,
-      ...calcularIndicadorDaAvaliacao(dimensao),
-    })),
+    {
+      id: 2,
+      titulo: 'Solicitações de férias',
+      valor: String(feriasPendentesGestor.length),
+      statusTexto: 'Aguardando sua análise',
+      statusCor: 'amarelo',
+      iconeBg: '#fef9c3',
+      iconeCor: '#ca8a04',
+      linkTexto: 'Analisar férias',
+      rota: '/ferias',
+      iconeTipo: 'relogio',
+      statusIcone: 'exclamacao',
+    },
+    {
+      id: 3,
+      titulo: 'Planos em andamento',
+      valor: String(planosEmAndamentoGestor.length),
+      statusTexto: 'Atribuídos a você',
+      statusCor: 'azul',
+      iconeBg: '#dbeafe',
+      iconeCor: '#2563eb',
+      linkTexto: 'Ver planos de ação',
+      rota: '/planos-acao',
+      iconeTipo: 'check-circulo',
+      statusIcone: 'pulso',
+    },
   ];
 
-  //----------------- AVALIAÇÕES RECENTES -----------------//
+  const kpis = ehGestor
+    ? kpisGestor
+    : kpisRH;
 
-  const avaliacoesRecentes = ordenarMaisRecentes(
+  //----------------- AVALIAÇÕES RECENTES (RH) -----------------//
+
+  const avaliacoesFormatadas = ordenarMaisRecentes(
     Array.isArray(dados.avaliacoes)
       ? dados.avaliacoes
       : []
-  );
-
-  const avaliacoesFormatadas = avaliacoesRecentes
+  )
     .slice(0, 3)
     .map((av, idx) => {
       const participacao =
         calcularParticipacaoAvaliacao(av);
 
       const status =
-        formatarStatusAtivoInativo(av.status);
+        typeof av.status === 'boolean'
+          ? av.status
+            ? 'Ativo'
+            : 'Inativo'
+          : Number(av.status) === 1 ||
+            [
+              'ativo',
+              'ativa',
+              'true',
+            ].includes(normalizarTexto(av.status))
+          ? 'Ativo'
+          : 'Inativo';
 
       const abaixoMeta = participacao < 50;
 
@@ -810,21 +1090,27 @@ function Dashboard() {
         setor: obterSetorAvaliacao(av),
         participacao,
         metaTexto: abaixoMeta ? '< meta' : '',
-        corBarra: abaixoMeta ? '#e69500' : '#0b5ed7',
-        corTexto: abaixoMeta ? '#d97706' : '#1e293b',
+        corBarra: abaixoMeta
+          ? '#e69500'
+          : '#0b5ed7',
+        corTexto: abaixoMeta
+          ? '#d97706'
+          : '#1e293b',
         status,
       };
     });
 
-  //----------------- PLANOS DE AÇÃO RECENTES -----------------//
+  //----------------- PLANOS FORMATADOS -----------------//
 
-  const planosRecentes = ordenarMaisRecentes(
-    Array.isArray(dados.planosAcao)
+  const listaPlanosDashboard = ehGestor
+    ? planosDoGestor
+    : Array.isArray(dados.planosAcao)
       ? dados.planosAcao
-      : []
-  );
+      : [];
 
-  const planosFormatados = planosRecentes
+  const planosFormatados = ordenarMaisRecentes(
+    listaPlanosDashboard
+  )
     .slice(0, 3)
     .map((plano, idx) => {
       let status = formatarStatusPlano(plano);
@@ -843,14 +1129,16 @@ function Dashboard() {
         plano.prazo ??
         null;
 
-      const statusConcluido = status === 'Concluído';
+      const statusConcluido =
+        status === 'Concluído';
 
-      // Plano não concluído com data final vencida é exibido como atrasado.
       const hoje = new Date();
       hoje.setHours(0, 0, 0, 0);
 
       const dataFinalPlano = dataFim
-        ? new Date(`${String(dataFim).split('T')[0]}T00:00:00`)
+        ? new Date(
+            `${String(dataFim).split('T')[0]}T00:00:00`
+          )
         : null;
 
       const atrasado =
@@ -874,8 +1162,8 @@ function Dashboard() {
 
       return {
         id:
-          plano.id ??
           plano.id_plano_acao ??
+          plano.id ??
           idx,
         plano:
           plano.titulo ??
@@ -884,18 +1172,19 @@ function Dashboard() {
         origem:
           plano.origem ??
           'Avaliação Psicossocial',
-        responsavel: obterNomeResponsavelPlano(plano),
-        dataInicio: formatarDataPlano(dataInicio),
-        dataFim: formatarDataPlano(dataFim),
+        responsavel:
+          obterNomeResponsavelPlano(plano),
+        dataInicio:
+          formatarDataPlano(dataInicio),
+        dataFim:
+          formatarDataPlano(dataFim),
         status,
         atrasado: Boolean(atrasado),
         statusTipo,
       };
     });
 
-  //----------------- ABRIR AVALIAÇÃO -----------------//
-
-  const handleAbrirAvaliacao = (item) => {
+  const handleAbrirAvaliacao = (item) =>
     navigate(
       `/avaliacao-psicossocial?avaliacaoId=${item.id}`,
       {
@@ -906,9 +1195,8 @@ function Dashboard() {
         },
       }
     );
-  };
 
-  //----------------- ÍCONES DOS KPI -----------------//
+  //----------------- ÍCONES KPI -----------------//
 
   const renderKpiIcone = (tipo, cor) => {
     switch (tipo) {
@@ -988,8 +1276,6 @@ function Dashboard() {
         return null;
     }
   };
-
-  //----------------- ÍCONES DE STATUS -----------------//
 
   const renderStatusIcone = (tipo) => {
     switch (tipo) {
@@ -1074,8 +1360,11 @@ function Dashboard() {
       <div className="card-tiulo">
         <div className="titulo-descricao">
           <h2>Dashboard</h2>
+
           <p>
-            Visão geral da organização e principais informações.
+            {ehGestor
+              ? 'Visão geral da sua equipe e principais informações.'
+              : 'Visão geral da organização e principais informações.'}
           </p>
         </div>
       </div>
@@ -1108,8 +1397,6 @@ function Dashboard() {
           </div>
         ) : (
           <>
-            {/*----------------- CARDS KPI -----------------*/}
-
             <section
               className="kpi-grid"
               style={{
@@ -1147,7 +1434,10 @@ function Dashboard() {
                   <div
                     className={`kpi-substatus status-${item.statusCor}`}
                   >
-                    {renderStatusIcone(item.statusIcone)}
+                    {renderStatusIcone(
+                      item.statusIcone
+                    )}
+
                     <span>{item.statusTexto}</span>
                   </div>
 
@@ -1164,8 +1454,6 @@ function Dashboard() {
                 </div>
               ))}
             </section>
-
-            {/*----------------- INDICADORES E AVALIAÇÕES -----------------*/}
 
             <section className="meio-grid">
               <div className="dash-card card-indicadores">
@@ -1225,123 +1513,123 @@ function Dashboard() {
                 </div>
               </div>
 
-              {/*----------------- AVALIAÇÕES PSICOSSOCIAIS -----------------*/}
+              {!ehGestor && (
+                <div className="dash-card card-pesquisas">
+                  <h3 className="card-titulo-secao">
+                    Avaliações psicossociais
+                  </h3>
 
-              <div className="dash-card card-pesquisas">
-                <h3 className="card-titulo-secao">
-                  Avaliações psicossociais
-                </h3>
-
-                <div className="tabela-responsiva">
-                  <table className="dash-tabela tabela-pesquisas">
-                    <thead>
-                      <tr>
-                        <th>AVALIAÇÃO</th>
-                        <th>SETOR</th>
-                        <th>PARTICIPAÇÃO</th>
-                        <th>STATUS</th>
-                        <th>AÇÃO</th>
-                      </tr>
-                    </thead>
-
-                    <tbody>
-                      {avaliacoesFormatadas.length === 0 ? (
+                  <div className="tabela-responsiva">
+                    <table className="dash-tabela tabela-pesquisas">
+                      <thead>
                         <tr>
-                          <td
-                            colSpan="5"
-                            style={{
-                              textAlign: 'center',
-                              color: '#64748b',
-                            }}
-                          >
-                            Nenhuma avaliação psicossocial encontrada.
-                          </td>
+                          <th>AVALIAÇÃO</th>
+                          <th>SETOR</th>
+                          <th>PARTICIPAÇÃO</th>
+                          <th>STATUS</th>
+                          <th>AÇÃO</th>
                         </tr>
-                      ) : (
-                        avaliacoesFormatadas.map((item) => (
-                          <tr key={item.id}>
-                            <td className="celula-pesquisa-nome">
-                              {item.nome}
-                            </td>
+                      </thead>
 
-                            <td className="celula-setor">
-                              {item.setor}
-                            </td>
-
-                            <td className="celula-participacao">
-                              <div className="part-topo">
-                                <span
-                                  style={{
-                                    color: item.corTexto,
-                                    fontWeight: 700,
-                                  }}
-                                >
-                                  {item.participacao}%
-                                </span>
-
-                                {item.metaTexto && (
-                                  <span className="part-meta">
-                                    {item.metaTexto}
-                                  </span>
-                                )}
-                              </div>
-
-                              <div className="part-barra-bg">
-                                <div
-                                  className="part-barra-fill"
-                                  style={{
-                                    width: `${item.participacao}%`,
-                                    backgroundColor: item.corBarra,
-                                  }}
-                                />
-                              </div>
-                            </td>
-
-                            <td>
-                              <span className="pill-status pill-azul">
-                                {item.status}
-                              </span>
-                            </td>
-
-                            <td>
-                              <button
-                                type="button"
-                                className="btn-ver"
-                                onClick={() =>
-                                  handleAbrirAvaliacao(item)
-                                }
-                              >
-                                Ver
-                              </button>
+                      <tbody>
+                        {avaliacoesFormatadas.length === 0 ? (
+                          <tr>
+                            <td
+                              colSpan="5"
+                              style={{
+                                textAlign: 'center',
+                                color: '#64748b',
+                              }}
+                            >
+                              Nenhuma avaliação psicossocial encontrada.
                             </td>
                           </tr>
-                        ))
-                      )}
-                    </tbody>
-                  </table>
-                </div>
+                        ) : (
+                          avaliacoesFormatadas.map((item) => (
+                            <tr key={item.id}>
+                              <td className="celula-pesquisa-nome">
+                                {item.nome}
+                              </td>
 
-                <div className="card-rodape-link">
-                  <a
-                    href="/avaliacao-psicossocial"
-                    className="dash-link"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      navigate('/avaliacao-psicossocial');
-                    }}
-                  >
-                    Ver Mais
-                  </a>
+                              <td className="celula-setor">
+                                {item.setor}
+                              </td>
+
+                              <td className="celula-participacao">
+                                <div className="part-topo">
+                                  <span
+                                    style={{
+                                      color: item.corTexto,
+                                      fontWeight: 700,
+                                    }}
+                                  >
+                                    {item.participacao}%
+                                  </span>
+
+                                  {item.metaTexto && (
+                                    <span className="part-meta">
+                                      {item.metaTexto}
+                                    </span>
+                                  )}
+                                </div>
+
+                                <div className="part-barra-bg">
+                                  <div
+                                    className="part-barra-fill"
+                                    style={{
+                                      width: `${item.participacao}%`,
+                                      backgroundColor: item.corBarra,
+                                    }}
+                                  />
+                                </div>
+                              </td>
+
+                              <td>
+                                <span className="pill-status pill-azul">
+                                  {item.status}
+                                </span>
+                              </td>
+
+                              <td>
+                                <button
+                                  type="button"
+                                  className="btn-ver"
+                                  onClick={() =>
+                                    handleAbrirAvaliacao(item)
+                                  }
+                                >
+                                  Ver
+                                </button>
+                              </td>
+                            </tr>
+                          ))
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div className="card-rodape-link">
+                    <a
+                      href="/avaliacao-psicossocial"
+                      className="dash-link"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        navigate('/avaliacao-psicossocial');
+                      }}
+                    >
+                      Ver Mais
+                    </a>
+                  </div>
                 </div>
-              </div>
+              )}
             </section>
-
-            {/*----------------- PLANOS DE AÇÃO -----------------*/}
 
             <section className="planos-wrapper">
               <div className="dash-card card-planos">
                 <h3 className="card-titulo-secao">
-                  Planos de ação
+                  {ehGestor
+                    ? 'Meus planos de ação'
+                    : 'Planos de ação'}
                 </h3>
 
                 <div className="tabela-responsiva">
@@ -1367,7 +1655,9 @@ function Dashboard() {
                               color: '#64748b',
                             }}
                           >
-                            Nenhum plano de ação encontrado.
+                            {ehGestor
+                              ? 'Você não possui planos de ação atribuídos.'
+                              : 'Nenhum plano de ação encontrado.'}
                           </td>
                         </tr>
                       ) : (
@@ -1430,14 +1720,18 @@ function Dashboard() {
                               )}
 
                               <div>
-                                <span style={{ fontWeight: 600 }}>
+                                <span
+                                  style={{ fontWeight: 600 }}
+                                >
                                   Início:
                                 </span>{' '}
                                 {plano.dataInicio}
                               </div>
 
                               <div>
-                                <span style={{ fontWeight: 600 }}>
+                                <span
+                                  style={{ fontWeight: 600 }}
+                                >
                                   Encerramento:
                                 </span>{' '}
                                 {plano.dataFim}

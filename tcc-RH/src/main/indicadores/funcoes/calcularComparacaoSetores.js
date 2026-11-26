@@ -1,23 +1,18 @@
-
 /********************************************************************************
  * Objetivo:
  * Comparar a média de um fator psicossocial entre os setores.
  *
  * Regras:
- * - Considera todas as avaliações encerradas.
+ * - Considera somente avaliações encerradas.
  * - Ignora avaliações canceladas.
  * - Agrupa respostas de avaliações diferentes por setor.
  * - Considera pelo menos 1 participante distinto por setor.
  * - Calcula a média das respostas válidas de 1 a 5.
- * - Mantém todos os setores na comparação, mesmo sem respostas.
+ * - Mantém todos os setores recebidos, mesmo sem respostas.
  ********************************************************************************/
 
 const QUANTIDADE_MINIMA_PARTICIPANTES = 1;
 const PARAMETRO_MINIMO = 2.5;
-
-/* =========================================================
-   TEXTO
-========================================================= */
 
 function normalizarTexto(texto = '') {
     return String(texto)
@@ -26,10 +21,6 @@ function normalizarTexto(texto = '') {
         .toLowerCase()
         .trim();
 }
-
-/* =========================================================
-   AVALIAÇÕES
-========================================================= */
 
 function obterStatusAvaliacao(avaliacao) {
     return (
@@ -57,69 +48,29 @@ function avaliacaoFoiCancelada(avaliacao) {
 }
 
 /**
- * Converte a data final da avaliação.
- */
-function converterDataFinal(avaliacao) {
-    const dataFim =
-        avaliacao?.data_fim ||
-        avaliacao?.data_final;
-
-    if (!dataFim) {
-        return null;
-    }
-
-    const texto = String(dataFim);
-
-    const somenteData = texto.match(
-        /^(\d{4})-(\d{2})-(\d{2})$/
-    );
-
-    const data = somenteData
-        ? new Date(
-            Number(somenteData[1]),
-            Number(somenteData[2]) - 1,
-            Number(somenteData[3])
-        )
-        : new Date(dataFim);
-
-    return Number.isNaN(data.getTime())
-        ? null
-        : data;
-}
-
-/**
- * Considera encerrada quando:
- * - O status indica que a avaliação foi concluída;
- * - Ou a data final é hoje ou uma data anterior.
+ * Status numérico 1 = encerrada.
+ * Status numérico 0 = aberta/em andamento.
+ * Também aceita status textual.
  */
 function avaliacaoEncerrada(avaliacao) {
-    // Status 1 significa avaliação encerrada no backend.
-    if (Number(avaliacao.status) === 1) {
+    const statusOriginal = obterStatusAvaliacao(avaliacao);
+
+    if (Number(statusOriginal) === 1) {
         return true;
     }
 
-    // Status 0 significa avaliação aberta.
-    if (Number(avaliacao.status) === 0) {
+    if (Number(statusOriginal) === 0) {
         return false;
     }
 
-    // Caso o backend retorne status textual,
-    // mantém a verificação por nome.
-    const status = obterStatusAvaliacao(avaliacao);
+    const status = normalizarTexto(statusOriginal);
 
     return (
-        status.includes('encerrada') ||
-        status.includes('encerrado') ||
-        status.includes('concluida') ||
-        status.includes('concluido') ||
-        status.includes('finalizada') ||
-        status.includes('finalizado')
+        status.includes('encerrad') ||
+        status.includes('concluid') ||
+        status.includes('finalizad')
     );
 }
-
-/* =========================================================
-   PARTICIPAÇÕES
-========================================================= */
 
 function obterColaborador(participacao) {
     return Array.isArray(participacao?.colaborador)
@@ -164,10 +115,6 @@ function obterIdAvaliacao(participacao) {
     );
 }
 
-/* =========================================================
-   RESPOSTAS
-========================================================= */
-
 function obterIdParticipacaoResposta(resposta) {
     return Number(
         resposta?.id_avaliacao_participacao ??
@@ -201,14 +148,8 @@ function calcularMedia(valores) {
         0
     );
 
-    return Number(
-        (soma / valores.length).toFixed(1)
-    );
+    return Number((soma / valores.length).toFixed(1));
 }
-
-/* =========================================================
-   CLASSIFICAÇÃO
-========================================================= */
 
 function obterClassificacao(media) {
     if (
@@ -230,10 +171,6 @@ function obterClassificacao(media) {
     return 'Normal';
 }
 
-/* =========================================================
-   COMPARAÇÃO POR SETOR
-========================================================= */
-
 export function calcularComparacaoSetores({
     setores = [],
     avaliacoes = [],
@@ -243,7 +180,7 @@ export function calcularComparacaoSetores({
     quantidadeMinima = QUANTIDADE_MINIMA_PARTICIPANTES
 }) {
     /*
-     * 1. Seleciona avaliações encerradas
+     * 1. Selecionar avaliações encerradas
      * e que não foram canceladas.
      */
     const avaliacoesValidas = avaliacoes.filter(
@@ -259,8 +196,7 @@ export function calcularComparacaoSetores({
     );
 
     /*
-     * 2. Seleciona participações pertencentes
-     * às avaliações encerradas.
+     * 2. Selecionar participações das avaliações encerradas.
      */
     const participacoesValidas = participacoes.filter(
         participacao => {
@@ -279,26 +215,27 @@ export function calcularComparacaoSetores({
     );
 
     /*
-     * 3. Relaciona as participações pelo ID.
+     * 3. Relacionar participações pelo ID.
      */
     const participacoesPorId = new Map(
-        participacoesValidas.map(
-            participacao => [
-                Number(participacao.id),
-                participacao
-            ]
-        )
+        participacoesValidas.map(participacao => [
+            Number(participacao.id),
+            participacao
+        ])
     );
 
     /*
-     * 4. Seleciona respostas do fator escolhido
-     * e identifica o setor de cada resposta.
+     * 4. Selecionar respostas válidas do fator escolhido
+     * e identificar o setor de cada resposta.
      */
     const respostasValidas = respostas
         .filter(
             resposta =>
-                Number(resposta.id_psicossocial_fator) ===
-                Number(idFator)
+                Number(
+                    resposta?.id_psicossocial_fator ??
+                    resposta?.psicossocial_fator?.id ??
+                    resposta?.fator_psicossocial?.id
+                ) === Number(idFator)
         )
         .map(resposta => {
             const idParticipacao =
@@ -310,20 +247,21 @@ export function calcularComparacaoSetores({
             const valor =
                 obterValorResposta(resposta);
 
-            if (
-                !participacao ||
-                valor === null
-            ) {
+            if (!participacao || valor === null) {
                 return null;
             }
 
-            const idSetor = obterIdSetor(participacao);
+            const idSetor =
+                obterIdSetor(participacao);
+
             const idColaborador =
                 obterIdColaborador(participacao);
 
             if (
                 !Number.isFinite(idSetor) ||
-                idSetor <= 0
+                idSetor <= 0 ||
+                !Number.isFinite(idColaborador) ||
+                idColaborador <= 0
             ) {
                 return null;
             }
@@ -337,11 +275,10 @@ export function calcularComparacaoSetores({
         .filter(Boolean);
 
     /*
-     * 5. Calcula a média de cada setor.
+     * 5. Calcular a média de cada setor.
      *
-     * IMPORTANTE:
-     * Não remove setores sem respostas.
-     * Todos os setores recebidos permanecem na lista.
+     * Setores sem respostas permanecem na lista,
+     * mas ficam com média null.
      */
     return setores.map(setor => {
         const idSetor = Number(setor.id);
@@ -363,16 +300,10 @@ export function calcularComparacaoSetores({
         const totalRespostas =
             respostasSetor.length;
 
-        /*
-         * Setor sem respostas válidas continua aparecendo,
-         * mas sem média.
-         */
         if (
             totalParticipantes < quantidadeMinima ||
             totalRespostas === 0
-        )
-        
-        {
+        ) {
             return {
                 id: setor.id,
                 codigo: setor.codigo || '',
