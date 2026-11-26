@@ -190,7 +190,59 @@ function Dashboard() {
     ].includes(texto);
   };
 
-  //----------------- STATUS ATIVO/INATIVO -----------------//
+  //----------------- STATUS DO PLANO DE AÇÃO -----------------//
+
+  const formatarStatusPlano = (plano) => {
+    const valor = plano?.status ??
+      plano?.situacao ??
+      plano?.estado;
+
+    // Na API de Plano de Ação:
+    // 0 = em andamento/ativo
+    // 1 = concluído/encerrado
+    if (typeof valor === 'number' || /^\\d+$/.test(String(valor ?? ''))) {
+      return Number(valor) === 1
+        ? 'Concluído'
+        : 'Em andamento';
+    }
+
+    if (typeof valor === 'boolean') {
+      return valor ? 'Em andamento' : 'Não iniciado';
+    }
+
+    const texto = normalizarTexto(valor);
+
+    if (
+      ['concluido', 'concluida', 'encerrado', 'encerrada',
+       'finalizado', 'finalizada'].includes(texto)
+    ) {
+      return 'Concluído';
+    }
+
+    if (['atrasado', 'atrasada', 'em atraso'].includes(texto)) {
+      return 'Atrasado';
+    }
+
+    if (
+      ['em andamento', 'andamento', 'ativo', 'ativa',
+       'iniciado', 'iniciada'].includes(texto)
+    ) {
+      return 'Em andamento';
+    }
+
+    if (
+      ['nao iniciado', 'nao iniciada', 'pendente',
+       'aguardando'].includes(texto)
+    ) {
+      return 'Não iniciado';
+    }
+
+    return texto
+      ? String(valor)
+      : 'Em andamento';
+  };
+
+  //----------------- STATUS ATIVO/INATIVO DAS AVALIAÇÕES -----------------//
 
   const formatarStatusAtivoInativo = (valor) => {
     if (typeof valor === 'boolean') {
@@ -203,13 +255,58 @@ function Dashboard() {
 
     const texto = normalizarTexto(valor);
 
-    if (
-      ['1', 'true', 'ativo', 'ativa'].includes(texto)
-    ) {
+    if (['1', 'true', 'ativo', 'ativa'].includes(texto)) {
       return 'Ativo';
     }
 
     return 'Inativo';
+  };
+
+  //----------------- FORMATAR DATA DO PLANO -----------------//
+
+  const formatarDataPlano = (valor) => {
+    if (!valor) return 'Não definida';
+
+    const data = String(valor).split('T')[0];
+    const partes = data.split('-');
+
+    if (partes.length !== 3) {
+      return String(valor);
+    }
+
+    return `${partes[2]}/${partes[1]}/${partes[0]}`;
+  };
+
+  //----------------- OBTER RESPONSÁVEL DO PLANO -----------------//
+
+  const obterNomeResponsavelPlano = (plano) => {
+    // O cadastro/acompanhamento do plano utiliza colaborador
+    // como relação do responsável específico daquele plano.
+    const responsavel =
+      plano?.colaborador ??
+      plano?.colaborador_responsavel ??
+      plano?.responsavel ??
+      plano?.usuario_responsavel ??
+      plano?.gestor ??
+      null;
+
+    if (typeof responsavel === 'string') {
+      return responsavel.trim() || 'Responsável não definido';
+    }
+
+    const nome =
+      responsavel?.nome ??
+      responsavel?.nome_completo ??
+      responsavel?.nome_colaborador ??
+      responsavel?.colaborador?.nome ??
+      responsavel?.usuario?.nome ??
+      plano?.colaborador_responsavel?.nome ??
+      plano?.responsavel?.nome ??
+      plano?.usuario_responsavel?.nome ??
+      plano?.nome_responsavel ??
+      '';
+
+    return String(nome).trim() || 'Responsável não definido';
   };
 
   //----------------- ID DA AVALIAÇÃO -----------------//
@@ -730,12 +827,50 @@ function Dashboard() {
   const planosFormatados = planosRecentes
     .slice(0, 3)
     .map((plano, idx) => {
-      const status =
-        formatarStatusAtivoInativo(plano.status);
+      let status = formatarStatusPlano(plano);
 
-      const atrasado = normalizarTexto(
-        plano.status
-      ).includes('atrasad');
+      const dataInicio =
+        plano.data_inicio ??
+        plano.dataInicio ??
+        plano.data_inicio_plano ??
+        null;
+
+      const dataFim =
+        plano.data_fim ??
+        plano.dataFim ??
+        plano.data_encerramento ??
+        plano.data_termino ??
+        plano.prazo ??
+        null;
+
+      const statusConcluido = status === 'Concluído';
+
+      // Plano não concluído com data final vencida é exibido como atrasado.
+      const hoje = new Date();
+      hoje.setHours(0, 0, 0, 0);
+
+      const dataFinalPlano = dataFim
+        ? new Date(`${String(dataFim).split('T')[0]}T00:00:00`)
+        : null;
+
+      const atrasado =
+        !statusConcluido &&
+        dataFinalPlano &&
+        !Number.isNaN(dataFinalPlano.getTime()) &&
+        dataFinalPlano < hoje;
+
+      if (atrasado) {
+        status = 'Atrasado';
+      }
+
+      const statusTipo =
+        status === 'Concluído'
+          ? 'concluido'
+          : status === 'Atrasado'
+            ? 'atrasada'
+            : status === 'Não iniciado'
+              ? 'nao-iniciada'
+              : 'andamento';
 
       return {
         id:
@@ -749,21 +884,12 @@ function Dashboard() {
         origem:
           plano.origem ??
           'Avaliação Psicossocial',
-        responsavel:
-          plano.responsavel ??
-          plano.nome_responsavel ??
-          'RH',
-        prazo:
-          plano.prazo ??
-          plano.data_termino ??
-          '-',
+        responsavel: obterNomeResponsavelPlano(plano),
+        dataInicio: formatarDataPlano(dataInicio),
+        dataFim: formatarDataPlano(dataFim),
         status,
-        atrasado,
-        statusTipo: atrasado
-          ? 'atrasada'
-          : status === 'Ativo'
-            ? 'andamento'
-            : 'nao-iniciada',
+        atrasado: Boolean(atrasado),
+        statusTipo,
       };
     });
 
@@ -1303,7 +1429,19 @@ function Dashboard() {
                                 </svg>
                               )}
 
-                              {plano.prazo}
+                              <div>
+                                <span style={{ fontWeight: 600 }}>
+                                  Início:
+                                </span>{' '}
+                                {plano.dataInicio}
+                              </div>
+
+                              <div>
+                                <span style={{ fontWeight: 600 }}>
+                                  Encerramento:
+                                </span>{' '}
+                                {plano.dataFim}
+                              </div>
                             </td>
 
                             <td>
