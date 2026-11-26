@@ -1,12 +1,11 @@
 
-//----------------- IMPORTAÇÕES -----------------------------//
+ //----------------- IMPORTAÇÕES -----------------------------//
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import CardDocumento from './CardDocumento.jsx';
 
-import './css-componentes/listaDocumentos.css'
-
+import './css-componentes/listaDocumentos.css';
 
 
 //----------------- COMPONENTE ------------------------------//
@@ -20,6 +19,11 @@ function ListaDocumentos({
     //----------------- ESTADO DA PAGINAÇÃO ------------------//
 
     const [paginaAtual, setPaginaAtual] = useState(1);
+
+    // Guarda a identificação dos documentos para detectar
+    // quando a lista realmente muda, sem resetar a página
+    // a cada renderização.
+    const assinaturaAnterior = useRef('');
 
 
     //----------------- CALCULAR PAGINAÇÃO ------------------//
@@ -38,16 +42,78 @@ function ListaDocumentos({
     );
 
 
-    //----------------- AJUSTAR PÁGINA ATUAL -----------------//
+    //----------------- IDENTIFICAR MUDANÇA NA LISTA ----------//
+
+    const assinaturaDocumentos = documentos
+        .map(documento => documento.id_documento || documento.id)
+        .join(',');
+
+
+    //----------------- AJUSTAR PÁGINA QUANDO A LISTA MUDA ----//
 
     useEffect(() => {
 
-        setPaginaAtual(1);
+        if (assinaturaAnterior.current !== assinaturaDocumentos) {
 
-    }, [documentos]);
+            assinaturaAnterior.current = assinaturaDocumentos;
+
+            setPaginaAtual(1);
+
+        }
+
+    }, [assinaturaDocumentos]);
 
 
-    //----------------- NAVEGAR ENTRE PÁGINAS ---------------//
+    //----------------- AJUSTAR PÁGINA SE DIMINUIR O TOTAL ----//
+
+    useEffect(() => {
+
+        if (totalPaginas === 0) {
+
+            setPaginaAtual(1);
+
+            return;
+
+        }
+
+        if (paginaAtual > totalPaginas) {
+
+            setPaginaAtual(totalPaginas);
+
+        }
+
+    }, [totalPaginas, paginaAtual]);
+
+
+    //----------------- GRUPO DE PÁGINAS ---------------------//
+
+    // Exibe somente 5 números por vez.
+    // Exemplo: 1 até 5, depois 6 até 10.
+    const paginasPorGrupo = 5;
+
+    const primeiraPaginaGrupo =
+        Math.floor((paginaAtual - 1) / paginasPorGrupo) *
+        paginasPorGrupo + 1;
+
+    const ultimaPaginaGrupo = Math.min(
+        primeiraPaginaGrupo + paginasPorGrupo - 1,
+        totalPaginas
+    );
+
+    const paginasVisiveis = [];
+
+    for (
+        let pagina = primeiraPaginaGrupo;
+        pagina <= ultimaPaginaGrupo;
+        pagina++
+    ) {
+
+        paginasVisiveis.push(pagina);
+
+    }
+
+
+    //----------------- NAVEGAR PARA UMA PÁGINA ---------------//
 
     function mudarPagina(pagina) {
 
@@ -60,7 +126,36 @@ function ListaDocumentos({
     }
 
 
-    //----------------- VISUALIZAR DOCUMENTO ----------------//
+    //----------------- PRÓXIMO GRUPO -------------------------//
+
+    function proximoGrupo() {
+
+        if (ultimaPaginaGrupo < totalPaginas) {
+
+            // Vai diretamente para a primeira página
+            // do próximo grupo.
+            mudarPagina(ultimaPaginaGrupo + 1);
+
+        }
+
+    }
+
+
+    //----------------- GRUPO ANTERIOR ------------------------//
+
+    function grupoAnterior() {
+
+        if (primeiraPaginaGrupo > 1) {
+
+            // Volta para a última página do grupo anterior.
+            mudarPagina(primeiraPaginaGrupo - 1);
+
+        }
+
+    }
+
+
+    //----------------- VISUALIZAR DOCUMENTO -----------------//
 
     function visualizar(documento) {
 
@@ -79,7 +174,7 @@ function ListaDocumentos({
     }
 
 
-    //----------------- PRIMEIRO REGISTRO --------------------//
+    //----------------- PRIMEIRO REGISTRO ---------------------//
 
     const primeiroRegistro = documentos.length === 0
         ? 0
@@ -94,7 +189,7 @@ function ListaDocumentos({
     );
 
 
-    //----------------- COMPONENTE VISUAL -------------------//
+    //----------------- COMPONENTE VISUAL --------------------//
 
     return (
 
@@ -139,9 +234,14 @@ function ListaDocumentos({
                         {documentosPagina.map((documento) => (
 
                             <CardDocumento
-                                key={documento.id_documento || documento.id}
+                                key={
+                                    documento.id_documento ||
+                                    documento.id
+                                }
                                 documento={documento}
-                                onVisualizar={() => visualizar(documento)}
+                                onVisualizar={() =>
+                                    visualizar(documento)
+                                }
                             />
 
                         ))}
@@ -182,26 +282,31 @@ function ListaDocumentos({
 
                     <div className="paginacao-documentos">
 
+
+                        {/* GRUPO ANTERIOR */}
+
                         <button
                             type="button"
                             className="botao-pagina-documentos"
-                            disabled={paginaAtual === 1}
-                            onClick={() => mudarPagina(paginaAtual - 1)}
+                            disabled={primeiraPaginaGrupo === 1}
+                            onClick={grupoAnterior}
+                            title="Páginas anteriores"
                         >
                             ‹
                         </button>
 
 
-                        {Array.from(
-                            { length: totalPaginas },
-                            (_, indice) => indice + 1
-                        ).map(pagina => (
+                        {/* NÚMEROS DAS PÁGINAS */}
+
+                        {paginasVisiveis.map(pagina => (
 
                             <button
                                 key={pagina}
                                 type="button"
                                 className={`botao-pagina-documentos ${
-                                    paginaAtual === pagina ? 'pagina-documento-ativa' : ''
+                                    paginaAtual === pagina
+                                        ? 'pagina-documento-ativa'
+                                        : ''
                                 }`}
                                 onClick={() => mudarPagina(pagina)}
                             >
@@ -211,11 +316,14 @@ function ListaDocumentos({
                         ))}
 
 
+                        {/* PRÓXIMO GRUPO */}
+
                         <button
                             type="button"
                             className="botao-pagina-documentos"
-                            disabled={paginaAtual >= totalPaginas}
-                            onClick={() => mudarPagina(paginaAtual + 1)}
+                            disabled={ultimaPaginaGrupo >= totalPaginas}
+                            onClick={proximoGrupo}
+                            title="Próximas páginas"
                         >
                             ›
                         </button>
