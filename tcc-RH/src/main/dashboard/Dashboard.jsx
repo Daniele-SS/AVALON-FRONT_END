@@ -26,7 +26,7 @@ const ESTADO_INICIAL = {
 const DIMENSOES_AVALIACAO = [
   {
     nome: 'Ambiente',
-    palavras: ['ambiente'],
+    palavras: ['equilibrio', 'demandas', 'recursos'],
   },
   {
     nome: 'Comunicação',
@@ -216,9 +216,9 @@ function Dashboard() {
 
   const obterIdAvaliacao = (avaliacao) =>
     Number(
-      avaliacao?.id ??
       avaliacao?.id_avaliacao ??
-      avaliacao?.avaliacao?.id
+      avaliacao?.avaliacao?.id ??
+      avaliacao?.id
     );
 
   //----------------- SETOR DA AVALIAÇÃO -----------------//
@@ -362,6 +362,7 @@ function Dashboard() {
 
   const obterNomeFatorResultado = (resultado) => {
     return (
+      resultado?.fator_psicossocial?.psicossocialFator?.nome ??
       resultado?.fator_psicossocial?.nome ??
       resultado?.psicossocial_fator?.nome ??
       resultado?.fator?.nome ??
@@ -372,6 +373,7 @@ function Dashboard() {
 
   const obterIdFatorResultado = (resultado) => {
     return Number(
+      resultado?.fator_psicossocial?.psicossocialFator?.id ??
       resultado?.fator_psicossocial?.id ??
       resultado?.psicossocial_fator?.id ??
       resultado?.fator?.id ??
@@ -392,65 +394,131 @@ function Dashboard() {
     ) ?? null;
   };
 
-  //----------------- RESULTADOS VÁLIDOS -----------------//
+  //----------------- AVALIAÇÕES CONCLUÍDAS -----------------//
+
+  const isAvaliacaoConcluida = (avaliacao) => {
+    const status = avaliacao?.status ??
+      avaliacao?.situacao ??
+      avaliacao?.estado;
+
+    if (typeof status === 'number') {
+      return status === 1;
+    }
+
+    if (typeof status === 'boolean') {
+      return status;
+    }
+
+    return [
+      '1',
+      'true',
+      'concluido',
+      'concluida',
+      'encerrado',
+      'encerrada',
+      'finalizado',
+      'finalizada',
+    ].includes(normalizarTexto(status));
+  };
+
+  //----------------- RESULTADOS AGRUPADOS POR FATOR -----------------//
 
   const obterResultadosValidos = () => {
     const resultados = Array.isArray(dados.resultados)
       ? dados.resultados
       : [];
 
-    return resultados
-      .map((resultado) => ({
-        ...resultado,
-        idAvaliacao: obterIdAvaliacao(resultado),
-        idFator: obterIdFatorResultado(resultado),
-        dimensao: obterDimensaoResultado(resultado),
-        nota: obterNumero(
+    const avaliacoesConcluidas = new Set(
+      (Array.isArray(dados.avaliacoes) ? dados.avaliacoes : [])
+        .filter(isAvaliacaoConcluida)
+        .map((avaliacao) => obterIdAvaliacao(avaliacao))
+        .filter(Boolean)
+    );
+
+    // Quando o resultado já traz a avaliação completa, usa seu status.
+    // Caso contrário, consulta a lista de avaliações carregada pelo serviço.
+    const resultadosValidos = resultados
+      .map((resultado) => {
+        const avaliacao = resultado?.avaliacao ?? {};
+        const idAvaliacao = obterIdAvaliacao(resultado);
+        const idFator = obterIdFatorResultado(resultado);
+        const dimensao = obterDimensaoResultado(resultado);
+        const nota = obterNumero(
           resultado.valor_medio ??
           resultado.media ??
           resultado.valor
-        ),
-      }))
-      .filter(
-        (resultado) =>
-          resultado.idAvaliacao &&
-          resultado.idFator &&
-          resultado.dimensao &&
-          resultado.nota !== null
-      );
+        );
+
+        return {
+          ...resultado,
+          idAvaliacao,
+          idFator,
+          dimensao,
+          nota,
+          avaliacao,
+        };
+      })
+      .filter((resultado) => {
+        if (
+          !resultado.idAvaliacao ||
+          !resultado.idFator ||
+          !resultado.dimensao ||
+          resultado.nota === null
+        ) {
+          return false;
+        }
+
+        if (resultado.avaliacao.status !== undefined) {
+          return isAvaliacaoConcluida(resultado.avaliacao);
+        }
+
+        return avaliacoesConcluidas.has(resultado.idAvaliacao);
+      });
+
+    // A API retorna uma linha por pergunta. Calculamos a média das perguntas
+    // do mesmo fator dentro da mesma avaliação para obter uma única nota.
+    const grupos = {};
+
+    resultadosValidos.forEach((resultado) => {
+      const chave = `${resultado.idAvaliacao}-${resultado.idFator}`;
+
+
+      if (!grupos[chave]) {
+        grupos[chave] = {
+          idAvaliacao: resultado.idAvaliacao,
+          idFator: resultado.idFator,
+          dimensao: resultado.dimensao,
+          avaliacao: resultado.avaliacao,
+          total: 0,
+          quantidade: 0,
+          data: obterDataRegistro(resultado),
+        };
+      }
+
+      grupos[chave].total += resultado.nota;
+      grupos[chave].quantidade += 1;
+    });
+
+    return Object.values(grupos).map((grupo) => ({
+      ...grupo,
+      nota: grupo.quantidade > 0
+        ? grupo.total / grupo.quantidade
+        : null,
+    }));
   };
 
   //----------------- ÚLTIMA NOTA DE CADA FATOR -----------------//
 
   const obterUltimaNotaDoFator = (dimensao) => {
     const resultados = obterResultadosValidos().filter(
-      (resultado) =>
-        resultado.dimensao.nome === dimensao.nome
+      (resultado) => resultado.dimensao.nome === dimensao.nome
     );
 
     if (resultados.length === 0) {
       return null;
     }
 
-    const resultadosPorAvaliacao = {};
-
-    resultados.forEach((resultado) => {
-      const chave =
-        `${resultado.idFator}-${resultado.idAvaliacao}`;
-
-      if (!resultadosPorAvaliacao[chave]) {
-        resultadosPorAvaliacao[chave] = {
-          idFator: resultado.idFator,
-          idAvaliacao: resultado.idAvaliacao,
-          nota: resultado.nota,
-          data: obterDataRegistro(resultado),
-        };
-      }
-    });
-
-    const resultadosOrdenados = Object.values(
-      resultadosPorAvaliacao
-    ).sort((a, b) => {
+    const resultadosOrdenados = [...resultados].sort((a, b) => {
       if (a.data !== b.data) {
         return b.data - a.data;
       }
