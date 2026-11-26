@@ -72,11 +72,19 @@ function Header() {
         <header>
             <div className="acoes-header">
 
-                <img
-                    className="campainha"
-                    src={campainhaIcone}
-                    alt="Notificações"
-                />
+                <button
+                    type="button"
+                    className="botao-campainha"
+                    onClick={() => navegar('/notificacoes')}
+                    aria-label="Abrir notificações"
+                    title="Notificações"
+                >
+                    <img
+                        className="campainha"
+                        src={campainhaIcone}
+                        alt=""
+                    />
+                </button>
 
                 <div className="pefil">
 
@@ -94,9 +102,8 @@ function Header() {
 
                     <button
                         type="button"
-                        className={`seta-perfil ${
-                            menuAberto ? 'seta-aberta' : ''
-                        }`}
+                        className={`seta-perfil ${menuAberto ? 'seta-aberta' : ''
+                            }`}
                         onClick={alternarMenu}
                         aria-label="Abrir menu do perfil"
                         aria-expanded={menuAberto}

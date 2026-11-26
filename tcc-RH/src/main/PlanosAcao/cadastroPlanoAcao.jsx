@@ -1,4 +1,5 @@
-//----------------- IMPORTAÇÕES -----------------------------//
+
+ //----------------- IMPORTAÇÕES -----------------------------//
 
 import { useEffect, useState } from 'react';
 
@@ -24,7 +25,7 @@ const API = 'http://localhost:8080/v1/senai/avalon';
 
 //----------------- COMPONENTE PRINCIPAL -------------------//
 
-function CadastroPlanoAcao({ voltar }) {
+function CadastroPlanoAcao({ voltar, onConcluir }) {
 
     //----------------- ESTADOS -----------------------------//
 
@@ -58,6 +59,10 @@ function CadastroPlanoAcao({ voltar }) {
     // mas alguma tarefa falhe.
     const [idPlanoCriado, setIdPlanoCriado] = useState(null);
 
+    // Guarda quais tarefas já foram cadastradas na API.
+    // Isso evita duplicar tarefas se ocorrer uma falha parcial.
+    const [tarefasCadastradas, setTarefasCadastradas] = useState([]);
+
 
     //----------------- AUTENTICAÇÃO ------------------------//
 
@@ -77,6 +82,7 @@ function CadastroPlanoAcao({ voltar }) {
                 Authorization: `Bearer ${token}`
             }
         };
+
     }
 
 
@@ -177,7 +183,6 @@ function CadastroPlanoAcao({ voltar }) {
                 const gestoresAtivos = listaUsuarios.flatMap(
                     (usuario) => {
 
-                        // Obtém o nível de acesso do usuário.
                         const nivelAcesso =
                             usuario?.nivel_acesso
                                 ?.nivel_acesso?.[0]?.nome;
@@ -187,8 +192,8 @@ function CadastroPlanoAcao({ voltar }) {
                             return [];
                         }
 
-                        // A API retorna o colaborador dentro de um array.
-                        // Também aceita objeto para manter compatibilidade.
+                        // A API pode retornar o colaborador
+                        // dentro de um array ou como objeto.
                         const colaboradoresUsuario =
                             Array.isArray(usuario.colaborador)
                                 ? usuario.colaborador
@@ -205,12 +210,12 @@ function CadastroPlanoAcao({ voltar }) {
                             })
                             .map((colaborador) => {
 
-                                // Mantém o ID do colaborador,
-                                // que é o ID utilizado no plano de ação.
                                 return {
 
                                     ...colaborador,
 
+                                    // Mantém o ID do colaborador,
+                                    // utilizado no plano de ação.
                                     id: colaborador.id,
 
                                     email:
@@ -278,10 +283,13 @@ function CadastroPlanoAcao({ voltar }) {
 
     function adicionarTarefa() {
 
-        const titulo = tituloTarefa.trim();
-        const descricao = descricaoTarefa.trim();
+        const tituloTarefaTratado = tituloTarefa.trim();
+        const descricaoTarefaTratada = descricaoTarefa.trim();
 
-        if (!titulo || !descricao) {
+        if (
+            !tituloTarefaTratado ||
+            !descricaoTarefaTratada
+        ) {
             return;
         }
 
@@ -291,8 +299,8 @@ function CadastroPlanoAcao({ voltar }) {
 
             {
                 id: `${Date.now()}-${tarefasAtuais.length}`,
-                titulo,
-                descricao
+                titulo: tituloTarefaTratado,
+                descricao: descricaoTarefaTratada
             }
 
         ]);
@@ -346,6 +354,15 @@ function CadastroPlanoAcao({ voltar }) {
 
         );
 
+        // Remove também do controle de tarefas cadastradas.
+        setTarefasCadastradas((tarefasAtuais) =>
+
+            tarefasAtuais.filter(
+                (idTarefa) => idTarefa !== id
+            )
+
+        );
+
     }
 
 
@@ -379,6 +396,12 @@ function CadastroPlanoAcao({ voltar }) {
         ) {
 
             const tarefa = tarefas[indice];
+
+            // Se a tarefa já foi cadastrada anteriormente,
+            // pula para não duplicar o registro.
+            if (tarefasCadastradas.includes(tarefa.id)) {
+                continue;
+            }
 
             const resposta = await fetch(
                 `${API}/tarefa_plano`,
@@ -418,6 +441,9 @@ function CadastroPlanoAcao({ voltar }) {
                 dados = {};
             }
 
+
+            //----------------- VALIDAR SESSÃO ---------------//
+
             if (resposta.status === 401) {
 
                 localStorage.removeItem('access_token');
@@ -428,17 +454,33 @@ function CadastroPlanoAcao({ voltar }) {
 
             }
 
+
+            //----------------- VALIDAR CADASTRO -------------//
+
             if (!resposta.ok || dados.status === false) {
 
                 throw new Error(
 
                     dados.message ||
                     dados.mensagem ||
-                    `Não foi possível cadastrar a tarefa "${tarefa.descricao}".`
+                    `Não foi possível cadastrar a tarefa "${tarefa.titulo}".`
 
                 );
 
             }
+
+
+            //----------------- MARCAR TAREFA ----------------//
+
+            // Marca a tarefa como cadastrada somente depois
+            // que a API confirmar o sucesso.
+            setTarefasCadastradas((tarefasAtuais) => [
+
+                ...tarefasAtuais,
+
+                tarefa.id
+
+            ]);
 
         }
 
@@ -449,6 +491,9 @@ function CadastroPlanoAcao({ voltar }) {
 
     async function salvarPlano() {
 
+        // Se o plano ainda não existe, valida o formulário.
+        // Se já existe, permite tentar finalizar as tarefas
+        // que ainda não foram cadastradas.
         if (!formularioValido && !idPlanoCriado) {
 
             setErro(
@@ -471,6 +516,7 @@ function CadastroPlanoAcao({ voltar }) {
 
             let idPlano = idPlanoCriado;
 
+            // Só cria o plano se ainda não tiver sido criado.
             if (!idPlano) {
 
                 const dadosPlano = {
@@ -494,6 +540,9 @@ function CadastroPlanoAcao({ voltar }) {
 
                 };
 
+
+                //----------------- RESPONSÁVEL ----------------//
+
                 // Responsável é opcional.
                 if (idColaborador) {
 
@@ -501,6 +550,9 @@ function CadastroPlanoAcao({ voltar }) {
                         Number(idColaborador);
 
                 }
+
+
+                //----------------- ENVIAR PLANO --------------//
 
                 const resultado = await cadastrarPlanoAcao(
                     dadosPlano
@@ -541,7 +593,21 @@ function CadastroPlanoAcao({ voltar }) {
                 'Plano de ação e tarefas cadastrados com sucesso!'
             );
 
-            voltar();
+            // Chama a função do componente pai para:
+            // 1. Voltar para a listagem.
+            // 2. Atualizar os planos e as tarefas.
+            // 3. Exibir o alerta de sucesso.
+            if (onConcluir) {
+
+                await onConcluir();
+
+            } else {
+
+                // Compatibilidade caso o componente seja
+                // utilizado sem a propriedade onConcluir.
+                voltar();
+
+            }
 
         } catch (error) {
 
@@ -660,6 +726,9 @@ function CadastroPlanoAcao({ voltar }) {
                     desabilitado={Boolean(idPlanoCriado)}
 
                 />
+
+
+                {/* TAREFAS */}
 
                 <ListaTarefasPlano
 

@@ -123,3 +123,17 @@ header {
 .dropdown-perfil .botao-sair {
     color: #DC2626;
 }
+
+.botao-campainha {
+    background: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.botao-campainha .campainha {
+    cursor: pointer;
+}

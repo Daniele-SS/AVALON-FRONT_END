@@ -80,6 +80,7 @@
 
     cursor: pointer;
     transition: background-color 0.2s;
+    color: #000000 !important;
 }
 
 .alerta-fechar:hover {

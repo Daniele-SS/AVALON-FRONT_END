@@ -8,6 +8,7 @@ import { useState, useEffect, useMemo } from 'react';
 import BotaoCadastro from '../../componentes/cardNomePag/nomePag.jsx';
 import Filtro from '../../componentes/cardFiltros/filtros.jsx';
 import Minicards from '../../componentes/minicard/minicard.jsx';
+import AlertaNotificacao from '../../componentes/alerta/Alerta.jsx';
 
 import LinhaTempoFeedback from './componentes/LinhaTempoFeedback';
 import DetalhesFeedback from './componentes/DetalhesFeedback';
@@ -27,6 +28,9 @@ import RespostaIcone from './img/resposta.svg';
 
 import './css-feedbacks/feedbacks.css';
 import '../../componentes/cardNomePag/nomePag.css';
+
+
+//----------------- COMPONENTE PRINCIPAL ------------------//
 
 function Feedbacks() {
 
@@ -49,6 +53,26 @@ function Feedbacks() {
     const [erro, setErro] = useState('');
 
 
+    //----------------- NOTIFICAÇÃO -----------------------//
+
+    const [alertaNotificacao, setAlertaNotificacao] = useState(null);
+
+    function exibirNotificacao(tipo, mensagem) {
+
+        setAlertaNotificacao({
+            tipo,
+            mensagem
+        });
+
+    }
+
+    function fecharNotificacao() {
+
+        setAlertaNotificacao(null);
+
+    }
+
+
     //----------------- OPÇÕES DE PERÍODO -----------------//
 
     const periodos = [
@@ -67,9 +91,15 @@ function Feedbacks() {
             setCarregando(true);
             setErro('');
 
-            const [dadosFeedbacks, dadosRespostas] = await Promise.all([
+            const [
+                dadosFeedbacks,
+                dadosRespostas
+            ] = await Promise.all([
+
                 buscarFeedbacks(),
+
                 buscarRespostasFeedback()
+
             ]);
 
             const informacoes = montarInformacoesFeedbacks(
@@ -79,11 +109,21 @@ function Feedbacks() {
 
             setFeedbacks(informacoes);
 
+            return true;
+
         } catch (erro) {
 
-            console.error('Erro ao carregar feedbacks:', erro);
+            console.error(
+                'Erro ao carregar feedbacks:',
+                erro
+            );
 
-            setErro(erro.message || 'Erro ao carregar os feedbacks.');
+            setErro(
+                erro.message ||
+                'Erro ao carregar os feedbacks.'
+            );
+
+            return false;
 
         } finally {
 
@@ -97,21 +137,27 @@ function Feedbacks() {
     //----------------- EXECUTAR BUSCA --------------------//
 
     useEffect(() => {
+
         carregarDados();
+
     }, []);
 
 
     //----------------- ATUALIZAR FILTROS -----------------//
 
     function atualizarFiltros(novosFiltros) {
+
         setFiltros(novosFiltros);
+
     }
 
 
     //----------------- CALCULAR INDICADORES --------------//
 
     const indicadores = useMemo(() => {
+
         return calcularIndicadoresFeedbacks(feedbacks);
+
     }, [feedbacks]);
 
 
@@ -119,17 +165,28 @@ function Feedbacks() {
 
     function converterData(data) {
 
-        if (!data) return null;
+        if (!data) {
+            return null;
+        }
 
         const dataTexto = String(data);
-        const partes = dataTexto.substring(0, 10).split('-');
+
+        const partes = dataTexto
+            .substring(0, 10)
+            .split('-');
 
         if (partes.length === 3) {
 
             const [ano, mes, dia] = partes.map(Number);
 
             if (ano && mes && dia) {
-                return new Date(ano, mes - 1, dia);
+
+                return new Date(
+                    ano,
+                    mes - 1,
+                    dia
+                );
+
             }
 
         }
@@ -164,23 +221,40 @@ function Feedbacks() {
         }
 
         const hoje = new Date();
+
         hoje.setHours(0, 0, 0, 0);
 
         const dataInicial = new Date(hoje);
 
         if (filtros.opcao === '7dias') {
-            dataInicial.setDate(hoje.getDate() - 6);
+
+            dataInicial.setDate(
+                hoje.getDate() - 6
+            );
+
         } else if (filtros.opcao === '30dias') {
-            dataInicial.setDate(hoje.getDate() - 29);
+
+            dataInicial.setDate(
+                hoje.getDate() - 29
+            );
+
         } else if (filtros.opcao === '6meses') {
-            dataInicial.setMonth(hoje.getMonth() - 6);
+
+            dataInicial.setMonth(
+                hoje.getMonth() - 6
+            );
+
         }
 
         return resultado.filter(feedback => {
 
-            const dataFeedback = converterData(feedback.data);
+            const dataFeedback = converterData(
+                feedback.data
+            );
 
-            if (!dataFeedback) return false;
+            if (!dataFeedback) {
+                return false;
+            }
 
             return (
                 dataFeedback >= dataInicial &&
@@ -195,8 +269,13 @@ function Feedbacks() {
     //----------------- ABRIR CADASTRO --------------------//
 
     function novoFeedback() {
+
         setFeedbackSelecionado(null);
+
+        setAlertaNotificacao(null);
+
         setTela('cadastro');
+
     }
 
 
@@ -204,9 +283,28 @@ function Feedbacks() {
 
     async function finalizarCadastro() {
 
-        await carregarDados();
+        // Atualiza os feedbacks e as respostas.
+        const carregou = await carregarDados();
 
+        // Volta para a tela principal.
         setTela('lista');
+
+        // Exibe o alerta após retornar para a listagem.
+        if (carregou) {
+
+            exibirNotificacao(
+                'sucesso',
+                'Feedback cadastrado com sucesso!'
+            );
+
+        } else {
+
+            exibirNotificacao(
+                'atencao',
+                'O feedback foi cadastrado, mas não foi possível atualizar a listagem.'
+            );
+
+        }
 
     }
 
@@ -214,7 +312,9 @@ function Feedbacks() {
     //----------------- VOLTAR PARA LISTAGEM --------------//
 
     function voltarListagem() {
+
         setTela('lista');
+
     }
 
 
@@ -223,6 +323,7 @@ function Feedbacks() {
     if (tela === 'cadastro') {
 
         return (
+
             <div className="pagina-feedbacks">
 
                 <CadastroFeedback
@@ -231,6 +332,7 @@ function Feedbacks() {
                 />
 
             </div>
+
         );
 
     }
@@ -241,6 +343,21 @@ function Feedbacks() {
     return (
 
         <div className="pagina-feedbacks">
+
+            {/* NOTIFICAÇÃO */}
+
+            {alertaNotificacao && (
+
+                <AlertaNotificacao
+                    tipo={alertaNotificacao.tipo}
+                    mensagem={alertaNotificacao.mensagem}
+                    onFechar={fecharNotificacao}
+                />
+
+            )}
+
+
+            {/* CABEÇALHO */}
 
             <BotaoCadastro
                 titulo="Feedbacks"
@@ -308,33 +425,54 @@ function Feedbacks() {
                 <div className="cabecalho-linha-tempo">
 
                     <div>
-                        <h3>Atividade Recente & Linha do Tempo</h3>
-                        <span>Tempo real</span>
+
+                        <h3>
+                            Atividade Recente & Linha do Tempo
+                        </h3>
+
+                        <span>
+                            Tempo real
+                        </span>
+
                     </div>
 
                     <small>
+
                         Exibindo {
-                            feedbacksFiltrados.filter(item => item.ativo).length
+                            feedbacksFiltrados.filter(
+                                item => item.ativo
+                            ).length
                         } de {
-                            feedbacks.filter(item => item.ativo).length
+                            feedbacks.filter(
+                                item => item.ativo
+                            ).length
                         } registros
+
                     </small>
 
                 </div>
 
 
+                {/* CARREGAMENTO */}
+
                 {carregando && (
+
                     <div className="mensagem-feedbacks">
                         Carregando feedbacks...
                     </div>
+
                 )}
 
+
+                {/* ERRO */}
 
                 {!carregando && erro && (
 
                     <div className="mensagem-erro-feedbacks">
 
-                        <p>{erro}</p>
+                        <p>
+                            {erro}
+                        </p>
 
                         <button
                             type="button"
@@ -347,6 +485,8 @@ function Feedbacks() {
 
                 )}
 
+
+                {/* LISTA */}
 
                 {!carregando && !erro && (
 
@@ -378,5 +518,8 @@ function Feedbacks() {
     );
 
 }
+
+
+//----------------- EXPORTAÇÃO -----------------------------//
 
 export default Feedbacks;

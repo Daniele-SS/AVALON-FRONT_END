@@ -21,6 +21,9 @@ import ReconhecimentoIcone from './img/reconhecimento-icon.svg';
 import MelhoriaIcone from './img/melhoria-icon.svg';
 import AcompanhamentoIcone from './img/acompanhamento-icon.svg';
 
+
+//----------------- COMPONENTE PRINCIPAL ------------------//
+
 function CadastroFeedback({ onVoltar, onSucesso }) {
 
     //----------------- ESTADOS ---------------------------//
@@ -44,6 +47,7 @@ function CadastroFeedback({ onVoltar, onSucesso }) {
 
     const [erro, setErro] = useState('');
     const [sucesso, setSucesso] = useState('');
+
 
     //----------------- TIPOS DE FEEDBACK -----------------//
 
@@ -74,6 +78,7 @@ function CadastroFeedback({ onVoltar, onSucesso }) {
         }
     ];
 
+
     //----------------- BUSCAR COLABORADORES -------------//
 
     useEffect(() => {
@@ -91,10 +96,14 @@ function CadastroFeedback({ onVoltar, onSucesso }) {
 
             } catch (erro) {
 
-                console.error('Erro ao buscar colaboradores:', erro);
+                console.error(
+                    'Erro ao buscar colaboradores:',
+                    erro
+                );
 
                 setErro(
-                    erro.message || 'Não foi possível carregar os colaboradores.'
+                    erro.message ||
+                    'Não foi possível carregar os colaboradores.'
                 );
 
             } finally {
@@ -108,6 +117,7 @@ function CadastroFeedback({ onVoltar, onSucesso }) {
         carregarColaboradores();
 
     }, []);
+
 
     //----------------- FECHAR DROPDOWN AO CLICAR FORA ---//
 
@@ -124,13 +134,22 @@ function CadastroFeedback({ onVoltar, onSucesso }) {
 
         }
 
-        document.addEventListener('mousedown', fecharDropdown);
+        document.addEventListener(
+            'mousedown',
+            fecharDropdown
+        );
 
         return () => {
-            document.removeEventListener('mousedown', fecharDropdown);
+
+            document.removeEventListener(
+                'mousedown',
+                fecharDropdown
+            );
+
         };
 
     }, []);
+
 
     //----------------- COLABORADOR SELECIONADO ----------//
 
@@ -139,6 +158,7 @@ function CadastroFeedback({ onVoltar, onSucesso }) {
             String(colaborador.id) ===
             String(formulario.id_colaborador_destinatario)
     );
+
 
     //----------------- NORMALIZAR TEXTO ------------------//
 
@@ -152,11 +172,14 @@ function CadastroFeedback({ onVoltar, onSucesso }) {
 
     }
 
+
     //----------------- FILTRAR COLABORADORES ------------//
 
     const colaboradoresFiltrados = useMemo(() => {
 
-        const pesquisa = normalizarTexto(pesquisaColaborador);
+        const pesquisa = normalizarTexto(
+            pesquisaColaborador
+        );
 
         if (!pesquisa) {
             return colaboradores;
@@ -164,8 +187,13 @@ function CadastroFeedback({ onVoltar, onSucesso }) {
 
         return colaboradores.filter(colaborador => {
 
-            const nome = normalizarTexto(colaborador.nome);
-            const matricula = normalizarTexto(colaborador.matricula);
+            const nome = normalizarTexto(
+                colaborador.nome
+            );
+
+            const matricula = normalizarTexto(
+                colaborador.matricula
+            );
 
             return (
                 nome.includes(pesquisa) ||
@@ -175,6 +203,7 @@ function CadastroFeedback({ onVoltar, onSucesso }) {
         });
 
     }, [colaboradores, pesquisaColaborador]);
+
 
     //----------------- INICIAIS DO COLABORADOR ----------//
 
@@ -187,7 +216,11 @@ function CadastroFeedback({ onVoltar, onSucesso }) {
         const partesNome = nome.trim().split(' ');
 
         if (partesNome.length === 1) {
-            return partesNome[0].substring(0, 2).toUpperCase();
+
+            return partesNome[0]
+                .substring(0, 2)
+                .toUpperCase();
+
         }
 
         return (
@@ -196,6 +229,7 @@ function CadastroFeedback({ onVoltar, onSucesso }) {
         ).toUpperCase();
 
     }
+
 
     //----------------- PESQUISAR COLABORADOR ------------//
 
@@ -207,7 +241,6 @@ function CadastroFeedback({ onVoltar, onSucesso }) {
         setDropdownAberto(true);
 
         // Se alterar a pesquisa, remove a seleção anterior.
-
         if (
             colaboradorSelecionado &&
             valorPesquisa !== colaboradorSelecionado.nome
@@ -222,19 +255,23 @@ function CadastroFeedback({ onVoltar, onSucesso }) {
 
     }
 
+
     //----------------- SELECIONAR COLABORADOR -----------//
 
     function selecionarColaborador(colaborador) {
 
         setFormulario(dadosAnteriores => ({
             ...dadosAnteriores,
-            id_colaborador_destinatario: String(colaborador.id)
+            id_colaborador_destinatario: String(
+                colaborador.id
+            )
         }));
 
         setPesquisaColaborador(colaborador.nome);
         setDropdownAberto(false);
 
     }
+
 
     //----------------- ATUALIZAR CAMPOS ------------------//
 
@@ -249,6 +286,7 @@ function CadastroFeedback({ onVoltar, onSucesso }) {
 
     }
 
+
     //----------------- SELECIONAR TIPO -------------------//
 
     function selecionarTipo(tipo) {
@@ -260,33 +298,45 @@ function CadastroFeedback({ onVoltar, onSucesso }) {
 
     }
 
+
     //----------------- VALIDAR FORMULÁRIO ---------------//
 
     function validarFormulario() {
 
         if (!formulario.id_colaborador_destinatario) {
+
             return 'Selecione o colaborador que receberá o feedback.';
+
         }
 
         if (!formulario.tipo) {
+
             return 'Selecione o tipo do feedback.';
+
         }
 
         if (!formulario.data_feedback) {
+
             return 'Informe a data do feedback.';
+
         }
 
         if (!formulario.descricao.trim()) {
+
             return 'Escreva o conteúdo do feedback.';
+
         }
 
         if (formulario.descricao.trim().length > 800) {
+
             return 'A descrição deve possuir no máximo 800 caracteres.';
+
         }
 
         return '';
 
     }
+
 
     //----------------- SALVAR FEEDBACK -------------------//
 
@@ -297,62 +347,110 @@ function CadastroFeedback({ onVoltar, onSucesso }) {
         const mensagemValidacao = validarFormulario();
 
         if (mensagemValidacao) {
+
             setErro(mensagemValidacao);
             setSucesso('');
+
             return;
+
         }
 
         try {
 
             setSalvando(true);
+
             setErro('');
             setSucesso('');
 
-            // Busca os dados do usuário autenticado.
+
+            //----------------- IDENTIFICAR USUÁRIO ---------//
 
             const usuarioSalvo = localStorage.getItem('usuario');
 
             if (!usuarioSalvo) {
+
                 throw new Error(
                     'Não foi possível identificar o usuário autenticado. Faça login novamente.'
                 );
+
             }
 
-            const usuario = JSON.parse(usuarioSalvo);
+            const dadosUsuario = JSON.parse(usuarioSalvo);
 
-            const idRemetente = Number(usuario.id_colaborador);
+            const usuario =
+                dadosUsuario?.usuario ||
+                dadosUsuario?.response?.usuario ||
+                dadosUsuario;
+
+            const idRemetente = Number(
+                usuario.id_colaborador
+            );
 
             if (!idRemetente || isNaN(idRemetente)) {
+
                 throw new Error(
                     'O usuário autenticado não possui um colaborador vinculado.'
                 );
+
             }
 
-            // Mantém o formato esperado pela API atual.
+
+            //----------------- PREPARAR FEEDBACK -----------//
 
             const dadosFeedback = {
+
                 id_colaborador_remetente: idRemetente,
+
                 id_colaborador_destinatario: Number(
                     formulario.id_colaborador_destinatario
                 ),
+
                 tipo: formulario.tipo,
+
                 descricao: formulario.descricao.trim(),
+
                 data_feedback: formulario.data_feedback,
+
                 ativo: 1
+
             };
+
+
+            //----------------- CADASTRAR FEEDBACK ---------//
 
             await cadastrarFeedback(dadosFeedback);
 
-            setSucesso('Feedback cadastrado com sucesso!');
 
-            await onSucesso();
+            //----------------- FINALIZAÇÃO ----------------//
+
+            setSucesso(
+                'Feedback cadastrado com sucesso!'
+            );
+
+            // Chama o componente pai para atualizar a lista
+            // e exibir a notificação de sucesso.
+            if (onSucesso) {
+
+                await onSucesso();
+
+            } else if (onVoltar) {
+
+                // Compatibilidade caso o componente seja
+                // utilizado sem a propriedade onSucesso.
+                onVoltar();
+
+            }
 
         } catch (erro) {
 
-            console.error('Erro ao cadastrar feedback:', erro);
+            console.error(
+                'Erro ao cadastrar feedback:',
+                erro
+            );
 
             setErro(
-                erro.message || 'Não foi possível cadastrar o feedback.'
+                erro.message ||
+                'Não foi possível cadastrar o feedback.'
             );
 
         } finally {
@@ -362,6 +460,7 @@ function CadastroFeedback({ onVoltar, onSucesso }) {
         }
 
     }
+
 
     //----------------- RETORNAR TELA ---------------------//
 
@@ -383,6 +482,7 @@ function CadastroFeedback({ onVoltar, onSucesso }) {
                         <button
                             type="button"
                             onClick={onVoltar}
+                            disabled={salvando}
                         >
                             Feedbacks
                         </button>
@@ -401,6 +501,7 @@ function CadastroFeedback({ onVoltar, onSucesso }) {
 
             </div>
 
+
             {/* FORMULÁRIO */}
 
             <form
@@ -415,19 +516,25 @@ function CadastroFeedback({ onVoltar, onSucesso }) {
                     <div className="cabecalho-etapa-feedback">
 
                         <div>
+
                             <span className="numero-etapa-feedback">
                                 ETAPA 1
                             </span>
 
                             <h2>Colaborador & Contexto</h2>
+
                         </div>
 
                         <span className="etiqueta-etapa-feedback etiqueta-ativa-feedback">
+
                             <span className="ponto-etiqueta-feedback"></span>
+
                             Vinculação Ativa
+
                         </span>
 
                     </div>
+
 
                     <div className="campo-feedback">
 
@@ -442,6 +549,7 @@ function CadastroFeedback({ onVoltar, onSucesso }) {
                             </small>
 
                         </div>
+
 
                         {/* SELEÇÃO PERSONALIZADA DO COLABORADOR */}
 
@@ -483,6 +591,7 @@ function CadastroFeedback({ onVoltar, onSucesso }) {
                                 </span>
 
                             </div>
+
 
                             {/* LISTA DE RESULTADOS */}
 
@@ -545,6 +654,7 @@ function CadastroFeedback({ onVoltar, onSucesso }) {
 
                     </div>
 
+
                     {/* CARTÃO DO COLABORADOR SELECIONADO */}
 
                     {colaboradorSelecionado && (
@@ -570,20 +680,27 @@ function CadastroFeedback({ onVoltar, onSucesso }) {
                                 </div>
 
                                 <span className="status-colaborador-feedback">
+
                                     <span></span>
+
                                     Ativo
+
                                 </span>
 
                             </div>
 
                             <div className="aviso-vinculo-feedback">
+
                                 <span>●</span>
+
                                 Colaborador selecionado para receber o feedback
+
                             </div>
 
                         </div>
 
                     )}
+
 
                     {!carregando && colaboradores.length === 0 && !erro && (
 
@@ -595,6 +712,7 @@ function CadastroFeedback({ onVoltar, onSucesso }) {
 
                 </section>
 
+
                 {/*----------------- ETAPA 2 -----------------*/}
 
                 <section className="etapa-feedback">
@@ -602,11 +720,13 @@ function CadastroFeedback({ onVoltar, onSucesso }) {
                     <div className="cabecalho-etapa-feedback">
 
                         <div>
+
                             <span className="numero-etapa-feedback">
                                 ETAPA 2
                             </span>
 
                             <h2>Classificação & Tipo de Feedback</h2>
+
                         </div>
 
                         <span className="descricao-etapa-feedback">
@@ -614,6 +734,7 @@ function CadastroFeedback({ onVoltar, onSucesso }) {
                         </span>
 
                     </div>
+
 
                     <div className="campo-feedback">
 
@@ -648,9 +769,11 @@ function CadastroFeedback({ onVoltar, onSucesso }) {
                                         </strong>
 
                                         <span className="seletor-tipo-feedback">
+
                                             {formulario.tipo === tipo.id
                                                 ? '✓'
                                                 : ''}
+
                                         </span>
 
                                     </div>
@@ -666,6 +789,7 @@ function CadastroFeedback({ onVoltar, onSucesso }) {
                         </div>
 
                     </div>
+
 
                     {/* DATA */}
 
@@ -689,6 +813,7 @@ function CadastroFeedback({ onVoltar, onSucesso }) {
 
                 </section>
 
+
                 {/*----------------- ETAPA 3 -----------------*/}
 
                 <section className="etapa-feedback">
@@ -696,11 +821,13 @@ function CadastroFeedback({ onVoltar, onSucesso }) {
                     <div className="cabecalho-etapa-feedback">
 
                         <div>
+
                             <span className="numero-etapa-feedback">
                                 ETAPA 3
                             </span>
 
                             <h2>Conteúdo do Feedback</h2>
+
                         </div>
 
                         <span className="descricao-etapa-feedback">
@@ -708,6 +835,7 @@ function CadastroFeedback({ onVoltar, onSucesso }) {
                         </span>
 
                     </div>
+
 
                     {/* CONTEÚDO */}
 
@@ -738,27 +866,35 @@ function CadastroFeedback({ onVoltar, onSucesso }) {
                         />
 
                         <small className="dica-descricao-feedback">
+
                             ⓘ Dica: Contextualize a situação com fatos objetivos,
                             comportamentos observados e o impacto gerado.
+
                         </small>
 
                     </div>
 
                 </section>
 
+
                 {/*----------------- MENSAGENS -----------------*/}
 
                 {erro && (
+
                     <div className="mensagem-formulario-feedback erro-feedback">
                         {erro}
                     </div>
+
                 )}
 
                 {sucesso && (
+
                     <div className="mensagem-formulario-feedback sucesso-feedback">
                         {sucesso}
                     </div>
+
                 )}
+
 
                 {/*----------------- RODAPÉ -----------------*/}
 
@@ -776,5 +912,8 @@ function CadastroFeedback({ onVoltar, onSucesso }) {
     );
 
 }
+
+
+//----------------- EXPORTAÇÃO -----------------------------//
 
 export default CadastroFeedback;

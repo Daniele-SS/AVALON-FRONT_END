@@ -4,7 +4,7 @@
 import { useState } from 'react';
 
 import BotaoCadastro from '../../componentes/cardNomePag/nomePag.jsx';
-import BotaoSalvarCancelar from '../../componentes/botoes/BotaoSalvarCancelar.jsx';
+import BotaoSalvarCancelar from '../../componentes/botoes/botaoSalvarCancelar.jsx';
 
 import cadastrarRegra from './servicos/cadastroRegraApi.js';
 

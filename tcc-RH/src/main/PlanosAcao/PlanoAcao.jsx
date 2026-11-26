@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import BotaoCadastro from '../../componentes/cardNomePag/nomePag.jsx';
 import Minicards from '../../componentes/minicard/minicard.jsx';
 import Filtro from '../../componentes/cardFiltros/filtros.jsx';
+import AlertaNotificacao from '../../componentes/alerta/Alerta.jsx';
 
 import CardPlanoAcao from './componentes/CardPlanoAcao.jsx';
 
@@ -147,6 +148,120 @@ function PlanoAcaoRH() {
     });
 
 
+    //----------------- NOTIFICAÇÃO -------------------------//
+
+    const [alertaNotificacao, setAlertaNotificacao] = useState(null);
+
+    function exibirNotificacao(tipo, mensagem) {
+
+        setAlertaNotificacao({
+            tipo,
+            mensagem
+        });
+
+    }
+
+    function fecharNotificacao() {
+
+        setAlertaNotificacao(null);
+
+    }
+
+
+    //----------------- CARREGAR PLANOS E TAREFAS -----------//
+
+    async function carregarDados() {
+
+        try {
+
+            setCarregando(true);
+            setErro('');
+
+            // Busca os planos e as tarefas ao mesmo tempo.
+            const [
+                dadosPlanos,
+                dadosTarefas
+            ] = await Promise.all([
+
+                listarPlanosAcao(),
+
+                listarTarefasPlano()
+
+            ]);
+
+            // Junta as informações dos planos com suas tarefas.
+            const planosComInformacoes =
+                montarInformacoesPlanosAcao(
+                    dadosPlanos,
+                    dadosTarefas
+                );
+
+            setPlanos(planosComInformacoes);
+
+            return true;
+
+        } catch (error) {
+
+            console.error(
+                'Erro ao carregar planos de ação:',
+                error
+            );
+
+            setErro(
+                error.message ||
+                'Não foi possível carregar os planos de ação.'
+            );
+
+            return false;
+
+        } finally {
+
+            setCarregando(false);
+
+        }
+
+    }
+
+
+    //----------------- CARREGAMENTO INICIAL ---------------//
+
+    useEffect(() => {
+
+        carregarDados();
+
+    }, []);
+
+
+    //----------------- FINALIZAR CADASTRO -----------------//
+
+    async function finalizarCadastro() {
+
+        // Volta para a listagem.
+        setTelaAtual('lista');
+
+        // Atualiza os planos e as tarefas após o cadastro.
+        const carregou = await carregarDados();
+
+        // Mostra a notificação após atualizar a listagem.
+        if (carregou) {
+
+            exibirNotificacao(
+                'sucesso',
+                'Plano de ação cadastrado com sucesso!'
+            );
+
+        } else {
+
+            exibirNotificacao(
+                'atencao',
+                'O plano foi cadastrado, mas não foi possível atualizar a listagem.'
+            );
+
+        }
+
+    }
+
+
     //----------------- ATUALIZAR PLANO NA LISTA ------------//
 
     function atualizarPlanoNaLista(planoAtualizado) {
@@ -169,10 +284,12 @@ function PlanoAcaoRH() {
                 planoAtual &&
                 String(planoAtual.id) === String(planoAtualizado.id)
             ) {
+
                 return {
                     ...planoAtual,
                     ...planoAtualizado
                 };
+
             }
 
             return planoAtual;
@@ -182,73 +299,37 @@ function PlanoAcaoRH() {
     }
 
 
-    //----------------- CARREGAR PLANOS E TAREFAS ------------//
-
-    useEffect(() => {
-
-        async function carregarDados() {
-
-            try {
-
-                setCarregando(true);
-                setErro('');
-
-                const [dadosPlanos, dadosTarefas] = await Promise.all([
-                    listarPlanosAcao(),
-                    listarTarefasPlano()
-                ]);
-
-                const planosComInformacoes =
-                    montarInformacoesPlanosAcao(
-                        dadosPlanos,
-                        dadosTarefas
-                    );
-
-                setPlanos(planosComInformacoes);
-
-            } catch (error) {
-
-                setErro(
-                    error.message ||
-                    'Não foi possível carregar os planos de ação.'
-                );
-
-            } finally {
-
-                setCarregando(false);
-
-            }
-
-        }
-
-        carregarDados();
-
-    }, []);
-
-
-    //----------------- ABRIR CADASTRO -----------------------//
+    //----------------- ABRIR CADASTRO ----------------------//
 
     function novoPlano() {
+
         setTelaAtual('cadastro');
+
     }
 
 
-    //----------------- ACOMPANHAMENTO ------------------------//
+    //----------------- ACOMPANHAMENTO ----------------------//
 
     function abrirAcompanhamento(plano) {
+
         setPlanoSelecionado(plano);
+
     }
 
     function fecharAcompanhamento() {
+
         setPlanoSelecionado(null);
+
     }
 
     function voltarParaLista() {
+
         setTelaAtual('lista');
+
     }
 
 
-    //----------------- FILTROS -------------------------------//
+    //----------------- FILTROS -----------------------------//
 
     const planosFiltrados = filtrarPlanosAcao(
         planos,
@@ -256,7 +337,7 @@ function PlanoAcaoRH() {
     );
 
 
-    //----------------- SETORES -------------------------------//
+    //----------------- SETORES -----------------------------//
 
     const setores = [
         ...new Map(
@@ -282,29 +363,44 @@ function PlanoAcaoRH() {
     ];
 
 
-    //----------------- INDICADORES ---------------------------//
+    //----------------- INDICADORES -------------------------//
 
     const indicadores = calcularIndicadoresPlanosAcao(planos);
 
 
-    //----------------- CADASTRO ------------------------------//
+    //----------------- TELA DE CADASTRO -------------------//
 
     if (telaAtual === 'cadastro') {
 
         return (
+
             <CadastroPlanoAcao
                 voltar={voltarParaLista}
+                onConcluir={finalizarCadastro}
             />
+
         );
 
     }
 
 
-    //----------------- TELA DO RH -----------------------------//
+    //----------------- TELA DO RH --------------------------//
 
     return (
 
         <div className="tela-plano-acao">
+
+            {/* Notificação de sucesso ou atenção */}
+            {alertaNotificacao && (
+
+                <AlertaNotificacao
+                    tipo={alertaNotificacao.tipo}
+                    mensagem={alertaNotificacao.mensagem}
+                    onFechar={fecharNotificacao}
+                />
+
+            )}
+
 
             <BotaoCadastro
                 titulo="Plano de Ação"
@@ -313,6 +409,8 @@ function PlanoAcaoRH() {
                 onClick={novoPlano}
             />
 
+
+            {/* INDICADORES */}
 
             <div className="indicadores-plano-acao">
 
@@ -351,6 +449,8 @@ function PlanoAcaoRH() {
             </div>
 
 
+            {/* FILTROS */}
+
             <div className="filtro-plano-acao">
 
                 <Filtro
@@ -364,6 +464,8 @@ function PlanoAcaoRH() {
             </div>
 
 
+            {/* LISTA DE PLANOS */}
+
             <div className="lista-planos-acao">
 
                 {carregando ? (
@@ -375,8 +477,11 @@ function PlanoAcaoRH() {
                 ) : erro ? (
 
                     <div className="mensagem-planos-vazios">
+
                         <h3>Não foi possível carregar os planos</h3>
+
                         <p>{erro}</p>
+
                     </div>
 
                 ) : planosFiltrados.length > 0 ? (
@@ -408,6 +513,8 @@ function PlanoAcaoRH() {
 
             </div>
 
+
+            {/* ACOMPANHAMENTO DO PLANO */}
 
             {planoSelecionado && (
 
