@@ -318,6 +318,8 @@ function prepararDados(dados, fatores) {
         });
 }
 
+
+
 /* =========================================================
    POSIÇÕES DOS PONTOS
 ========================================================= */
@@ -327,19 +329,25 @@ function obterPosicaoX(
     quantidade,
     larguraUtil
 ) {
+    /*
+     * Quando existe apenas um mês,
+     * posiciona o ponto no início da área do gráfico.
+     */
     if (quantidade <= 1) {
-        return (
-            MARGEM.esquerda +
-            larguraUtil / 2
-        );
+        return MARGEM.esquerda;
     }
 
+    /*
+     * Quando existem vários meses,
+     * distribui os pontos igualmente.
+     */
     return (
         MARGEM.esquerda +
         (indice / (quantidade - 1)) *
         larguraUtil
     );
 }
+
 
 function obterPosicaoY(valor, alturaUtil) {
     return (

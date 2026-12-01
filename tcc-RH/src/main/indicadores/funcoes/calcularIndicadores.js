@@ -1,7 +1,12 @@
-
 /********************************************************************************
- * Objetivo: Calcular os indicadores da avaliação selecionada.
- * Regra: Só apresentar médias quando houver pelo menos 5 participantes distintos.
+ * Objetivo:
+ * Calcular os indicadores da avaliação selecionada.
+ *
+ * Regras:
+ * - Considera pelo menos 1 participante distinto com resposta válida.
+ * - Considera somente respostas com valores entre 1 e 5.
+ * - Respeita o filtro de setor.
+ * - Não apresenta médias quando não existem respostas válidas.
  ********************************************************************************/
 
 const QUANTIDADE_MINIMA_PARTICIPANTES = 1;
@@ -10,9 +15,9 @@ const QUANTIDADE_MINIMA_PARTICIPANTES = 1;
  * Obtém o colaborador da participação.
  */
 function obterColaborador(participacao) {
-    return Array.isArray(participacao.colaborador)
+    return Array.isArray(participacao?.colaborador)
         ? participacao.colaborador[0]
-        : participacao.colaborador;
+        : participacao?.colaborador;
 }
 
 /**
@@ -36,8 +41,8 @@ function obterIdSetor(participacao) {
     return Number(
         colaborador?.id_setor ??
         setor?.id ??
-        participacao.id_setor ??
-        participacao.setor?.id
+        participacao?.id_setor ??
+        participacao?.setor?.id
     );
 }
 
@@ -50,7 +55,7 @@ function obterIdColaborador(participacao) {
     return Number(
         colaborador?.id ??
         colaborador?.id_colaborador ??
-        participacao.id_colaborador
+        participacao?.id_colaborador
     );
 }
 
@@ -59,22 +64,59 @@ function obterIdColaborador(participacao) {
  */
 function obterIdAvaliacao(participacao) {
     return Number(
-        participacao.id_avaliacao ??
-        participacao.avaliacao?.id
+        participacao?.id_avaliacao ??
+        participacao?.avaliacao?.id
     );
 }
 
 /**
- * Calcula a média de respostas válidas, de 1 a 5.
+ * Obtém o ID da participação vinculada à resposta.
+ */
+function obterIdParticipacaoResposta(resposta) {
+    return Number(
+        resposta?.id_avaliacao_participacao ??
+        resposta?.avaliacao_participacao?.id
+    );
+}
+
+/**
+ * Obtém o ID do fator psicossocial da resposta.
+ */
+function obterIdFatorResposta(resposta) {
+    return Number(
+        resposta?.id_psicossocial_fator ??
+        resposta?.psicossocial_fator?.id ??
+        resposta?.fator_psicossocial?.id ??
+        resposta?.id_fator_psicossocial
+    );
+}
+
+/**
+ * Converte o valor da resposta para número.
+ */
+function obterValorResposta(resposta) {
+    const valor = Number(
+        String(resposta?.valor ?? '').replace(',', '.')
+    );
+
+    if (
+        !Number.isFinite(valor) ||
+        valor < 1 ||
+        valor > 5
+    ) {
+        return null;
+    }
+
+    return valor;
+}
+
+/**
+ * Calcula a média de respostas válidas.
  */
 function calcularMedia(respostas) {
     const valores = respostas
-        .map(resposta => Number(resposta.valor))
-        .filter(valor =>
-            Number.isFinite(valor) &&
-            valor >= 1 &&
-            valor <= 5
-        );
+        .map(obterValorResposta)
+        .filter(valor => valor !== null);
 
     if (valores.length === 0) {
         return null;
@@ -85,7 +127,9 @@ function calcularMedia(respostas) {
         0
     );
 
-    return Number((soma / valores.length).toFixed(1));
+    return Number(
+        (soma / valores.length).toFixed(1)
+    );
 }
 
 /**
@@ -95,7 +139,8 @@ function calcularMedia(respostas) {
  * - null: considera todos os setores.
  * - número: considera somente o setor informado.
  *
- * fatores: array de objetos com id e nome.
+ * fatores:
+ * - Array de objetos contendo id e nome.
  */
 export function calcularIndicadores({
     participacoes = [],
@@ -105,32 +150,120 @@ export function calcularIndicadores({
     fatores = [],
     quantidadeMinima = QUANTIDADE_MINIMA_PARTICIPANTES
 }) {
+    /* =====================================================
+       PARTICIPAÇÕES DA AVALIAÇÃO
+    ===================================================== */
+
     const participacoesAvaliacao = participacoes.filter(
         participacao =>
-            obterIdAvaliacao(participacao) === Number(idAvaliacao)
+            obterIdAvaliacao(participacao) ===
+            Number(idAvaliacao)
     );
 
-    const participacoesFiltradas = participacoesAvaliacao.filter(
-        participacao => {
-            if (idSetor === null || idSetor === undefined) {
+    /* =====================================================
+       FILTRAR SETOR
+    ===================================================== */
+
+    const participacoesFiltradas =
+        participacoesAvaliacao.filter(participacao => {
+            if (
+                idSetor === null ||
+                idSetor === undefined
+            ) {
                 return true;
             }
 
-            return obterIdSetor(participacao) === Number(idSetor);
+            return (
+                obterIdSetor(participacao) ===
+                Number(idSetor)
+            );
+        });
+
+    /* =====================================================
+       MAPEAR PARTICIPAÇÕES
+    ===================================================== */
+
+    const mapaParticipacoes = new Map();
+
+    participacoesFiltradas.forEach(participacao => {
+        const idParticipacao = Number(
+            participacao.id
+        );
+
+        const idColaborador =
+            obterIdColaborador(participacao);
+
+        if (
+            Number.isFinite(idParticipacao) &&
+            idParticipacao > 0
+        ) {
+            mapaParticipacoes.set(
+                idParticipacao,
+                {
+                    participacao,
+                    idColaborador
+                }
+            );
+        }
+    });
+
+    /* =====================================================
+       RESPOSTAS VÁLIDAS DA AVALIAÇÃO
+    ===================================================== */
+
+    const respostasAvaliacao = respostas.filter(
+        resposta => {
+            const idParticipacao =
+                obterIdParticipacaoResposta(resposta);
+
+            const participacao =
+                mapaParticipacoes.get(idParticipacao);
+
+            if (!participacao) {
+                return false;
+            }
+
+            return obterValorResposta(resposta) !== null;
         }
     );
 
-    // Conta colaboradores distintos, não linhas de respostas.
-    const participantesDistintos = new Set(
-        participacoesFiltradas
-            .map(obterIdColaborador)
-            .filter(id => Number.isFinite(id) && id > 0)
-    );
+    /* =====================================================
+       PARTICIPANTES DISTINTOS COM RESPOSTAS VÁLIDAS
+    ===================================================== */
 
-    const totalParticipantes = participantesDistintos.size;
+    const participantesDistintos = new Set();
 
-    // Se não houver participantes suficientes, não exibe médias.
-    if (totalParticipantes < quantidadeMinima) {
+    respostasAvaliacao.forEach(resposta => {
+        const idParticipacao =
+            obterIdParticipacaoResposta(resposta);
+
+        const dadosParticipacao =
+            mapaParticipacoes.get(idParticipacao);
+
+        const idColaborador =
+            dadosParticipacao?.idColaborador;
+
+        if (
+            Number.isFinite(idColaborador) &&
+            idColaborador > 0
+        ) {
+            participantesDistintos.add(
+                idColaborador
+            );
+        }
+    });
+
+    const totalParticipantes =
+        participantesDistintos.size;
+
+    /* =====================================================
+       VERIFICAR QUANTIDADE MÍNIMA
+    ===================================================== */
+
+    if (
+        totalParticipantes <
+        quantidadeMinima
+    ) {
         return {
             totalParticipantes,
             satisfacaoGeral: null,
@@ -139,36 +272,39 @@ export function calcularIndicadores({
         };
     }
 
-    const idsParticipacoes = new Set(
-        participacoesFiltradas.map(
-            participacao => Number(participacao.id)
-        )
-    );
+    /* =====================================================
+       SATISFAÇÃO GERAL
+    ===================================================== */
 
-    const respostasAvaliacao = respostas.filter(resposta =>
-        idsParticipacoes.has(
-            Number(resposta.id_avaliacao_participacao)
-        )
-    );
+    const satisfacaoGeral =
+        calcularMedia(respostasAvaliacao);
 
-    const satisfacaoGeral = calcularMedia(respostasAvaliacao);
+    /* =====================================================
+       MÉDIAS DOS FATORES PSICOSSOCIAIS
+    ===================================================== */
 
     const mediasFatores = {};
 
     fatores.forEach(fator => {
-        const respostasFator = respostasAvaliacao.filter(
-            resposta =>
-                Number(resposta.id_psicossocial_fator) ===
+        const respostasFator =
+            respostasAvaliacao.filter(resposta =>
+                obterIdFatorResposta(resposta) ===
                 Number(fator.id)
-        );
+            );
 
-        mediasFatores[fator.nome] = calcularMedia(respostasFator);
+        mediasFatores[fator.nome] =
+            calcularMedia(respostasFator);
     });
+
+    /* =====================================================
+       RETORNO
+    ===================================================== */
 
     return {
         totalParticipantes,
         satisfacaoGeral,
         mediasFatores,
-        possuiDadosAnonimos: true
+        possuiDadosAnonimos:
+            respostasAvaliacao.length > 0
     };
 }

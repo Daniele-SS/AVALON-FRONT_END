@@ -327,26 +327,6 @@ function Indicadores() {
     }, []);
 
     /* =====================================================
-       AVALIAÇÃO MAIS RECENTE
-    ===================================================== */
-
-    const ultimaAvaliacao = useMemo(() => {
-        if (!dados.avaliacoes.length) {
-            return null;
-        }
-
-        return [...dados.avaliacoes].sort((a, b) => {
-            const dataA = new Date(obterDataAvaliacao(a)).getTime();
-            const dataB = new Date(obterDataAvaliacao(b)).getTime();
-
-            return (
-                (Number.isFinite(dataB) ? dataB : 0) -
-                (Number.isFinite(dataA) ? dataA : 0)
-            );
-        })[0];
-    }, [dados.avaliacoes]);
-
-    /* =====================================================
        FATORES PSICOSSOCIAIS COM ID
     ===================================================== */
 
@@ -501,15 +481,152 @@ function Indicadores() {
         filtros
     ]);
 
-    /*
-     * Gestor nunca usa null para representar todos os setores.
-     * RH continua podendo usar null quando seleciona "Todos".
-     */
+    /* =====================================================
+       ID DO SETOR SELECIONADO
+
+       IMPORTANTE:
+       Esta variável precisa ser declarada antes de
+       ultimaAvaliacao, pois o useMemo utiliza seu valor.
+    ===================================================== */
+
     const idSetorSelecionado = ehGestor
         ? perfilUsuario.idSetor
         : setorSelecionado
             ? Number(setorSelecionado.id)
             : null;
+
+    /* =====================================================
+       AVALIAÇÃO MAIS RECENTE COM RESPOSTAS VÁLIDAS
+
+       Considera respostas com valores de 1 a 5.
+       Quando um setor está selecionado, considera
+       somente as participações daquele setor.
+    ===================================================== */
+
+    const ultimaAvaliacao = useMemo(() => {
+        if (!dados.avaliacoes.length) {
+            return null;
+        }
+
+        /*
+         * Identifica as participações do setor selecionado.
+         * Se o RH selecionar "Todos", considera todos.
+         */
+        const participacoesFiltradas =
+            dados.participacoes.filter(participacao => {
+                if (
+                    idSetorSelecionado === null ||
+                    idSetorSelecionado === undefined
+                ) {
+                    return true;
+                }
+
+                return (
+                    obterIdSetorParticipacao(participacao) ===
+                    Number(idSetorSelecionado)
+                );
+            });
+
+        /*
+         * Guarda os IDs das participações.
+         */
+        const idsParticipacoes = new Set(
+            participacoesFiltradas
+                .map(participacao => Number(participacao.id))
+                .filter(id =>
+                    Number.isFinite(id) && id > 0
+                )
+        );
+
+        /*
+         * Identifica as avaliações que possuem
+         * pelo menos uma resposta válida.
+         */
+        const idsAvaliacoesComRespostas = new Set();
+
+        dados.respostas.forEach(resposta => {
+            const valor = Number(
+                String(resposta.valor ?? '').replace(',', '.')
+            );
+
+            const idParticipacao = Number(
+                resposta.id_avaliacao_participacao ??
+                resposta.avaliacao_participacao?.id
+            );
+
+            if (
+                !Number.isFinite(valor) ||
+                valor < 1 ||
+                valor > 5 ||
+                !idsParticipacoes.has(idParticipacao)
+            ) {
+                return;
+            }
+
+            const participacao =
+                participacoesFiltradas.find(
+                    item =>
+                        Number(item.id) === idParticipacao
+                );
+
+            if (!participacao) {
+                return;
+            }
+
+            const idAvaliacao = obterIdAvaliacao(
+                participacao
+            );
+
+            if (
+                Number.isFinite(idAvaliacao) &&
+                idAvaliacao > 0
+            ) {
+                idsAvaliacoesComRespostas.add(
+                    idAvaliacao
+                );
+            }
+        });
+
+        /*
+         * Mantém somente avaliações com respostas
+         * válidas no setor selecionado.
+         */
+        const avaliacoesComRespostas =
+            dados.avaliacoes.filter(avaliacao =>
+                idsAvaliacoesComRespostas.has(
+                    Number(avaliacao.id)
+                )
+            );
+
+        if (!avaliacoesComRespostas.length) {
+            return null;
+        }
+
+        /*
+         * Ordena pela data e seleciona a mais recente.
+         */
+        return [...avaliacoesComRespostas].sort(
+            (a, b) => {
+                const dataA = new Date(
+                    obterDataAvaliacao(a)
+                ).getTime();
+
+                const dataB = new Date(
+                    obterDataAvaliacao(b)
+                ).getTime();
+
+                return (
+                    (Number.isFinite(dataB) ? dataB : 0) -
+                    (Number.isFinite(dataA) ? dataA : 0)
+                );
+            }
+        )[0];
+    }, [
+        dados.avaliacoes,
+        dados.participacoes,
+        dados.respostas,
+        idSetorSelecionado
+    ]);
 
     /* =====================================================
        PARTICIPAÇÕES DA ÚLTIMA AVALIAÇÃO
@@ -585,58 +702,58 @@ function Indicadores() {
         ehGestor
     ]);
 
-/* =====================================================
-   COMPARAÇÃO POR SETOR
+    /* =====================================================
+       COMPARAÇÃO POR SETOR
 
-   RH: compara todos os setores.
-   Gestor: compara somente o próprio setor.
+       RH: compara todos os setores.
+       Gestor: compara somente o próprio setor.
 
-   Usa todas as avaliações, participações e respostas.
-   ===================================================== */
+       Usa todas as avaliações, participações e respostas.
+    ===================================================== */
 
-const comparacaoSetores = useMemo(() => {
-    const fator = fatores.find(
-        item =>
-            normalizarTexto(item.nome) ===
-            normalizarTexto(fatorSelecionado)
-    );
+    const comparacaoSetores = useMemo(() => {
+        const fator = fatores.find(
+            item =>
+                normalizarTexto(item.nome) ===
+                normalizarTexto(fatorSelecionado)
+        );
 
-    if (
-        !fator ||
-        (ehGestor && !setorSelecionado)
-    ) {
-        return [];
-    }
+        if (
+            !fator ||
+            (ehGestor && !setorSelecionado)
+        ) {
+            return [];
+        }
 
-    const setoresParaComparacao = ehGestor
-        ? [setorSelecionado]
-        : dados.setores;
+        const setoresParaComparacao = ehGestor
+            ? [setorSelecionado]
+            : dados.setores;
 
-    return calcularComparacaoSetores({
-        setores: setoresParaComparacao,
+        return calcularComparacaoSetores({
+            setores: setoresParaComparacao,
 
-        // IMPORTANTE: envia todas as avaliações.
-        avaliacoes: dados.avaliacoes,
+            // Envia todas as avaliações.
+            avaliacoes: dados.avaliacoes,
 
-        // IMPORTANTE: envia todas as participações.
-        participacoes: dados.participacoes,
+            // Envia todas as participações.
+            participacoes: dados.participacoes,
 
-        // Envia todas as respostas.
-        respostas: dados.respostas,
+            // Envia todas as respostas.
+            respostas: dados.respostas,
 
-        // Fator selecionado no gráfico.
-        idFator: fator.id
-    });
-}, [
-    dados.setores,
-    dados.avaliacoes,
-    dados.participacoes,
-    dados.respostas,
-    fatores,
-    fatorSelecionado,
-    ehGestor,
-    setorSelecionado
-]);
+            // Fator selecionado no gráfico.
+            idFator: fator.id
+        });
+    }, [
+        dados.setores,
+        dados.avaliacoes,
+        dados.participacoes,
+        dados.respostas,
+        fatores,
+        fatorSelecionado,
+        ehGestor,
+        setorSelecionado
+    ]);
 
     /* =====================================================
        MÉDIAS DOS CARDS
@@ -755,8 +872,9 @@ const comparacaoSetores = useMemo(() => {
 
             {!mediasIndicadores.possuiDadosAnonimos && (
                 <div className="indicadores-mensagem">
-                    São necessários pelo menos 5 participantes distintos
-                    para apresentar os indicadores deste grupo.
+                    É necessário pelo menos 1 participante com
+                    respostas válidas para apresentar os indicadores
+                    deste grupo.
                 </div>
             )}
 
