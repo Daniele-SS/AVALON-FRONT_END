@@ -1,12 +1,13 @@
-//----------------- CONFIGURAÇÕES ---------------------------//
+
+/********************************************************************************
+ * Objetivo: Buscar os dados utilizados no Dashboard.
+ ********************************************************************************/
 
 const API = 'http://localhost:8080/v1/senai/avalon';
 
-
-//----------------- CONFIGURAR AUTENTICAÇÃO -----------------//
+//----------------- CONFIGURAÇÃO -----------------//
 
 function obterConfiguracao() {
-
     const token = localStorage.getItem('access_token');
 
     if (!token) {
@@ -14,71 +15,40 @@ function obterConfiguracao() {
     }
 
     return {
-        'Authorization': `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json'
     };
 }
 
+//----------------- BUSCAR ENDPOINT -----------------//
 
-//----------------- BUSCAR DADOS DO DASHBOARD ---------------//
+async function buscarEndpoint(endpoint, configuracao) {
+    const resposta = await fetch(`${API}${endpoint}`, {
+        method: 'GET',
+        headers: configuracao
+    });
+
+    if (resposta.status === 401) {
+        localStorage.removeItem('access_token');
+        throw new Error('Sua sessão expirou. Faça login novamente.');
+    }
+
+    if (!resposta.ok) {
+        console.error(
+            `Erro ao buscar ${endpoint}:`,
+            resposta.status
+        );
+
+        return {};
+    }
+
+    return await resposta.json();
+}
+
+//----------------- BUSCAR DADOS -----------------//
 
 async function buscarDadosDashboard() {
-
     const configuracao = obterConfiguracao();
-
-    const [
-        resColaboradores,
-        resSetores,
-        resAvaliacoes,
-        resParticipacoes,
-        resAvaliacoesSetores,
-        resAvaliacoesCargos,
-        resDocumentos,
-        resFerias,
-        resPlanosAcao
-    ] = await Promise.allSettled([
-        fetch(`${API}/colaborador`, { headers: configuracao }),
-        fetch(`${API}/setor`, { headers: configuracao }),
-        fetch(`${API}/avaliacao`, { headers: configuracao }),
-        fetch(`${API}/avaliacao_participacao`, { headers: configuracao }),
-        fetch(`${API}/avaliacao_setor`, { headers: configuracao }),
-        fetch(`${API}/avaliacao_cargo`, { headers: configuracao }),
-        fetch(`${API}/documento`, { headers: configuracao }),
-        fetch(`${API}/ferias`, { headers: configuracao }),
-        fetch(`${API}/plano_acao`, { headers: configuracao })
-    ]);
-
-    const respostas = [
-        resColaboradores,
-        resSetores,
-        resAvaliacoes,
-        resParticipacoes,
-        resAvaliacoesSetores,
-        resAvaliacoesCargos,
-        resDocumentos,
-        resFerias,
-        resPlanosAcao
-    ];
-
-    const expirou = respostas.some(
-        (r) => r.status === 'fulfilled' && r.value.status === 401
-    );
-
-    if (expirou) {
-        localStorage.removeItem('access_token');
-        throw new Error('Sua autenticação expirou. Faça login novamente.');
-    }
-
-    async function extrairJson(resultadoFetch) {
-        if (resultadoFetch.status !== 'fulfilled' || !resultadoFetch.value.ok) {
-            return {};
-        }
-        try {
-            return await resultadoFetch.value.json();
-        } catch {
-            return {};
-        }
-    }
 
     const [
         dadosColaboradores,
@@ -86,20 +56,18 @@ async function buscarDadosDashboard() {
         dadosAvaliacoes,
         dadosParticipacoes,
         dadosAvaliacoesSetores,
-        dadosAvaliacoesCargos,
-        dadosDocumentos,
         dadosFerias,
-        dadosPlanosAcao
+        dadosPlanosAcao,
+        dadosResultados
     ] = await Promise.all([
-        extrairJson(resColaboradores),
-        extrairJson(resSetores),
-        extrairJson(resAvaliacoes),
-        extrairJson(resParticipacoes),
-        extrairJson(resAvaliacoesSetores),
-        extrairJson(resAvaliacoesCargos),
-        extrairJson(resDocumentos),
-        extrairJson(resFerias),
-        extrairJson(resPlanosAcao)
+        buscarEndpoint('/colaborador', configuracao),
+        buscarEndpoint('/setor', configuracao),
+        buscarEndpoint('/avaliacao', configuracao),
+        buscarEndpoint('/avaliacao_participacao', configuracao),
+        buscarEndpoint('/avaliacao_setor', configuracao),
+        buscarEndpoint('/ferias', configuracao),
+        buscarEndpoint('/plano_acao', configuracao),
+        buscarEndpoint('/avaliacao_resultado', configuracao)
     ]);
 
     return {
@@ -128,16 +96,6 @@ async function buscarDadosDashboard() {
             dadosAvaliacoesSetores.avaliacao_setor ??
             [],
 
-        avaliacoesCargos:
-            dadosAvaliacoesCargos.response?.avaliacaoCargos ??
-            dadosAvaliacoesCargos.avaliacaoCargos ??
-            [],
-
-        documentos:
-            dadosDocumentos.response?.documentos ??
-            dadosDocumentos.documentos ??
-            [],
-
         ferias:
             dadosFerias.response?.ferias ??
             dadosFerias.ferias ??
@@ -147,6 +105,12 @@ async function buscarDadosDashboard() {
             dadosPlanosAcao.response?.planos_acao ??
             dadosPlanosAcao.response?.plano_acao ??
             dadosPlanosAcao.planos_acao ??
+            dadosPlanosAcao.plano_acao ??
+            [],
+
+        resultados:
+            dadosResultados.response?.resultados ??
+            dadosResultados.resultados ??
             []
     };
 }
