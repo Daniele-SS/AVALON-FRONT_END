@@ -15,6 +15,17 @@ const alternativasPadrao = [
 ];
 
 
+//----------------- ALTERNATIVAS DA ESCALA ----------------------//
+
+const alternativasEscala = [
+    { valor: '5', nome: 'Excelente' },
+    { valor: '4', nome: 'Bom' },
+    { valor: '3', nome: 'Regular' },
+    { valor: '2', nome: 'Ruim' },
+    { valor: '1', nome: 'Muito ruim' }
+];
+
+
 //----------------- IDENTIFICAR ID DA PERGUNTA -----------------//
 
 function buscarIdPergunta(resultado) {
@@ -71,6 +82,15 @@ function GraficoAlternativasPesquisa({
     );
 
 
+    //----------------- IDENTIFICAR TIPO ------------------------//
+
+    const tipoPergunta = String(
+        pergunta?.tipo || ''
+    ).trim().toUpperCase();
+
+    const perguntaEhEscala = tipoPergunta === 'ESCALA';
+
+
     //----------------- FILTRAR RESULTADOS ----------------------//
 
     const resultadosPergunta = pesquisaResultados.filter(resultado => {
@@ -83,19 +103,44 @@ function GraficoAlternativasPesquisa({
 
     //----------------- PREPARAR ALTERNATIVAS ------------------//
 
-    const alternativasExistentes = resultadosPergunta.map(resultado => {
-
-        return String(resultado.valor_resposta || '').trim();
-
-    }).filter(alternativa => alternativa !== '');
+    let alternativas;
 
 
-    const alternativas = [
-        ...new Set([
-            ...alternativasPadrao,
-            ...alternativasExistentes
-        ])
-    ];
+    if (perguntaEhEscala) {
+
+        // Para escala, mostra somente os valores de 5 a 1
+        // com seus respectivos nomes.
+
+        alternativas = alternativasEscala.map(item => ({
+            valor: item.valor,
+            alternativa: item.nome
+        }));
+
+    } else {
+
+        // Para perguntas comuns, mantém as alternativas padrão
+        // e também as alternativas encontradas no banco.
+
+        const alternativasExistentes = resultadosPergunta.map(resultado => {
+
+            return String(
+                resultado.valor_resposta || ''
+            ).trim();
+
+        }).filter(alternativa => alternativa !== '');
+
+
+        alternativas = [
+            ...new Set([
+                ...alternativasPadrao,
+                ...alternativasExistentes
+            ])
+        ].map(alternativa => ({
+            valor: alternativa,
+            alternativa
+        }));
+
+    }
 
 
     //----------------- PREPARAR DADOS DO GRÁFICO --------------//
@@ -104,7 +149,9 @@ function GraficoAlternativasPesquisa({
 
         const resultado = resultadosPergunta.find(item => {
 
-            return String(item.valor_resposta || '').trim() === alternativa;
+            return String(
+                item.valor_resposta || ''
+            ).trim() === alternativa.valor;
 
         });
 
@@ -115,7 +162,8 @@ function GraficoAlternativasPesquisa({
 
 
         return {
-            alternativa,
+            valor: alternativa.valor,
+            alternativa: alternativa.alternativa,
             quantidade
         };
 
@@ -140,7 +188,7 @@ function GraficoAlternativasPesquisa({
 
         return Array.from(
             { length: Math.max(0, alternativa.quantidade) },
-            () => alternativa.alternativa
+            () => alternativa.valor
         );
 
     });
@@ -154,6 +202,7 @@ function GraficoAlternativasPesquisa({
     //----------------- RENDERIZAR -------------------------------//
 
     return (
+
         <div className="grafico-alternativas-pesquisa">
 
             <div className="cabecalho-grafico-pesquisa">
@@ -185,7 +234,7 @@ function GraficoAlternativasPesquisa({
 
                 <p className="aviso-privacidade-pesquisa">
                     Os resultados serão exibidos quando houver pelo
-                    menos 1 respostas válidas.
+                    menos 1 resposta válida.
                 </p>
 
             )}
@@ -208,9 +257,10 @@ function GraficoAlternativasPesquisa({
 
 
                     return (
+
                         <div
                             className="linha-alternativa-pesquisa"
-                            key={`${pergunta.id}-${alternativa.alternativa}-${indice}`}
+                            key={`${pergunta.id}-${alternativa.valor}-${indice}`}
                         >
 
                             <span className="nome-alternativa-pesquisa">
@@ -247,6 +297,7 @@ function GraficoAlternativasPesquisa({
                             </div>
 
                         </div>
+
                     );
 
                 })}
@@ -267,6 +318,7 @@ function GraficoAlternativasPesquisa({
             </div>
 
         </div>
+
     );
 
 }

@@ -64,9 +64,10 @@ function CardResultadoPergunta({
     mostrarResultados = true
 }) {
 
+    // Normaliza o tipo para reconhecer ESCALA, escala ou Escala.
     const tipoPergunta = String(
         pergunta?.tipo || ''
-    ).toLowerCase();
+    ).trim().toUpperCase();
 
 
     //----------------- FILTRAR RESPOSTAS DA PERGUNTA -----------------//
@@ -113,12 +114,22 @@ function CardResultadoPergunta({
         .filter(resposta => resposta !== '');
 
 
+    //----------------- IDENTIFICAR TIPOS DE GRÁFICO ------------------//
+
+    const perguntaEhAlternativa =
+        tipoPergunta === 'ALTERNATIVA';
+
+    const perguntaEhEscala =
+        tipoPergunta === 'ESCALA';
+
+
     //----------------- RENDERIZAR -------------------------------------//
 
     return (
+
         <article className="card-resultado-pergunta">
 
-            {tipoPergunta === 'alternativa' ? (
+            {perguntaEhAlternativa || perguntaEhEscala ? (
 
                 <GraficoAlternativasPesquisa
                     pergunta={pergunta}
@@ -127,7 +138,7 @@ function CardResultadoPergunta({
                     mostrarResultados={mostrarResultados}
                 />
 
-            ) : tipoPergunta === 'discursiva' ? (
+            ) : tipoPergunta === 'DISCURSIVA' ? (
 
                 <div className="resultado-discursivo-pesquisa">
 
@@ -188,6 +199,7 @@ function CardResultadoPergunta({
             )}
 
         </article>
+
     );
 
 }

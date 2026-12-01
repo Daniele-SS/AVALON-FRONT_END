@@ -316,10 +316,15 @@ function contarRespostasValidasPergunta(
 
     const tipoPergunta = String(
         pergunta?.tipo || ''
-    ).toLowerCase();
+    ).trim().toUpperCase();
 
 
-    if (tipoPergunta === 'alternativa') {
+    //----------------- ALTERNATIVA E ESCALA -----------------//
+
+    if (
+        tipoPergunta === 'ALTERNATIVA' ||
+        tipoPergunta === 'ESCALA'
+    ) {
 
         return pesquisaResultados
             .filter(resultado =>
@@ -339,7 +344,9 @@ function contarRespostasValidasPergunta(
     }
 
 
-    if (tipoPergunta === 'discursiva') {
+    //----------------- DISCURSIVA ---------------------------//
+
+    if (tipoPergunta === 'DISCURSIVA') {
 
         return respostas.filter(resposta => {
 
@@ -352,6 +359,7 @@ function contarRespostasValidasPergunta(
         }).length;
 
     }
+
 
     return 0;
 
